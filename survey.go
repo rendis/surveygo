@@ -15,11 +15,11 @@ type Survey struct {
 	Version     string            `json:"version"`
 	Description *string           `json:"description"`
 	NameIdPaths map[string]string `json:"idPaths"`
-	JsonSurvey  string            `json:"jsonSurvey"`
+	JsonSurvey  *string           `json:"jsonSurvey"`
 }
 
 func (s *Survey) Check(aws Answers) error {
-	gres := gjson.Parse(s.JsonSurvey)
+	gres := gjson.Parse(*s.JsonSurvey)
 	for nameId, values := range aws {
 		path, ok := s.NameIdPaths[nameId]
 		if !ok {

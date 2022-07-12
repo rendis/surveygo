@@ -34,6 +34,6 @@ func ParseBytes(b []byte) (*Survey, error) {
 		Version:     *ins.Version,
 		Description: ins.Description,
 		NameIdPaths: paths,
-		JsonSurvey:  uglyJson,
+		JsonSurvey:  &uglyJson,
 	}, nil
 }

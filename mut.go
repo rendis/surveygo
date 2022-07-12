@@ -8,7 +8,7 @@ import (
 
 func (s *Survey) RemoveQuestion(nameId string) error {
 	var ins internalSurvey
-	err := json.Unmarshal([]byte(s.JsonSurvey), &ins)
+	err := json.Unmarshal([]byte(*s.JsonSurvey), &ins)
 	if err != nil {
 		return err
 	}
@@ -44,7 +44,7 @@ func (s *Survey) AddQuestionBytes(questionByte []byte) error {
 	}
 
 	var ins internalSurvey
-	err = json.Unmarshal([]byte(s.JsonSurvey), &ins)
+	err = json.Unmarshal([]byte(*s.JsonSurvey), &ins)
 	if err != nil {
 		return err
 	}
@@ -65,7 +65,7 @@ func (s *Survey) UpdateQuestionBytes(questionByte []byte) error {
 	}
 
 	var ins internalSurvey
-	err = json.Unmarshal([]byte(s.JsonSurvey), &ins)
+	err = json.Unmarshal([]byte(*s.JsonSurvey), &ins)
 	if err != nil {
 		return err
 	}
@@ -95,7 +95,9 @@ func (s *Survey) internalUpdate(ins *internalSurvey) error {
 	if err != nil {
 		return err
 	}
-	s.JsonSurvey = string(b)
+
+	js := string(b)
+	s.JsonSurvey = &js
 	s.NameIdPaths = paths
 	return nil
 }
