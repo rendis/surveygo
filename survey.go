@@ -1,6 +1,7 @@
 package surveygo
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/rendis/surveygo/check"
 	"github.com/rendis/surveygo/part"
@@ -11,15 +12,15 @@ import (
 type Answers map[string][]any
 
 type Survey struct {
-	Title       *string           `json:"title"`
-	Version     *string           `json:"version"`
-	Description *string           `json:"description"`
-	NameIdPaths map[string]string `json:"idPaths"`
-	JsonSurvey  *string           `json:"jsonSurvey"`
+	Title          *string           `json:"title"`
+	Version        *string           `json:"version"`
+	Description    *string           `json:"description"`
+	NameIdPaths    map[string]string `json:"idPaths"`
+	FullJsonSurvey *string           `json:"fullJsonSurvey"`
 }
 
 func (s *Survey) Check(aws Answers) error {
-	gres := gjson.Parse(*s.JsonSurvey)
+	gres := gjson.Parse(*s.FullJsonSurvey)
 	for nameId, values := range aws {
 		path, ok := s.NameIdPaths[nameId]
 		if !ok {
@@ -43,14 +44,14 @@ func (s *Survey) Check(aws Answers) error {
 	return nil
 }
 
-type internalSurvey struct {
+type jsonSurvey struct {
 	Title       *string         `json:"title"`
 	Version     *string         `json:"version"`
 	Description *string         `json:"description"`
 	Questions   []part.Question `json:"questions"`
 }
 
-func (s *internalSurvey) getNameIdPaths() (map[string]string, error) {
+func (s *jsonSurvey) getNameIdPaths() (map[string]string, error) {
 	base := []string{"questions"}
 	var paths = make(map[string]string)
 	for i, q := range s.Questions {
@@ -65,7 +66,7 @@ func (s *internalSurvey) getNameIdPaths() (map[string]string, error) {
 	return paths, nil
 }
 
-func (s *internalSurvey) validate() error {
+func (s *jsonSurvey) validate() error {
 	if s.Title == nil || *s.Title == "" {
 		return fmt.Errorf("survey title is required")
 	}
@@ -75,4 +76,12 @@ func (s *internalSurvey) validate() error {
 	}
 
 	return nil
+}
+
+func (s *jsonSurvey) marshal() (string, error) {
+	b, err := json.Marshal(s)
+	if err != nil {
+		return "", err
+	}
+	return string(b), nil
 }

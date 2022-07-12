@@ -7,10 +7,12 @@ import (
 )
 
 func (s *Survey) RemoveQuestion(nameId string) error {
-	var ins internalSurvey
-	err := json.Unmarshal([]byte(*s.JsonSurvey), &ins)
+	ins, err := s.getInternal()
 	if err != nil {
 		return err
+	}
+	if ins == nil {
+		return fmt.Errorf("json survey is empty, title: '%s', version: '%s'", *s.Title, *s.Version)
 	}
 
 	var found bool
@@ -25,7 +27,7 @@ func (s *Survey) RemoveQuestion(nameId string) error {
 		return fmt.Errorf("question '%s' not found", nameId)
 	}
 
-	return s.internalUpdate(&ins)
+	return s.internalUpdate(ins)
 }
 
 func (s *Survey) AddQuestion(questionJson string) error {
@@ -43,23 +45,16 @@ func (s *Survey) AddQuestionBytes(questionByte []byte) error {
 		return fmt.Errorf("question '%s' already exists", *question.NameId)
 	}
 
-	var ins internalSurvey
-	if s.JsonSurvey == nil {
-		ins = internalSurvey{
-			Title:       s.Title,
-			Version:     s.Version,
-			Description: s.Description,
-			Questions:   []part.Question{},
-		}
-	} else {
-		err = json.Unmarshal([]byte(*s.JsonSurvey), &ins)
-		if err != nil {
-			return err
-		}
+	ins, err := s.getInternal()
+	if err != nil {
+		return err
+	}
+	if ins == nil {
+		return fmt.Errorf("json survey is empty, title: '%s', version: '%s'", *s.Title, *s.Version)
 	}
 
 	ins.Questions = append(ins.Questions, question)
-	return s.internalUpdate(&ins)
+	return s.internalUpdate(ins)
 }
 
 func (s *Survey) UpdateQuestion(questionJson string) error {
@@ -73,10 +68,12 @@ func (s *Survey) UpdateQuestionBytes(questionByte []byte) error {
 		return err
 	}
 
-	var ins internalSurvey
-	err = json.Unmarshal([]byte(*s.JsonSurvey), &ins)
+	ins, err := s.getInternal()
 	if err != nil {
 		return err
+	}
+	if ins == nil {
+		return fmt.Errorf("json survey is empty, title: '%s', version: '%s'", *s.Title, *s.Version)
 	}
 
 	var found bool
@@ -91,10 +88,10 @@ func (s *Survey) UpdateQuestionBytes(questionByte []byte) error {
 		return fmt.Errorf("question '%s' not found", *question.NameId)
 	}
 
-	return s.internalUpdate(&ins)
+	return s.internalUpdate(ins)
 }
 
-func (s *Survey) internalUpdate(ins *internalSurvey) error {
+func (s *Survey) internalUpdate(ins *jsonSurvey) error {
 	paths, err := ins.getNameIdPaths()
 	if err != nil {
 		return err
@@ -106,7 +103,26 @@ func (s *Survey) internalUpdate(ins *internalSurvey) error {
 	}
 
 	js := string(b)
-	s.JsonSurvey = &js
+	s.FullJsonSurvey = &js
 	s.NameIdPaths = paths
 	return nil
+}
+
+func (s *Survey) getInternal() (*jsonSurvey, error) {
+	if s.FullJsonSurvey == nil {
+		return &jsonSurvey{
+			Title:       s.Title,
+			Version:     s.Version,
+			Description: s.Description,
+			Questions:   []part.Question{},
+		}, nil
+	}
+
+	var ins jsonSurvey
+	err := json.Unmarshal([]byte(*s.FullJsonSurvey), &ins)
+	if err != nil {
+		return nil, err
+	}
+
+	return &ins, nil
 }
