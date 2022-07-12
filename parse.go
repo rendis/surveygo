@@ -30,8 +30,8 @@ func ParseBytes(b []byte) (*Survey, error) {
 	}
 
 	return &Survey{
-		Title:       *ins.Title,
-		Version:     *ins.Version,
+		Title:       ins.Title,
+		Version:     ins.Version,
 		Description: ins.Description,
 		NameIdPaths: paths,
 		JsonSurvey:  &uglyJson,

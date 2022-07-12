@@ -11,8 +11,8 @@ import (
 type Answers map[string][]any
 
 type Survey struct {
-	Title       string            `json:"title"`
-	Version     string            `json:"version"`
+	Title       *string           `json:"title"`
+	Version     *string           `json:"version"`
 	Description *string           `json:"description"`
 	NameIdPaths map[string]string `json:"idPaths"`
 	JsonSurvey  *string           `json:"jsonSurvey"`
