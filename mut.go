@@ -44,9 +44,18 @@ func (s *Survey) AddQuestionBytes(questionByte []byte) error {
 	}
 
 	var ins internalSurvey
-	err = json.Unmarshal([]byte(*s.JsonSurvey), &ins)
-	if err != nil {
-		return err
+	if s.JsonSurvey == nil {
+		ins = internalSurvey{
+			Title:       s.Title,
+			Version:     s.Version,
+			Description: s.Description,
+			Questions:   []part.Question{},
+		}
+	} else {
+		err = json.Unmarshal([]byte(*s.JsonSurvey), &ins)
+		if err != nil {
+			return err
+		}
 	}
 
 	ins.Questions = append(ins.Questions, question)
