@@ -1,7 +1,6 @@
 package surveygo
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/rendis/surveygo/check"
 	"github.com/rendis/surveygo/part"
@@ -11,48 +10,16 @@ import (
 
 type Answers map[string][]any
 
-func Parse(j string) (*Survey, error) {
-	b := []byte(j)
-	return ParseBytes(b)
-}
-
-func ParseBytes(b []byte) (*Survey, error) {
-	uglyJson := gjson.ParseBytes(b).Get("@ugly").String()
-	var ins internalSurvey
-	err := json.Unmarshal([]byte(uglyJson), &ins)
-	if err != nil {
-		return nil, err
-	}
-
-	err = ins.validate()
-	if err != nil {
-		return nil, err
-	}
-
-	paths, err := ins.getNameIdPaths()
-	if err != nil {
-		return nil, err
-	}
-
-	return &Survey{
-		Title:       ins.Title,
-		Version:     ins.Version,
-		Description: ins.Description,
-		NameIdPaths: paths,
-		JsonSurvey:  &uglyJson,
-	}, nil
-}
-
 type Survey struct {
-	Title       *string           `json:"title"`
-	Version     *string           `json:"version"`
+	Title       string            `json:"title"`
+	Version     string            `json:"version"`
 	Description *string           `json:"description"`
 	NameIdPaths map[string]string `json:"idPaths"`
-	JsonSurvey  *string           `json:"jsonSurvey"`
+	JsonSurvey  string            `json:"jsonSurvey"`
 }
 
 func (s *Survey) Check(aws Answers) error {
-	gres := gjson.Parse(*s.JsonSurvey)
+	gres := gjson.Parse(s.JsonSurvey)
 	for nameId, values := range aws {
 		path, ok := s.NameIdPaths[nameId]
 		if !ok {
