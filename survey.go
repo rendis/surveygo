@@ -44,6 +44,17 @@ func (s *Survey) Check(aws Answers) error {
 	return nil
 }
 
+func (s *Survey) ToMap() (map[string]any, error) {
+	r := make(map[string]any)
+	if s.FullJsonSurvey != nil {
+		err := json.Unmarshal([]byte(*s.FullJsonSurvey), &r)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return r, nil
+}
+
 type jsonSurvey struct {
 	Title       *string         `json:"title"`
 	Version     *string         `json:"version"`

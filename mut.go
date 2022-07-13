@@ -30,19 +30,24 @@ func (s *Survey) RemoveQuestion(nameId string) error {
 	return s.internalUpdate(ins)
 }
 
-func (s *Survey) AddQuestion(questionJson string) error {
-	return s.AddQuestionBytes([]byte(questionJson))
+func (s *Survey) AddQuestionMap(question map[string]any) error {
+	b, _ := json.Marshal(question)
+	return s.AddQuestionBytes(b)
 }
 
-func (s *Survey) AddQuestionBytes(questionByte []byte) error {
-	var question part.Question
-	err := json.Unmarshal(questionByte, &question)
+func (s *Survey) AddQuestionJson(question string) error {
+	return s.AddQuestionBytes([]byte(question))
+}
+
+func (s *Survey) AddQuestionBytes(question []byte) error {
+	var pq part.Question
+	err := json.Unmarshal(question, &pq)
 	if err != nil {
 		return err
 	}
 
-	if _, ok := s.NameIdPaths[*question.NameId]; ok {
-		return fmt.Errorf("question '%s' already exists", *question.NameId)
+	if _, ok := s.NameIdPaths[*pq.NameId]; ok {
+		return fmt.Errorf("pq '%s' already exists", *pq.NameId)
 	}
 
 	ins, err := s.getInternal()
@@ -53,17 +58,22 @@ func (s *Survey) AddQuestionBytes(questionByte []byte) error {
 		return fmt.Errorf("json survey is empty, title: '%s', version: '%s'", *s.Title, *s.Version)
 	}
 
-	ins.Questions = append(ins.Questions, question)
+	ins.Questions = append(ins.Questions, pq)
 	return s.internalUpdate(ins)
 }
 
-func (s *Survey) UpdateQuestion(questionJson string) error {
-	return s.UpdateQuestionBytes([]byte(questionJson))
+func (s *Survey) UpdateQuestionMap(question map[string]any) error {
+	b, _ := json.Marshal(question)
+	return s.UpdateQuestionBytes(b)
 }
 
-func (s *Survey) UpdateQuestionBytes(questionByte []byte) error {
-	var question part.Question
-	err := json.Unmarshal(questionByte, &question)
+func (s *Survey) UpdateQuestionJson(question string) error {
+	return s.UpdateQuestionBytes([]byte(question))
+}
+
+func (s *Survey) UpdateQuestionBytes(question []byte) error {
+	var pq part.Question
+	err := json.Unmarshal(question, &pq)
 	if err != nil {
 		return err
 	}
@@ -78,14 +88,14 @@ func (s *Survey) UpdateQuestionBytes(questionByte []byte) error {
 
 	var found bool
 	for i, q := range ins.Questions {
-		if *q.NameId == *question.NameId {
-			ins.Questions[i] = question
+		if *q.NameId == *pq.NameId {
+			ins.Questions[i] = pq
 			found = true
 			break
 		}
 	}
 	if !found {
-		return fmt.Errorf("question '%s' not found", *question.NameId)
+		return fmt.Errorf("pq '%s' not found", *pq.NameId)
 	}
 
 	return s.internalUpdate(ins)

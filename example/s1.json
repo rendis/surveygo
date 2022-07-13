@@ -1,0 +1,89 @@
+{
+  "title": "Sur #1",
+  "version": "1.0.0",
+  "description": "test survey",
+  "questions": [
+    {
+      "order": 0,
+      "nameId": "generals",
+      "type": "checkbox",
+      "label": "select one or more options",
+      "value": {
+        "options": [
+          {
+            "id": "1",
+            "label": "option 1",
+            "order": 0
+          },
+          {
+            "id": "2",
+            "label": "option 2",
+            "order": 1
+          },
+          {
+            "id": "3",
+            "label": "option 3",
+            "order": 2,
+            "subQuestions": [
+              {
+                "order": 0,
+                "nameId": "sub_generals",
+                "type": "checkbox",
+                "label": "select one or more options",
+                "value": {
+                  "options": [
+                    {
+                      "id": "2",
+                      "label": "option 2",
+                      "order": 1
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "id": "4",
+            "label": "other",
+            "order": 3,
+            "subQuestions": [
+              {
+                "order": 0,
+                "nameId": "other-text",
+                "type": "text_area",
+                "label": "other option",
+                "value": {
+                  "placeholder": "select one option"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "order": 1,
+      "nameId": "generals-radio",
+      "type": "radio",
+      "label": "select one or more options",
+      "value": {
+        "options": [
+          {
+            "id": "1",
+            "label": "option 1",
+            "order": 0
+          },
+          {
+            "id": "2",
+            "label": "option 2",
+            "order": 1
+          }
+        ]
+      }
+    }
+  ],
+  "answers": {
+    "generals": ["4"],
+    "other text": ["El valor es X"]
+  }
+}

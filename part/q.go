@@ -3,11 +3,14 @@ package part
 import (
 	"encoding/json"
 	"fmt"
+	"regexp"
 )
+
+var nameIdRegexp = regexp.MustCompile(`^[a-zA-Z][a-zA-Z\d_-]{1,62}[a-zA-Z\d]$`)
 
 type baseQuestion struct {
 	Order  *int          `json:"order"`
-	NameId *string       `json:"NameId"`
+	NameId *string       `json:"nameId"`
 	QTyp   *QuestionType `json:"type"`
 	Label  *string       `json:"label"`
 }
@@ -26,6 +29,12 @@ func (q *Question) UnmarshalJSON(b []byte) error {
 	var bq baseQuestion
 	if err := json.Unmarshal(b, &bq); err != nil {
 		return err
+	}
+
+	nameId := *bq.NameId
+
+	if !nameIdRegexp.MatchString(nameId) {
+		return fmt.Errorf("invalid nameId '%s', must match %s", nameId, nameIdRegexp.String())
 	}
 
 	var nq *Question

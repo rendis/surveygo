@@ -64,7 +64,7 @@ func validateChoiceContains(obj gjson.Result, answers []any) error {
 	})
 	for _, o := range answers {
 		if !contains(options, o) {
-			return fmt.Errorf("option id not found: %s", o)
+			return fmt.Errorf("option id not found: '%s'", o)
 		}
 	}
 	return nil
