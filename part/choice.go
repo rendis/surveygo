@@ -11,7 +11,7 @@ type Choice struct {
 
 type Option struct {
 	ID           *string    `json:"id"`           // Required
-	Value        *string    `json:"value"`        // Required
+	Label        *string    `json:"label"`        // Required
 	Order        *int       `json:"order"`        // Optional
 	SubQuestions []Question `json:"subQuestions"` // Optional
 }
@@ -30,10 +30,8 @@ func ChoiceUnmarshallValidator(c *Choice) error {
 	if c == nil {
 		return fmt.Errorf("choice is nil")
 	}
-
 	if c.Options == nil || len(c.Options) == 0 {
 		return fmt.Errorf("invalid choice format, options is not defined")
 	}
-
 	return nil
 }

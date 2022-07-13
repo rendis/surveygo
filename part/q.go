@@ -9,10 +9,11 @@ import (
 var nameIdRegexp = regexp.MustCompile(`^[a-zA-Z][a-zA-Z\d_-]{1,62}[a-zA-Z\d]$`)
 
 type baseQuestion struct {
-	Order  *int          `json:"order"`
-	NameId *string       `json:"nameId"`
-	QTyp   *QuestionType `json:"type"`
-	Label  *string       `json:"label"`
+	Order       *int          `json:"order"`
+	NameId      *string       `json:"nameId"`
+	QTyp        *QuestionType `json:"type"`
+	Label       *string       `json:"label"`
+	Placeholder *string       `json:"placeholder"`
 }
 
 type NameIdPath struct {
