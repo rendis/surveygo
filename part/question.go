@@ -6,8 +6,8 @@ import (
 	"regexp"
 )
 
-// nameIdRegexp is a regular expression used to validate the format of the "nameId" field in a Question.
-var nameIdRegexp = regexp.MustCompile(`^[a-zA-Z][a-zA-Z\d_-]{1,62}[a-zA-Z\d]$`)
+// nameIdRegex is a regular expression used to validate the format of the "nameId" field in a Question.
+var nameIdRegex = regexp.MustCompile(`^[a-zA-Z][a-zA-Z\d_-]{1,62}[a-zA-Z\d]$`)
 
 // baseQuestion is a struct that contains common fields for all types of questions in a survey.
 type baseQuestion struct {
@@ -54,8 +54,8 @@ func (q *Question) UnmarshalJSON(b []byte) error {
 
 	nameId := *bq.NameId
 
-	if !nameIdRegexp.MatchString(nameId) {
-		return fmt.Errorf("invalid nameId '%s', must match %s", nameId, nameIdRegexp.String())
+	if !nameIdRegex.MatchString(nameId) {
+		return fmt.Errorf("invalid nameId '%s', must match %s", nameId, nameIdRegex.String())
 	}
 
 	var nq *Question
@@ -65,8 +65,12 @@ func (q *Question) UnmarshalJSON(b []byte) error {
 	switch *bq.QTyp {
 	case QTypeSingleSelect, QTypeMultipleSelect, QTypeRadio, QTypeCheckbox:
 		nq, err = getQuestionByValueTyp[Choice](b, ChoiceUnmarshallValidator)
-	case QTypeTextArea:
+	case QTypeTextArea, QTypeInputText:
 		nq, err = getQuestionByValueTyp[TextArea](b, TextAreaUnmarshallValidator)
+	case QTypeEmail:
+		nq, err = getQuestionByValueTyp[Email](b, EmailUnmarshallValidator)
+	case QTypeTelephone:
+		nq, err = getQuestionByValueTyp[Telephone](b, TelephoneUnmarshallValidator)
 	default:
 		return fmt.Errorf("invalid question type: %s", *bq.QTyp)
 	}

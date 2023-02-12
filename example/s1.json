@@ -55,6 +55,43 @@
                 "value": {
                   "placeholder": "select one option"
                 }
+              },
+              {
+                "order": 1,
+                "nameId": "other-input-text",
+                "type": "input_text",
+                "label": "new input text",
+                "value": {
+                  "placeholder": "insert text here",
+                  "min": 3,
+                  "max": 5
+                }
+              },
+              {
+                "order": 2,
+                "nameId": "email-1",
+                "type": "email",
+                "label": "user email",
+                "value": {
+                  "placeholder": "insert email here",
+                  "allowedDomains": [
+                    "gmail.com",
+                    "hotmail.com"
+                  ]
+                }
+              },
+              {
+                "order": 2,
+                "nameId": "telephone-1",
+                "type": "telephone",
+                "label": "user telephone",
+                "value": {
+                  "placeholder": "insert telephone here",
+                  "allowedCountryCodes": [
+                    "+56",
+                    "+01"
+                  ]
+                }
               }
             ]
           }
@@ -83,7 +120,11 @@
     }
   ],
   "answers": {
-    "generals": ["4"],
-    "other text": ["El valor es X"]
+    "generals": [
+      "4"
+    ],
+    "other text": [
+      "El valor es X"
+    ]
   }
 }

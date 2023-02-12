@@ -62,6 +62,11 @@ func (s *Survey) Check(aws Answers) error {
 			if err != nil {
 				return fmt.Errorf("check error for nameId: '%s', path: '%s', error: %s", nameId, path, err)
 			}
+		case part.QTypeTextArea, part.QTypeInputText, part.QTypeEmail, part.QTypeTelephone:
+			err = check.ValidateText(obj, values, qt)
+			if err != nil {
+				return fmt.Errorf("check error for nameId: '%s', path: '%s', error: %s", nameId, path, err)
+			}
 		}
 	}
 	return nil

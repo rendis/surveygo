@@ -11,6 +11,10 @@ import (
 // answers: the list of answers to validate.
 // qt: the type of the choice field.
 func ValidateChoice(obj gjson.Result, answers []any, qt part.QuestionType) error {
+	if len(answers) == 0 {
+		return nil
+	}
+
 	switch qt {
 	case part.QTypeCheckbox:
 		return validateCheckbox(obj, answers)
@@ -27,18 +31,11 @@ func ValidateChoice(obj gjson.Result, answers []any, qt part.QuestionType) error
 
 // validateCheckbox validates the answers for a checkbox type.
 func validateCheckbox(obj gjson.Result, answers []any) error {
-	if len(answers) == 0 {
-		return nil
-	}
 	return validateChoiceContains(obj, answers)
 }
 
 // validateSingleSelect validates the answers for a single select type.
 func validateSingleSelect(obj gjson.Result, answers []any) error {
-	if len(answers) == 0 {
-		return nil
-	}
-
 	if len(answers) > 1 {
 		return fmt.Errorf("single select can only have one answer. got: %v", answers)
 	}
@@ -47,17 +44,11 @@ func validateSingleSelect(obj gjson.Result, answers []any) error {
 
 // validateMultipleSelect validates the answers for a multiple select type.
 func validateMultipleSelect(obj gjson.Result, answers []any) error {
-	if len(answers) == 0 {
-		return nil
-	}
 	return validateChoiceContains(obj, answers)
 }
 
 // validateRadio validates the answers for a radio type.
 func validateRadio(obj gjson.Result, answers []any) error {
-	if len(answers) == 0 {
-		return nil
-	}
 	if len(answers) > 1 {
 		return fmt.Errorf("radio can only have one answer. got: %v", answers)
 	}
@@ -79,7 +70,7 @@ func validateChoiceContains(obj gjson.Result, answers []any) error {
 	return nil
 }
 
-// / contains returns true if the given element 'e' is present in the slice 's'.
+// contains returns true if the given element 'e' is present in the slice 's'.
 func contains(s []any, e any) bool {
 	for _, a := range s {
 		if a == e {

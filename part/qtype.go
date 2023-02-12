@@ -13,16 +13,25 @@ const (
 	QTypeSingleSelect QuestionType = "single_select"
 
 	// QTypeMultipleSelect represents a multiple select field type
-	QTypeMultipleSelect QuestionType = "multi_select"
+	QTypeMultipleSelect = "multi_select"
 
 	// QTypeRadio represents a radio field type
-	QTypeRadio QuestionType = "radio"
+	QTypeRadio = "radio"
 
 	// QTypeCheckbox represents a checkbox field type
-	QTypeCheckbox QuestionType = "checkbox"
+	QTypeCheckbox = "checkbox"
 
 	// QTypeTextArea represents a text area field type
-	QTypeTextArea QuestionType = "text_area"
+	QTypeTextArea = "text_area"
+
+	// QTypeInputText represents a text input field type
+	QTypeInputText = "input_text"
+
+	// QTypeEmail represents an email input field type
+	QTypeEmail = "email"
+
+	// QTypeTelephone represents a telephone input field type
+	QTypeTelephone = "telephone"
 )
 
 // UnmarshalJSON implements the json.Unmarshaler interface.
@@ -61,6 +70,12 @@ func ParseToQuestionType(v string) (QuestionType, error) {
 		return QTypeCheckbox, nil
 	case string(QTypeTextArea):
 		return QTypeTextArea, nil
+	case string(QTypeInputText):
+		return QTypeInputText, nil
+	case string(QTypeEmail):
+		return QTypeEmail, nil
+	case string(QTypeTelephone):
+		return QTypeTelephone, nil
 	default:
 		return "", fmt.Errorf("invalid question type '%s'", v)
 	}

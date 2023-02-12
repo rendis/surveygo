@@ -38,7 +38,14 @@ func main() {
 		panic(err)
 	}
 
-	err = s.Check(map[string][]any{"sub_generals": {"2"}, "generals": {"2"}, "generals-radio": {"1"}})
+	err = s.Check(map[string][]any{
+		"sub_generals":     {"2"},
+		"generals":         {"2"},
+		"generals-radio":   {"1"},
+		"other-input-text": {"Free "},
+		"email-1":          {"example@gmail.com"},
+		"telephone-1":      {"+56964367711"},
+	})
 	if err != nil {
 		log.Printf("%s", err)
 	}
