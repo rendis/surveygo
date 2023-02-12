@@ -1,2 +1,2 @@
 # surveygo
-Generator and processing of JSON surveys
+Generate and process JSON surveys
