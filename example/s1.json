@@ -13,7 +13,18 @@
           {
             "id": "1",
             "label": "option 1",
-            "order": 0
+            "order": 0,
+            "subQuestions": [
+              {
+                "order": 1,
+                "nameId": "sub-text_area",
+                "type": "text_area",
+                "label": "write comments",
+                "value": {
+                  "placeholder": "write here"
+                }
+              }
+            ]
           },
           {
             "id": "2",

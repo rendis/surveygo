@@ -6,6 +6,14 @@ import (
 	"github.com/tidwall/gjson"
 )
 
+// choiceAnswerValidator is a map of choice type to its validator function.
+var choiceAnswerValidator = map[part.QuestionType]func(obj gjson.Result, answers []any) error{
+	part.QTypeCheckbox:       validateCheckbox,
+	part.QTypeSingleSelect:   validateSingleSelect,
+	part.QTypeMultipleSelect: validateMultipleSelect,
+	part.QTypeRadio:          validateRadio,
+}
+
 // ValidateChoice validates the answers for the given choice type.
 // obj: the JSON representation of the survey.
 // answers: the list of answers to validate.
@@ -14,19 +22,11 @@ func ValidateChoice(obj gjson.Result, answers []any, qt part.QuestionType) error
 	if len(answers) == 0 {
 		return nil
 	}
-
-	switch qt {
-	case part.QTypeCheckbox:
-		return validateCheckbox(obj, answers)
-	case part.QTypeSingleSelect:
-		return validateSingleSelect(obj, answers)
-	case part.QTypeMultipleSelect:
-		return validateMultipleSelect(obj, answers)
-	case part.QTypeRadio:
-		return validateRadio(obj, answers)
-	default:
-		return fmt.Errorf("invalid choice type: %s", qt)
+	validator, ok := choiceAnswerValidator[qt]
+	if !ok {
+		return fmt.Errorf("invalid choice type '%s'. supported types: %v", qt, part.QTypeChoiceTypes)
 	}
+	return validator(obj, answers)
 }
 
 // validateCheckbox validates the answers for a checkbox type.

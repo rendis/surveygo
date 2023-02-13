@@ -56,17 +56,12 @@ func (s *Survey) Check(aws Answers) error {
 		}
 
 		// validate the answers based on question type
-		switch qt {
-		case part.QTypeSingleSelect, part.QTypeMultipleSelect, part.QTypeRadio, part.QTypeCheckbox:
-			err = check.ValidateChoice(obj, values, qt)
-			if err != nil {
-				return fmt.Errorf("check error for nameId: '%s', path: '%s', error: %s", nameId, path, err)
-			}
-		case part.QTypeTextArea, part.QTypeInputText, part.QTypeEmail, part.QTypeTelephone:
-			err = check.ValidateText(obj, values, qt)
-			if err != nil {
-				return fmt.Errorf("check error for nameId: '%s', path: '%s', error: %s", nameId, path, err)
-			}
+		checker, err := check.GetQuestionChecker(qt)
+		if err != nil {
+			return err
+		}
+		if err = checker(obj, values, qt); err != nil {
+			return fmt.Errorf("invalid answer for nameId '%s', path '%s', error: %s", nameId, path, err)
 		}
 	}
 	return nil

@@ -2,11 +2,16 @@ package part
 
 import "fmt"
 
+// baseText is a struct that contains common fields for all types of text fields.
+type baseText struct {
+	// Placeholder is an optional placeholder text for the question.
+	Placeholder *string `json:"placeholder"`
+}
+
 // TextArea represents a text area field type.
 // It is used to represent the value of a question of type QTypeTextArea and QTypeInputText.
 type TextArea struct {
-	// Placeholder is an optional placeholder for the text area field.
-	Placeholder *string `json:"placeholder"`
+	baseText
 
 	// Min is an optional minimum length for the text area field.
 	Min *int `json:"min"`
@@ -28,8 +33,7 @@ func TextAreaUnmarshallValidator(t *TextArea) error {
 
 // Email represents an email field type.
 type Email struct {
-	// Placeholder is an optional placeholder for the email field.
-	Placeholder *string `json:"placeholder"`
+	baseText
 
 	// AllowedDomains is an optional list of allowed domains for the email field.
 	AllowedDomains []string `json:"allowedDomains"`
@@ -45,8 +49,7 @@ func EmailUnmarshallValidator(e *Email) error {
 
 // Telephone represents a telephone field type.
 type Telephone struct {
-	// Placeholder is an optional placeholder for the telephone field.
-	Placeholder *string `json:"placeholder"`
+	baseText
 
 	// AllowedCountryCodes is an optional list of allowed country codes for the telephone field.
 	AllowedCountryCodes []string `json:"allowedCountryCodes"`

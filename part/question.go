@@ -23,8 +23,8 @@ type baseQuestion struct {
 	// Label is a required label for the question.
 	Label *string `json:"label"`
 
-	// Placeholder is an optional placeholder text for the question.
-	Placeholder *string `json:"placeholder"`
+	// Required is an optional boolean that indicates whether the question is required. Defaults to false.
+	Required bool `json:"required"`
 }
 
 // NameIdPath represents a path to a question in a survey, including its NameId.
@@ -92,9 +92,8 @@ func (q *Question) GetNameIdPaths(from []string) []NameIdPath {
 	}
 
 	// If the question is a choice type, get the NameIdPaths for its sub-questions, if any.
-	switch *q.QTyp {
-	case QTypeSingleSelect, QTypeMultipleSelect, QTypeRadio, QTypeCheckbox:
-		paths = append(paths, q.getChoiceNameIdPaths(from)...)
+	if IsChoiceType(*q.QTyp) {
+		return append(paths, q.getChoiceNameIdPaths(from)...)
 	}
 
 	return paths

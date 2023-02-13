@@ -8,8 +8,19 @@ import (
 	"strings"
 )
 
+// emailRegex is a regex to validate email.
 var emailRegex = regexp.MustCompile("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z]{2,})+$")
+
+// phoneRegex is a regex to validate phone number.
 var phoneRegex = regexp.MustCompile("^(\\+[1-9]\\d{1,2})\\d{8,15}$")
+
+// textAnswerValidator is a map of text type to its validator function.
+var textAnswerValidator = map[part.QuestionType]func(obj gjson.Result, answer string) error{
+	part.QTypeTextArea:  validateText,
+	part.QTypeInputText: validateText,
+	part.QTypeEmail:     validateEmail,
+	part.QTypeTelephone: validateTelephone,
+}
 
 // ValidateText validates format of the answers for the given text type.
 func ValidateText(obj gjson.Result, answers []any, qt part.QuestionType) error {
@@ -17,20 +28,11 @@ func ValidateText(obj gjson.Result, answers []any, qt part.QuestionType) error {
 		return fmt.Errorf("text type can only have one answer. got: %v", answers)
 	}
 
-	var answer = answers[0].(string)
-
-	switch qt {
-	case part.QTypeTextArea, part.QTypeInputText:
-		return validateText(obj, answer)
-	case part.QTypeEmail:
-		return validateEmail(obj, answer)
-	case part.QTypeTelephone:
-		return validateTelephone(obj, answer)
-	default:
-		return fmt.Errorf(
-			"invalid text type '%s'. supported types: %s, %s", qt, part.QTypeEmail, part.QTypeTelephone,
-		)
+	validator, ok := textAnswerValidator[qt]
+	if !ok {
+		return fmt.Errorf("invalid text type '%s'. supported types: %v", qt, part.QTypeChoiceTypes)
 	}
+	return validator(obj, answers[0].(string))
 }
 
 // validateText validates the answers for a text type.

@@ -8,6 +8,14 @@ import (
 // QuestionType represents the different types of questions that can exist in a survey.
 type QuestionType string
 
+// Any new type, depending on the type of question, should be added to the following:
+// - QTypeChoiceTypes if type is a choice type
+// - QTypeTextTypes if type is a text type
+// if the new type cant be added to either of the above, then:
+// - create a new slice of QuestionType and add the new type to it
+// - append the new slice to AllQuestionTypes
+// - add a new function to check if the new type is of the new slice (e.g. IsChoiceType or IsTextType)
+// - update this comment to include the new type :)
 const (
 	// QTypeSingleSelect represents a single select field type
 	QTypeSingleSelect QuestionType = "single_select"
@@ -34,6 +42,37 @@ const (
 	QTypeTelephone = "telephone"
 )
 
+var QTypeChoiceTypes = []QuestionType{
+	QTypeSingleSelect, QTypeMultipleSelect, QTypeRadio, QTypeCheckbox,
+}
+
+var QTypeTextTypes = []QuestionType{
+	QTypeTextArea, QTypeInputText, QTypeEmail, QTypeTelephone,
+}
+
+// AllQuestionTypes is a slice of all question types. Used for validation.
+var AllQuestionTypes = append(QTypeChoiceTypes, QTypeTextTypes...)
+
+// IsChoiceType returns true if the question type is a choice type, false otherwise.
+func IsChoiceType(qt QuestionType) bool {
+	for _, t := range QTypeChoiceTypes {
+		if t == qt {
+			return true
+		}
+	}
+	return false
+}
+
+// IsTextType returns true if the question type is a text type, false otherwise.
+func IsTextType(qt QuestionType) bool {
+	for _, t := range QTypeTextTypes {
+		if t == qt {
+			return true
+		}
+	}
+	return false
+}
+
 // UnmarshalJSON implements the json.Unmarshaler interface.
 func (s *QuestionType) UnmarshalJSON(b []byte) error {
 	var st string
@@ -59,24 +98,11 @@ func (s *QuestionType) MarshalJSON() ([]byte, error) {
 
 // ParseToQuestionType takes a string and returns the corresponding QuestionType, or an error if the string is invalid.
 func ParseToQuestionType(v string) (QuestionType, error) {
-	switch v {
-	case string(QTypeSingleSelect):
-		return QTypeSingleSelect, nil
-	case string(QTypeMultipleSelect):
-		return QTypeMultipleSelect, nil
-	case string(QTypeRadio):
-		return QTypeRadio, nil
-	case string(QTypeCheckbox):
-		return QTypeCheckbox, nil
-	case string(QTypeTextArea):
-		return QTypeTextArea, nil
-	case string(QTypeInputText):
-		return QTypeInputText, nil
-	case string(QTypeEmail):
-		return QTypeEmail, nil
-	case string(QTypeTelephone):
-		return QTypeTelephone, nil
-	default:
-		return "", fmt.Errorf("invalid question type '%s'", v)
+	tmpQT := QuestionType(v)
+	for _, qt := range AllQuestionTypes {
+		if qt == tmpQT {
+			return tmpQT, nil
+		}
 	}
+	return "", fmt.Errorf("invalid question type '%s'", v)
 }
