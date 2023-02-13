@@ -9,6 +9,18 @@ import (
 // nameIdRegex is a regular expression used to validate the format of the "nameId" field in a Question.
 var nameIdRegex = regexp.MustCompile(`^[a-zA-Z][a-zA-Z\d_-]{1,62}[a-zA-Z\d]$`)
 
+// NameIdPath represents a path to a question in a survey, including its NameId.
+type NameIdPath struct {
+	// NameId is the identifier of the question.
+	NameId string
+
+	// Path is the location of the question within the survey.
+	Path []string
+
+	// Required indicates whether the question is required.
+	Required bool
+}
+
 // baseQuestion is a struct that contains common fields for all types of questions in a survey.
 type baseQuestion struct {
 	// Order is an optional order number for the question.
@@ -27,15 +39,6 @@ type baseQuestion struct {
 	Required bool `json:"required"`
 }
 
-// NameIdPath represents a path to a question in a survey, including its NameId.
-type NameIdPath struct {
-	// NameId is the identifier of the question.
-	NameId string
-
-	// Path is the location of the question within the survey.
-	Path []string
-}
-
 // Question is a struct that represents a question in a survey.
 type Question struct {
 	// baseQuestion contains common fields for all types of questions.
@@ -43,6 +46,12 @@ type Question struct {
 
 	// Value is the value of the question, which can be of different types depending on the type of question.
 	Value any `json:"value"`
+}
+
+// QuestionPath represents a Question with its associated path.
+type QuestionPath struct {
+	Question
+	path []string
 }
 
 // UnmarshalJSON implements the json.Unmarshaler interface.
@@ -82,35 +91,42 @@ func (q *Question) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
-// GetNameIdPaths returns a list of NameIdPaths for a question and its sub-questions, if any.
-func (q *Question) GetNameIdPaths(from []string) []NameIdPath {
-	var paths = []NameIdPath{
-		{
-			NameId: *q.NameId,
-			Path:   from,
-		},
-	}
+// GetNameIdPaths returns a slice of NameIdPath structs containing the NameId, Required and Path of a Question and its sub-questions.
+// startPath represents the starting path of the Question.
+func (q *Question) GetNameIdPaths(startPath []string) []NameIdPath {
+	var paths []NameIdPath
 
-	// If the question is a choice type, get the NameIdPaths for its sub-questions, if any.
-	if IsChoiceType(*q.QTyp) {
-		return append(paths, q.getChoiceNameIdPaths(from)...)
-	}
+	// Create a slice of QuestionPath structs containing the Question and its starting path.
+	queue := []QuestionPath{{*q, startPath}}
 
-	return paths
-}
+	// Loop through the queue until it's empty.
+	for len(queue) > 0 {
+		// Get the first QuestionPath from the queue.
+		currQ := queue[0]
+		queue = queue[1:]
 
-// getChoiceNameIdPaths is a helper function that returns a list of NameIdPaths for a choice type question.
-func (q *Question) getChoiceNameIdPaths(from []string) []NameIdPath {
-	paths := []NameIdPath{}
-	currentPath := append(from, "value", "options")
-	for oi, o := range q.Value.(*Choice).Options {
-		if o.SubQuestions != nil && len(o.SubQuestions) > 0 {
-			for si, nq := range o.SubQuestions {
-				p := nq.GetNameIdPaths(append(currentPath, fmt.Sprintf("%d", oi), "subQuestions", fmt.Sprintf("%d", si)))
-				paths = append(paths, p...)
-			}
+		// Add the current Question's NameId, Required and Path to the paths slice.
+		paths = append(paths, NameIdPath{
+			NameId:   *currQ.NameId,
+			Required: currQ.Required,
+			Path:     currQ.path,
+		})
+
+		// If the current Question is not of type Choice, continue to the next iteration.
+		if !IsChoiceType(*currQ.QTyp) {
+			continue
 		}
+
+		// Create the current path for the options.
+		currentPath := append(startPath, "value", "options")
+
+		// Get a queue of the sub-questions for each option.
+		optQueue := getOptionsQueue(currQ.Value.(*Choice).Options, currentPath)
+
+		// Append the options queue to the main queue.
+		queue = append(queue, optQueue...)
 	}
+
 	return paths
 }
 
@@ -137,4 +153,44 @@ func getQuestionByValueTyp[T any](b []byte, unmarshallValidator func(*T) error) 
 		baseQuestion: tq.baseQuestion,
 		Value:        tq.Value,
 	}, nil
+}
+
+// getOptionsQueue returns a slice of QuestionPath structs containing the sub-questions of the options and their associated path.
+func getOptionsQueue(options []Option, path []string) []QuestionPath {
+	var queue []QuestionPath
+
+	// Loop through each option.
+	for optIndex, opt := range options {
+		// If the option has sub-questions, get a queue of the sub-questions.
+		if opt.SubQuestions != nil && len(opt.SubQuestions) > 0 {
+			newPath := make([]string, len(path))
+			copy(newPath, path)
+			newPath = append(newPath, fmt.Sprintf("%d", optIndex), "subQuestions")
+			subQueue := getSubQuestionQueue(opt.SubQuestions, newPath)
+			queue = append(queue, subQueue...)
+		}
+	}
+
+	return queue
+}
+
+// getSubQuestionQueue returns a slice of QuestionPath structs containing the sub-questions and their associated path.
+func getSubQuestionQueue(subQuestions []Question, path []string) []QuestionPath {
+	var queue []QuestionPath
+
+	// Loop through each sub-question.
+	for subIndex, subQ := range subQuestions {
+		// Create a new path for the sub-question.
+		newPath := make([]string, len(path))
+		copy(newPath, path)
+		newPath = append(newPath, fmt.Sprintf("%d", subIndex))
+
+		// Add the sub-question and its path to the queue.
+		queue = append(queue, QuestionPath{
+			Question: subQ,
+			path:     newPath,
+		})
+	}
+
+	return queue
 }

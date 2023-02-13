@@ -96,10 +96,10 @@ type jsonSurvey struct {
 
 // getNameIdPaths returns a map of nameIds to their respective paths in the survey's json.
 func (s *jsonSurvey) getNameIdPaths() (map[string]string, error) {
-	base := []string{"questions"}
+	startPath := []string{"questions"}
 	var paths = make(map[string]string)
 	for i, question := range s.Questions {
-		pathsForQuestion := question.GetNameIdPaths(append(base, fmt.Sprintf("%d", i)))
+		pathsForQuestion := question.GetNameIdPaths(append(startPath, fmt.Sprintf("%d", i)))
 		for _, ip := range pathsForQuestion {
 			if _, ok := paths[ip.NameId]; ok {
 				return nil, fmt.Errorf("duplicate nameId: %s", ip.NameId)
