@@ -117,7 +117,7 @@ func (s *Survey) UpdateQuestionBytes(question []byte) error {
 // internalUpdate updates the survey after a modification to its internal representation
 func (s *Survey) internalUpdate(ins *jsonSurvey) error {
 	// update the name ID paths because the internal representation has changed.
-	paths, err := ins.getNameIdPaths()
+	paths, required, err := ins.getNameIdPaths()
 	if err != nil {
 		return err
 	}
@@ -131,6 +131,7 @@ func (s *Survey) internalUpdate(ins *jsonSurvey) error {
 	js := string(b)
 	s.FullJsonSurvey = &js
 	s.NameIdPaths = paths
+	s.RequiredNameIds = required
 	return nil
 }
 

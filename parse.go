@@ -50,16 +50,17 @@ func ParseBytes(b []byte) (*Survey, error) {
 		return nil, err
 	}
 
-	paths, err := jSvy.getNameIdPaths()
+	paths, required, err := jSvy.getNameIdPaths()
 	if err != nil {
 		return nil, err
 	}
 
 	return &Survey{
-		Title:          jSvy.Title,
-		Version:        jSvy.Version,
-		Description:    jSvy.Description,
-		NameIdPaths:    paths,
-		FullJsonSurvey: &uglyJson,
+		Title:           jSvy.Title,
+		Version:         jSvy.Version,
+		Description:     jSvy.Description,
+		NameIdPaths:     paths,
+		RequiredNameIds: required,
+		FullJsonSurvey:  &uglyJson,
 	}, nil
 }

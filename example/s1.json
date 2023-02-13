@@ -96,6 +96,7 @@
                 "nameId": "telephone-1",
                 "type": "telephone",
                 "label": "user telephone",
+                "required": true,
                 "value": {
                   "placeholder": "insert telephone here",
                   "allowedCountryCodes": [

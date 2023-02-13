@@ -26,6 +26,9 @@ type Survey struct {
 	// NameIdPaths is a map of question nameId to its path in the survey json.
 	NameIdPaths map[string]string `json:"idPaths"`
 
+	// RequiredNameIds is a list of required question nameIds.
+	RequiredNameIds []string `json:"required"`
+
 	// FullJsonSurvey is the full json representation of the survey.
 	FullJsonSurvey *string `json:"fullJsonSurvey"`
 }
@@ -34,6 +37,17 @@ type Survey struct {
 func (s *Survey) Check(aws Answers) error {
 	// parse the full json survey into gjson object
 	gres := gjson.Parse(*s.FullJsonSurvey)
+
+	// if the required questions are not answered, return an error
+	missing := make([]string, 0)
+	for _, nameId := range s.RequiredNameIds {
+		if _, ok := aws[nameId]; !ok {
+			missing = append(missing, nameId)
+		}
+	}
+	if len(missing) > 0 {
+		return fmt.Errorf("missing required answers: %s", strings.Join(missing, ", "))
+	}
 
 	// iterate through each answer
 	for nameId, values := range aws {
@@ -94,20 +108,24 @@ type jsonSurvey struct {
 	Questions []part.Question `json:"questions"`
 }
 
-// getNameIdPaths returns a map of nameIds to their respective paths in the survey's json.
-func (s *jsonSurvey) getNameIdPaths() (map[string]string, error) {
+// getNameIdPaths returns a map of nameIds to their respective paths in the survey's json and a list of required nameIds.
+func (s *jsonSurvey) getNameIdPaths() (map[string]string, []string, error) {
 	startPath := []string{"questions"}
 	var paths = make(map[string]string)
+	var required = make([]string, 0)
 	for i, question := range s.Questions {
 		pathsForQuestion := question.GetNameIdPaths(append(startPath, fmt.Sprintf("%d", i)))
 		for _, ip := range pathsForQuestion {
 			if _, ok := paths[ip.NameId]; ok {
-				return nil, fmt.Errorf("duplicate nameId: %s", ip.NameId)
+				return nil, nil, fmt.Errorf("duplicate nameId: %s", ip.NameId)
 			}
 			paths[ip.NameId] = strings.Join(ip.Path, ".")
+			if ip.Required {
+				required = append(required, ip.NameId)
+			}
 		}
 	}
-	return paths, nil
+	return paths, required, nil
 }
 
 // validate checks that the required fields are present in the survey.

@@ -93,8 +93,8 @@ func (q *Question) UnmarshalJSON(b []byte) error {
 
 // GetNameIdPaths returns a slice of NameIdPath structs containing the NameId, Required and Path of a Question and its sub-questions.
 // startPath represents the starting path of the Question.
-func (q *Question) GetNameIdPaths(startPath []string) []NameIdPath {
-	var paths []NameIdPath
+func (q *Question) GetNameIdPaths(startPath []string) []*NameIdPath {
+	var paths []*NameIdPath
 
 	// Create a slice of QuestionPath structs containing the Question and its starting path.
 	queue := []QuestionPath{{*q, startPath}}
@@ -106,7 +106,7 @@ func (q *Question) GetNameIdPaths(startPath []string) []NameIdPath {
 		queue = queue[1:]
 
 		// Add the current Question's NameId, Required and Path to the paths slice.
-		paths = append(paths, NameIdPath{
+		paths = append(paths, &NameIdPath{
 			NameId:   *currQ.NameId,
 			Required: currQ.Required,
 			Path:     currQ.path,
