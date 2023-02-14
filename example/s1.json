@@ -93,7 +93,7 @@
               },
               {
                 "order": 2,
-                "nameId": "telephone-1",
+                "nameId": "telephone..client",
                 "type": "telephone",
                 "label": "user telephone",
                 "required": true,

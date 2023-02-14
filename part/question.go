@@ -7,7 +7,7 @@ import (
 )
 
 // nameIdRegex is a regular expression used to validate the format of the "nameId" field in a Question.
-var nameIdRegex = regexp.MustCompile(`^[a-zA-Z][a-zA-Z\d_-]{1,62}[a-zA-Z\d]$`)
+var nameIdRegex = regexp.MustCompile(`^[a-zA-Z][a-zA-Z\d._-]{1,62}[a-zA-Z\d]$`)
 
 // NameIdPath represents a path to a question in a survey, including its NameId.
 type NameIdPath struct {
