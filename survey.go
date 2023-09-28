@@ -25,8 +25,8 @@ func NewSurvey(nameId, title, version string, description *string) (*Survey, err
 		Title:       title,
 		Version:     version,
 		Description: description,
-		Questions:   map[string]question.Question{},
-		Groups:      map[string]question.Group{},
+		Questions:   map[string]*question.Question{},
+		Groups:      map[string]*question.Group{},
 		GroupsOrder: []string{},
 	}, nil
 }
@@ -96,7 +96,7 @@ type Survey struct {
 	//	- required
 	//	- min length: 1
 	//	- each question must be valid
-	Questions map[string]question.Question `json:"questions" bson:"questions" validate:"required,dive"`
+	Questions map[string]*question.Question `json:"questions" bson:"questions" validate:"required,dive"`
 
 	// Groups is a map with all the groups in the survey.
 	// The key is the group NameId (Group.NameId).
@@ -104,7 +104,7 @@ type Survey struct {
 	//	- required
 	//	- min length: 1
 	//	- each group must be valid
-	Groups map[string]question.Group `json:"groups" bson:"groups" validate:"required,dive"`
+	Groups map[string]*question.Group `json:"groups" bson:"groups" validate:"required,dive"`
 
 	// GroupsOrder is a list of group name ids that defines the order of the groups in the survey.
 	// Validations:

@@ -38,13 +38,15 @@ type Group struct {
 }
 
 // RemoveQuestionId removes the question with the specified name ID from the group.
-func (g *Group) RemoveQuestionId(nameId string) {
+// Returns true if the question was removed, false otherwise.
+func (g *Group) RemoveQuestionId(nameId string) bool {
 	for i, id := range g.QuestionsIds {
 		if id == nameId {
 			g.QuestionsIds = append(g.QuestionsIds[:i], g.QuestionsIds[i+1:]...)
-			break
+			return true
 		}
 	}
+	return false
 }
 
 // AddQuestionId adds the question with the specified name ID to the group.

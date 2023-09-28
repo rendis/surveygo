@@ -53,6 +53,20 @@ func (c *Choice) GetOptionsGroups() map[string][]string {
 	return dependencies
 }
 
+// RemoveGroupId removes the group with the specified name ID from the choice.
+// Returns true if the group was removed, false otherwise.
+func (c *Choice) RemoveGroupId(groupId string) bool {
+	for _, option := range c.Options {
+		for i, id := range option.GroupsIds {
+			if id == groupId {
+				option.GroupsIds = append(option.GroupsIds[:i], option.GroupsIds[i+1:]...)
+				return true
+			}
+		}
+	}
+	return false
+}
+
 // CastToChoice casts the given interface to a Choice type.
 func CastToChoice(i any) (*Choice, error) {
 	c, ok := i.(*Choice)
