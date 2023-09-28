@@ -26,8 +26,8 @@ type SurveyResume struct {
 	TotalRequiredQuestions int `json:"totalRequiredQuestions" bson:"totalRequiredQuestions"`
 
 	//----- Answers Totals  -----//
-	// TotalAnsweredQuestions number of answered questions in the survey
-	TotalAnsweredQuestions int `json:"totalAnsweredQuestions" bson:"totalAnsweredQuestions"`
+	// TotalQuestionsAnswered number of answered questions in the survey
+	TotalQuestionsAnswered int `json:"totalQuestionsAnswered" bson:"totalQuestionsAnswered"`
 	// TotalRequiredQuestionsAnswered number of required questions answered in the survey
 	TotalRequiredQuestionsAnswered int `json:"totalRequiredQuestionsAnswered" bson:"totalRequiredQuestionsAnswered"`
 	// UnansweredQuestions map of unanswered questions, key is the nameId of the question, value is true if the question is required
