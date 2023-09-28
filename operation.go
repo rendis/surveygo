@@ -10,6 +10,12 @@ import (
 	"github.com/rendis/surveygo/v2/reviewer"
 )
 
+type InvalidAnswerError struct {
+	QuestionNameId string `json:"questionNameId" bson:"questionNameId"`
+	Answer         any    `json:"answer" bson:"answer"`
+	Error          string `json:"error" bson:"error"`
+}
+
 // SurveyResume contains the resume of a survey based on the answers provided.
 // All values are calculated based on the answers provided and over the visible components of the survey.
 type SurveyResume struct {
@@ -30,6 +36,10 @@ type SurveyResume struct {
 	//----- Others Totals -----//
 	// ExternalSurveyIds map of external survey ids. Key: GroupNameId, Value: ExternalSurveyId
 	ExternalSurveyIds map[string]string `json:"externalSurveyIds" bson:"externalSurveyIds"`
+
+	//----- Errors -----//
+	// InvalidAnswers list of invalid answers
+	InvalidAnswers []InvalidAnswerError `json:"invalidAnswers" bson:"invalidAnswers"`
 }
 
 // Check verifies if the answers provided are valid for this survey.
@@ -41,12 +51,12 @@ type SurveyResume struct {
 //   - value: if the question is required or not
 //   - error: if an error occurred
 func (s *Survey) Check(ans Answers) (*SurveyResume, error) {
-	var errs []error
+	var invalidAnswers []InvalidAnswerError
+
 	for nameId, values := range ans {
 		q, ok := s.Questions[nameId]
 
 		if !ok {
-			errs = append(errs, fmt.Errorf("nameId '%s' not found", nameId))
 			continue
 		}
 
@@ -56,17 +66,18 @@ func (s *Survey) Check(ans Answers) (*SurveyResume, error) {
 		}
 
 		if err = checker(q.Value, values, q.QTyp); err != nil {
-			errs = append(errs, fmt.Errorf("invalid answer for nameId '%s', error: %s", nameId, err))
+			invalidAnswers = append(invalidAnswers, InvalidAnswerError{
+				QuestionNameId: nameId,
+				Answer:         values,
+				Error:          err.Error(),
+			})
 		}
 	}
 
-	if len(errs) > 0 {
-		var err = fmt.Errorf("invalid answers")
-		errs = append([]error{err}, errs...)
-		return nil, errors.Join(errs...)
-	}
+	resume := s.getSurveyResume(ans)
+	resume.InvalidAnswers = invalidAnswers
 
-	return s.getSurveyResume(ans), nil
+	return resume, nil
 }
 
 // ToMap returns a map representation of the survey.
