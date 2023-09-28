@@ -1,9 +1,18 @@
-package part
+package types
 
 import (
 	"encoding/json"
 	"fmt"
 )
+
+// Base is a struct that contains common fields for all types of questions.
+type Base struct {
+	// Placeholder is a placeholder text.
+	// Validations:
+	// - optional
+	// - min length: 1
+	Placeholder *string `json:"placeholder" bson:"placeholder" validate:"omitempty,min=1"`
+}
 
 // QuestionType represents the different types of questions that can exist in a survey.
 type QuestionType string
@@ -42,37 +51,6 @@ const (
 	QTypeTelephone = "telephone"
 )
 
-var QTypeChoiceTypes = []QuestionType{
-	QTypeSingleSelect, QTypeMultipleSelect, QTypeRadio, QTypeCheckbox,
-}
-
-var QTypeTextTypes = []QuestionType{
-	QTypeTextArea, QTypeInputText, QTypeEmail, QTypeTelephone,
-}
-
-// AllQuestionTypes is a slice of all question types. Used for validation.
-var AllQuestionTypes = append(QTypeChoiceTypes, QTypeTextTypes...)
-
-// IsChoiceType returns true if the question type is a choice type, false otherwise.
-func IsChoiceType(qt QuestionType) bool {
-	for _, t := range QTypeChoiceTypes {
-		if t == qt {
-			return true
-		}
-	}
-	return false
-}
-
-// IsTextType returns true if the question type is a text type, false otherwise.
-func IsTextType(qt QuestionType) bool {
-	for _, t := range QTypeTextTypes {
-		if t == qt {
-			return true
-		}
-	}
-	return false
-}
-
 // UnmarshalJSON implements the json.Unmarshaler interface.
 func (s *QuestionType) UnmarshalJSON(b []byte) error {
 	var st string
@@ -96,13 +74,42 @@ func (s *QuestionType) MarshalJSON() ([]byte, error) {
 	return json.Marshal(string(*s))
 }
 
+// QTypeChoiceTypes groups all choice types.
+var QTypeChoiceTypes = map[QuestionType]bool{
+	QTypeSingleSelect:   true,
+	QTypeMultipleSelect: true,
+	QTypeRadio:          true,
+	QTypeCheckbox:       true,
+}
+
+// QTypeTextTypes groups all text types.
+var QTypeTextTypes = map[QuestionType]bool{
+	QTypeTextArea:  true,
+	QTypeInputText: true,
+	QTypeEmail:     true,
+	QTypeTelephone: true,
+}
+
+// IsChoiceType returns true if the question type is a choice type, false otherwise.
+func IsChoiceType(qt QuestionType) bool {
+	return QTypeChoiceTypes[qt]
+}
+
+// IsTextType returns true if the question type is a text type, false otherwise.
+func IsTextType(qt QuestionType) bool {
+	return QTypeTextTypes[qt]
+}
+
 // ParseToQuestionType takes a string and returns the corresponding QuestionType, or an error if the string is invalid.
 func ParseToQuestionType(v string) (QuestionType, error) {
 	tmpQT := QuestionType(v)
-	for _, qt := range AllQuestionTypes {
-		if qt == tmpQT {
-			return tmpQT, nil
-		}
+	if _, ok := QTypeChoiceTypes[tmpQT]; ok {
+		return tmpQT, nil
 	}
+
+	if _, ok := QTypeTextTypes[tmpQT]; ok {
+		return tmpQT, nil
+	}
+
 	return "", fmt.Errorf("invalid question type '%s'", v)
 }

@@ -1,136 +1,101 @@
 {
+  "nameId": "survey-1",
   "title": "Sur #1",
   "version": "1.0.0",
   "description": "test survey",
-  "questions": [
-    {
-      "order": 0,
+
+  "questions": {
+    "generals": {
       "nameId": "generals",
+      "visible": true,
       "type": "checkbox",
       "label": "select one or more options",
+      "required": true,
       "value": {
         "options": [
           {
-            "id": "1",
-            "label": "option 1",
-            "order": 0,
-            "subQuestions": [
-              {
-                "order": 1,
-                "nameId": "sub-text_area",
-                "type": "text_area",
-                "label": "write comments",
-                "value": {
-                  "placeholder": "write here"
-                }
-              }
-            ]
+            "nameId": "qwq1",
+            "label": "option 1"
           },
           {
-            "id": "2",
-            "label": "option 2",
-            "order": 1
+            "nameId": "qwq2",
+            "label": "option 2"
           },
           {
-            "id": "3",
-            "label": "option 3",
-            "order": 2,
-            "subQuestions": [
-              {
-                "order": 0,
-                "nameId": "sub_generals",
-                "type": "checkbox",
-                "label": "select one or more options",
-                "value": {
-                  "options": [
-                    {
-                      "id": "2",
-                      "label": "option 2",
-                      "order": 1
-                    }
-                  ]
-                }
-              }
-            ]
+            "nameId": "qwq3",
+            "label": "option 3"
           },
           {
-            "id": "4",
-            "label": "other",
-            "order": 3,
-            "subQuestions": [
-              {
-                "order": 0,
-                "nameId": "other-text",
-                "type": "text_area",
-                "label": "other option",
-                "value": {
-                  "placeholder": "select one option"
-                }
-              },
-              {
-                "order": 1,
-                "nameId": "other-input-text",
-                "type": "input_text",
-                "label": "new input text",
-                "value": {
-                  "placeholder": "insert text here",
-                  "min": 3,
-                  "max": 5
-                }
-              },
-              {
-                "order": 2,
-                "nameId": "email-1",
-                "type": "email",
-                "label": "user email",
-                "value": {
-                  "placeholder": "insert email here",
-                  "allowedDomains": [
-                    "gmail.com",
-                    "hotmail.com"
-                  ]
-                }
-              },
-              {
-                "order": 2,
-                "nameId": "telephone..client",
-                "type": "telephone",
-                "label": "user telephone",
-                "required": true,
-                "value": {
-                  "placeholder": "insert telephone here",
-                  "allowedCountryCodes": [
-                    "+56",
-                    "+01"
-                  ]
-                }
-              }
-            ]
+            "nameId": "qwq4",
+            "label": "other"
           }
         ]
       }
     },
-    {
-      "order": 1,
+    "generals-radio":{
       "nameId": "generals-radio",
+      "visible": true,
       "type": "radio",
       "label": "select one or more options",
+      "required": false,
       "value": {
         "options": [
           {
-            "id": "1",
+            "nameId": "qwr1",
             "label": "option 1",
-            "order": 0
+            "groupsIds": ["hidden-generals-info"]
           },
           {
-            "id": "2",
-            "label": "option 2",
-            "order": 1
+            "nameId": "qwr2",
+            "label": "option 2"
+          }
+        ]
+      }
+    },
+    "hidden-q":{
+      "nameId": "hidden-q",
+      "visible": true,
+      "type": "radio",
+      "label": "select one or more options",
+      "required": false,
+      "value": {
+        "options": [
+          {
+            "nameId": "qwh1",
+            "label": "option 1"
+          },
+          {
+            "nameId": "qwh2",
+            "label": "option 2"
           }
         ]
       }
     }
-  ],
+  },
+
+  "groups": {
+    "generals-info": {
+      "nameId": "generals-info",
+      "isExternalSurvey": false,
+      "questionsIds": ["generals", "generals-radio"],
+      "visible": true
+    },
+    "hidden-generals-info": {
+      "nameId": "hidden-generals-info",
+      "isExternalSurvey": false,
+      "questionsIds": ["hidden-q"],
+      "visible": true
+    },
+    "tether-user-info": {
+      "nameId": "tether-user-info",
+      "isExternalSurvey": true,
+      "questionsIds": ["external-id"],
+      "visible": true
+    }
+  },
+
+  "groupsOrder": ["generals-info"],
+
   "answers": {
     "generals": [
       "4"

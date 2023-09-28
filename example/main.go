@@ -1,31 +1,31 @@
 package main
 
 import (
-	"github.com/rendis/surveygo"
+	"fmt"
+	"github.com/rendis/surveygo/v2"
 	"log"
 	"os"
 )
 
 var nw = `{
-      "order": 0,
-      "nameId": "new_generals",
-      "type": "checkbox",
-      "label": "select one or more options",
-      "value": {
-        "options": [
-          {
-            "id": "1",
-            "label": "option 1",
-            "order": 0
-          },
-          {
-            "id": "2",
-            "label": "option 2",
-            "order": 1
-          }
-        ]
-      }
-    }`
+	"nameId": "new_generals",
+	"visible": true,
+	"type": "checkbox",
+	"label": "select one or more options",
+	"groupNameId": "generals-info",
+	"value": {
+	  "options": [
+		{
+		  "nameId": "qwe1",
+		  "label": "option 1"
+		},
+		{
+		  "nameId": "qwe2",
+		  "label": "option 2"
+		}
+	  ]
+	}
+  }`
 
 func main() {
 	f, err := os.ReadFile("example/s1.json")
@@ -38,21 +38,22 @@ func main() {
 		panic(err)
 	}
 
-	err = s.Check(map[string][]any{
-		"sub_generals":      {"2"},
-		"generals":          {"2"},
-		"generals-radio":    {"1"},
-		"other-input-text":  {"Free "},
-		"email-1":           {"example@gmail.com"},
-		"telephone..client": {"+56964367711"},
-	})
-	if err != nil {
-		log.Printf("%s", err)
+	ans := map[string][]any{
+		"generals":       {"qwq2"},
+		"generals-radio": {"qwr1"},
+		"hidden-q":       {"qwh2"},
 	}
+
+	resume, err := s.Check(ans)
+	if err != nil {
+		log.Fatalf("Error checking survey: %v", err)
+	}
+
+	fmt.Printf("Resume: %+v\n", resume)
 
 	// Add new question
 	err = s.AddQuestionJson(nw)
 	if err != nil {
-		panic(err)
+		log.Fatalf("Error adding question: %v", err)
 	}
 }
