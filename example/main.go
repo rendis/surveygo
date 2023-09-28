@@ -44,7 +44,7 @@ func main() {
 		"hidden-q":       {"qwh2"},
 	}
 
-	resume, err := s.Check(ans)
+	resume, err := s.ReviewAnswers(ans)
 	if err != nil {
 		log.Fatalf("Error checking survey: %v", err)
 	}

@@ -53,10 +53,8 @@ func ParseBytes(b []byte) (*Survey, error) {
 	}
 
 	// check survey consistency
-	if errs := survey.checkConsistency(); len(errs) > 0 {
-		var consErr = fmt.Errorf("error checking survey consistency")
-		errs = append([]error{consErr}, errs...)
-		return nil, errors.Join(errs...)
+	if err := survey.checkConsistency(); err != nil {
+		return nil, err
 	}
 
 	return survey, nil
@@ -116,7 +114,7 @@ type Survey struct {
 }
 
 // checkConsistency checks the consistency of the survey.
-func (s *Survey) checkConsistency() []error {
+func (s *Survey) checkConsistency() error {
 	var errs []error
 
 	// check questions
@@ -200,5 +198,12 @@ func (s *Survey) checkConsistency() []error {
 		}
 	}
 
-	return errs
+	// build the error
+	if len(errs) > 0 {
+		var consErr = fmt.Errorf("error checking survey consistency")
+		errs = append([]error{consErr}, errs...)
+		return errors.Join(errs...)
+	}
+
+	return nil
 }

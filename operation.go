@@ -42,7 +42,7 @@ type SurveyResume struct {
 	InvalidAnswers []InvalidAnswerError `json:"invalidAnswers" bson:"invalidAnswers"`
 }
 
-// Check verifies if the answers provided are valid for this survey.
+// ReviewAnswers verifies if the answers provided are valid for this survey.
 // Args:
 // * ans: the answers to check.
 // Returns:
@@ -50,7 +50,7 @@ type SurveyResume struct {
 //   - key: the name id of the missing question
 //   - value: if the question is required or not
 //   - error: if an error occurred
-func (s *Survey) Check(ans Answers) (*SurveyResume, error) {
+func (s *Survey) ReviewAnswers(ans Answers) (*SurveyResume, error) {
 	var invalidAnswers []InvalidAnswerError
 
 	for nameId, values := range ans {
@@ -78,6 +78,11 @@ func (s *Survey) Check(ans Answers) (*SurveyResume, error) {
 	resume.InvalidAnswers = invalidAnswers
 
 	return resume, nil
+}
+
+// ValidateSurvey validates the survey.
+func (s *Survey) ValidateSurvey() error {
+	return s.checkConsistency()
 }
 
 // ToMap returns a map representation of the survey.
