@@ -19,9 +19,8 @@ import (
 // Returns:
 //   - *Survey: the new survey instance
 //   - error: if an error occurred
-func NewSurvey(nameId, title, version string, description *string) (*Survey, error) {
+func NewSurvey(title, version string, description *string) (*Survey, error) {
 	return &Survey{
-		NameId:      nameId,
 		Title:       title,
 		Version:     version,
 		Description: description,
@@ -66,12 +65,6 @@ type Answers map[string][]any
 
 // Survey is a struct representation of a survey.
 type Survey struct {
-	// NameId is the name id of the survey.
-	// Validations:
-	//	- required
-	//	- valid name id
-	NameId string `json:"nameId" bson:"nameId" validate:"required,validNameId"`
-
 	// Title is the title of the survey.
 	// Validations:
 	//	- required
