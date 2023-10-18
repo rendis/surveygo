@@ -50,12 +50,25 @@ func (g *Group) RemoveQuestionId(nameId string) bool {
 }
 
 // AddQuestionId adds the question with the specified name ID to the group.
-func (g *Group) AddQuestionId(nameId string) {
-	// check if question already exists
+// Args:
+// - nameId: the name ID of the question to add.
+// - position: the position where to add the question. If position is -1, the question will be added at the end of the group.
+func (g *Group) AddQuestionId(nameId string, position int) {
+	// check if question already exists in the group
 	for _, id := range g.QuestionsIds {
 		if id == nameId {
 			return
 		}
 	}
-	g.QuestionsIds = append(g.QuestionsIds, nameId)
+
+	// add question at the end of the group
+	if position < 0 || position >= len(g.QuestionsIds) {
+		g.QuestionsIds = append(g.QuestionsIds, nameId)
+		return
+	}
+
+	// add question at the specified position
+	g.QuestionsIds = append(g.QuestionsIds, "")
+	copy(g.QuestionsIds[position+1:], g.QuestionsIds[position:])
+	g.QuestionsIds[position] = nameId
 }

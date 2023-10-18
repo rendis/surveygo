@@ -1,0 +1,88 @@
+{
+  "nameId": "customer-survey",
+  "title": "Customer Satisfaction Survey",
+  "version": "1.1.0",
+  "description": "Survey to assess customer satisfaction",
+
+  "questions": {
+    "service_quality": {
+      "nameId": "service_quality",
+      "visible": true,
+      "type": "radio",
+      "label": "Rate the quality of our service",
+      "required": true,
+      "value": {
+        "placeholder": "Select an option",
+        "options": [
+          {
+            "nameId": "excellent",
+            "label": "Excellent"
+          },
+          {
+            "nameId": "good",
+            "label": "Good"
+          },
+          {
+            "nameId": "fair",
+            "label": "Fair"
+          },
+          {
+            "nameId": "poor",
+            "label": "Poor"
+          }
+        ]
+      }
+    },
+    "recommend_to_friends": {
+      "nameId": "recommend_to_friends",
+      "visible": true,
+      "type": "radio",
+      "label": "Would you recommend us to your friends?",
+      "required": false,
+      "value": {
+        "options": [
+          {
+            "nameId": "definitely",
+            "label": "Definitely",
+            "groupsIds": ["grp-additional_comments"]
+          },
+          {
+            "nameId": "unlikely",
+            "label": "Unlikely"
+          }
+        ]
+      }
+    },
+    "additional_comments": {
+      "nameId": "additional_comments",
+      "visible": true,
+      "type": "text_area",
+      "label": "Any additional feedback?",
+      "required": false,
+      "value": {
+        "placeholder": "Type your comments here",
+        "min": 5,
+        "max": 1000
+      }
+    }
+  },
+
+  "groups": {
+    "grp-service_quality": {
+      "nameId": "grp-service_quality",
+      "title": "Service Quality",
+      "isExternalSurvey": false,
+      "questionsIds": ["service_quality", "recommend_to_friends"],
+      "visible": true
+    },
+    "grp-additional_comments": {
+      "nameId": "grp-additional_comments",
+      "title": "Additional Comments",
+      "isExternalSurvey": false,
+      "questionsIds": ["additional_comments"],
+      "visible": true
+    }
+  },
+
+  "groupsOrder": ["grp-service_quality"]
+}

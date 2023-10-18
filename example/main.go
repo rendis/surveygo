@@ -8,27 +8,19 @@ import (
 )
 
 var nw = `{
-	"nameId": "new_generals",
+	"nameId": "email",
 	"visible": true,
-	"type": "checkbox",
-	"label": "select one or more options",
-	"groupNameId": "generals-info",
+	"type": "email",
+	"label": "Email",
+	"required": true,
 	"value": {
-	  "options": [
-		{
-		  "nameId": "qwe1",
-		  "label": "option 1"
-		},
-		{
-		  "nameId": "qwe2",
-		  "label": "option 2"
-		}
-	  ]
+		"placeholder": "Type your email here",
+		"allowedDomains": ["gmail.com", "yahoo.com", "hotmail.com"]
 	}
   }`
 
 func main() {
-	f, err := os.ReadFile("example/s1.json")
+	f, err := os.ReadFile("example/survey.json")
 	if err != nil {
 		panic(err)
 	}
@@ -39,11 +31,12 @@ func main() {
 	}
 
 	ans := map[string][]any{
-		"generals":       {"qwq2"},
-		"generals-radio": {"qwr1"},
-		"hidden-q":       {"qwh2"},
+		"service_quality":      {"good"},
+		"recommend_to_friends": {"definitely"},
+		"additional_comments":  {"satisfied"},
 	}
 
+	// review answers
 	resume, err := s.ReviewAnswers(ans)
 	if err != nil {
 		log.Fatalf("Error checking survey: %v", err)
@@ -51,9 +44,21 @@ func main() {
 
 	fmt.Printf("Resume: %+v\n", resume)
 
-	// Add new question
+	// add new question
 	err = s.AddQuestionJson(nw)
 	if err != nil {
 		log.Fatalf("Error adding question: %v", err)
 	}
+
+	// add new answer
+	ans["email"] = []any{"test@yopmail.com"}
+
+	// review answers
+	resume, err = s.ReviewAnswers(ans)
+
+	if err != nil {
+		log.Fatalf("Error checking survey: %v", err)
+	}
+
+	fmt.Printf("Resume: %+v\n", resume)
 }
