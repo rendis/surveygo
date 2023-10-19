@@ -84,6 +84,7 @@ Structure representing a group of questions in a survey.
 - `telephone`: Telephone
 - `text_area`: Free text
 - `input_text`: Free text
+- `information`: Information field, not editable
 
 ### Choice
 
@@ -109,6 +110,9 @@ Structure for all questions in the `Choice` group.
 - `placeholder`: Placeholder text for the question. (Optional)
 - `min`: Minimum length of the text. (Optional)
 - `max`: Maximum length of the text. (Optional)
+
+**Information** (`information`)
+-  `text`: Text to be displayed. (Required)
 
 ## Functions
 

@@ -49,6 +49,9 @@ const (
 
 	// QTypeTelephone represents a telephone input field type
 	QTypeTelephone = "telephone"
+
+	// QTypeInformation represents an information field type
+	QTypeInformation = "information"
 )
 
 // UnmarshalJSON implements the json.Unmarshaler interface.
@@ -84,10 +87,11 @@ var QTypeChoiceTypes = map[QuestionType]bool{
 
 // QTypeTextTypes groups all text types.
 var QTypeTextTypes = map[QuestionType]bool{
-	QTypeTextArea:  true,
-	QTypeInputText: true,
-	QTypeEmail:     true,
-	QTypeTelephone: true,
+	QTypeTextArea:    true,
+	QTypeInputText:   true,
+	QTypeEmail:       true,
+	QTypeTelephone:   true,
+	QTypeInformation: true,
 }
 
 // IsChoiceType returns true if the question type is a choice type, false otherwise.

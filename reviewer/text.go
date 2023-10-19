@@ -16,10 +16,11 @@ var phoneRegex = regexp.MustCompile("^(\\+[1-9]\\d{1,2})\\d{8,15}$")
 
 // textAnswerReviewers is a map of text type to its review function.
 var textAnswerReviewers = map[types.QuestionType]func(question any, answer string) error{
-	types.QTypeTextArea:  reviewFreeText,
-	types.QTypeInputText: reviewFreeText,
-	types.QTypeEmail:     reviewEmail,
-	types.QTypeTelephone: reviewTelephone,
+	types.QTypeTextArea:    reviewFreeText,
+	types.QTypeInputText:   reviewFreeText,
+	types.QTypeEmail:       reviewEmail,
+	types.QTypeTelephone:   reviewTelephone,
+	types.QTypeInformation: dummyReview,
 }
 
 // ReviewText validates format of the answers for the given text type.
@@ -95,5 +96,9 @@ func reviewTelephone(questionValue any, answer string) error {
 		return fmt.Errorf("answer country code is not allowed. got '%s'", answer)
 	}
 
+	return nil
+}
+
+func dummyReview(questionValue any, answer string) error {
 	return nil
 }

@@ -67,6 +67,8 @@ func (q *Question) UnmarshalJSON(b []byte) error {
 		realQuestion, err = getQuestionByType[text.Email](b)
 	case types.QTypeTelephone:
 		realQuestion, err = getQuestionByType[text.Telephone](b)
+	case types.QTypeInformation:
+		realQuestion, err = getQuestionByType[text.InformationText](b)
 	default:
 		return fmt.Errorf("invalid question type: %s", bq.QTyp)
 	}

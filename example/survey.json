@@ -1,66 +1,158 @@
 {
-  "nameId": "customer-survey",
-  "title": "Customer Satisfaction Survey",
-  "version": "1.1.0",
-  "description": "Survey to assess customer satisfaction",
+  "nameId": "video_game_event_survey",
+  "title": "Video Game Event Experience Survey",
+  "version": "1.0.0",
+  "description": "Tell us about your experience at the Galactic Gaming Expo!",
 
   "questions": {
-    "service_quality": {
-      "nameId": "service_quality",
+    "event_rating": {
+      "nameId": "event_rating",
       "visible": true,
       "type": "radio",
-      "label": "Rate the quality of our service",
+      "label": "How would you rate the event overall?",
       "required": true,
       "value": {
         "placeholder": "Select an option",
         "options": [
           {
-            "nameId": "excellent",
-            "label": "Excellent"
+            "nameId": "amazing",
+            "label": "Amazing"
           },
           {
             "nameId": "good",
             "label": "Good"
           },
           {
-            "nameId": "fair",
-            "label": "Fair"
+            "nameId": "meh",
+            "label": "Meh"
           },
           {
-            "nameId": "poor",
-            "label": "Poor"
+            "nameId": "terrible",
+            "label": "Terrible",
+            "groupsIds": ["grp_event_rating_opinion"]
           }
         ]
       }
     },
-    "recommend_to_friends": {
-      "nameId": "recommend_to_friends",
+
+    "favorite_game": {
+      "nameId": "favorite_game",
       "visible": true,
-      "type": "radio",
-      "label": "Would you recommend us to your friends?",
+      "type": "single_select",
+      "label": "What was your favorite game at the event?",
+      "required": true,
+      "value": {
+        "options": [
+          {
+            "nameId": "cyberworld_2078",
+            "label": "Cyberworld 2078"
+          },
+          {
+            "nameId": "zombie_apocalypse",
+            "label": "Zombie Apocalypse"
+          },
+          {
+            "nameId": "fortress_siege",
+            "label": "Fortress Siege"
+          },
+          {
+            "nameId": "rocket_adventure",
+            "label": "Rocket Adventure"
+          }
+        ]
+      }
+    },
+
+    "improvement_areas": {
+      "nameId": "improvement_areas",
+      "visible": true,
+      "type": "multi_select",
+      "label": "What areas could be improved?",
       "required": false,
       "value": {
         "options": [
           {
-            "nameId": "definitely",
-            "label": "Definitely",
-            "groupsIds": ["grp-additional_comments"]
+            "nameId": "improvement_areas_food",
+            "label": "Food"
           },
           {
-            "nameId": "unlikely",
-            "label": "Unlikely"
+            "nameId": "improvement_areas_security",
+            "label": "Security"
+          },
+          {
+            "nameId": "improvement_areas_game_selection",
+            "label": "Game Selection"
+          },
+          {
+            "nameId": "improvement_areas_staff",
+            "label": "Staff"
           }
         ]
       }
     },
-    "additional_comments": {
-      "nameId": "additional_comments",
+
+    "would_attend_again": {
+      "nameId": "would_attend_again",
       "visible": true,
-      "type": "text_area",
-      "label": "Any additional feedback?",
+      "type": "checkbox",
+      "label": "Would you attend again?",
       "required": false,
       "value": {
-        "placeholder": "Type your comments here",
+        "options": [
+          {
+            "nameId": "would_attend_again_yes",
+            "label": "Yes"
+          }
+        ]
+      }
+    },
+
+    "feedback": {
+      "nameId": "feedback",
+      "visible": true,
+      "type": "text_area",
+      "label": "Any other comments or feedback?",
+      "required": false,
+      "value": {
+        "placeholder": "Type here",
+        "min": 5,
+        "max": 1000
+      }
+    },
+
+    "name": {
+      "nameId": "name",
+      "visible": true,
+      "type": "input_text",
+      "label": "Enter your name",
+      "required": true,
+      "value": {
+        "placeholder": "Type your name",
+        "min": 3,
+        "max": 1000
+      }
+    },
+
+    "email": {
+      "nameId": "email",
+      "visible": true,
+      "type": "email",
+      "label": "Enter your email if you'd like to participate in future events",
+      "required": true,
+      "value": {
+        "placeholder": "you@example.com",
+        "allowedDomains": ["example.com", "example.org"]
+      }
+    },
+
+    "event_rating_improvement_opinion": {
+      "nameId": "event_rating_improvement_opinion",
+      "visible": true,
+      "type": "text_area",
+      "label": "What could be improved?",
+      "required": false,
+      "value": {
+        "placeholder": "Type here",
         "min": 5,
         "max": 1000
       }
@@ -68,21 +160,28 @@
   },
 
   "groups": {
-    "grp-service_quality": {
-      "nameId": "grp-service_quality",
-      "title": "Service Quality",
+    "grp-general": {
+      "nameId": "grp-general",
+      "title": "General Questions",
       "isExternalSurvey": false,
-      "questionsIds": ["service_quality", "recommend_to_friends"],
+      "questionsIds": ["event_rating", "favorite_game", "would_attend_again", "improvement_areas"],
       "visible": true
     },
-    "grp-additional_comments": {
-      "nameId": "grp-additional_comments",
-      "title": "Additional Comments",
+    "grp-feedback": {
+      "nameId": "grp-feedback",
+      "title": "Feedback",
       "isExternalSurvey": false,
-      "questionsIds": ["additional_comments"],
+      "questionsIds": ["feedback", "name", "email"],
+      "visible": true
+    },
+    "grp_event_rating_opinion": {
+      "nameId": "grp_event_rating_opinion",
+      "title": "Event Rating Opinion",
+      "isExternalSurvey": false,
+      "questionsIds": ["event_rating_improvement_opinion"],
       "visible": true
     }
   },
 
-  "groupsOrder": ["grp-service_quality"]
+  "groupsOrder": ["grp-general", "grp-feedback"]
 }
