@@ -5,8 +5,8 @@ import (
 	"fmt"
 )
 
-// Base is a struct that contains common fields for all types of questions.
-type Base struct {
+// QBase is a struct that contains common fields for all types of questions.
+type QBase struct {
 	// Placeholder is a placeholder text.
 	// Validations:
 	// - optional
@@ -26,6 +26,8 @@ type QuestionType string
 // - add a new function to check if the new type is of the new slice (e.g. IsChoiceType or IsTextType)
 // - update this comment to include the new type :)
 const (
+	//------ Choice types ------//
+
 	// QTypeSingleSelect represents a single select field type
 	QTypeSingleSelect QuestionType = "single_select"
 
@@ -37,6 +39,8 @@ const (
 
 	// QTypeCheckbox represents a checkbox field type
 	QTypeCheckbox = "checkbox"
+
+	//------ Text types ------//
 
 	// QTypeTextArea represents a text area field type
 	QTypeTextArea = "text_area"
@@ -52,6 +56,11 @@ const (
 
 	// QTypeInformation represents an information field type
 	QTypeInformation = "information"
+
+	//------ External types ------//
+
+	// QTypeExternalQuestion represents a external question field type
+	QTypeExternalQuestion = "external_question"
 )
 
 // UnmarshalJSON implements the json.Unmarshaler interface.
@@ -94,6 +103,11 @@ var QTypeTextTypes = map[QuestionType]bool{
 	QTypeInformation: true,
 }
 
+// QTypeExternalQuestions groups all external types.
+var QTypeExternalQuestions = map[QuestionType]bool{
+	QTypeExternalQuestion: true,
+}
+
 // IsChoiceType returns true if the question type is a choice type, false otherwise.
 func IsChoiceType(qt QuestionType) bool {
 	return QTypeChoiceTypes[qt]
@@ -104,6 +118,11 @@ func IsTextType(qt QuestionType) bool {
 	return QTypeTextTypes[qt]
 }
 
+// IsExternalType returns true if the question type is an external type, false otherwise.
+func IsExternalType(qt QuestionType) bool {
+	return QTypeExternalQuestions[qt]
+}
+
 // ParseToQuestionType takes a string and returns the corresponding QuestionType, or an error if the string is invalid.
 func ParseToQuestionType(v string) (QuestionType, error) {
 	tmpQT := QuestionType(v)
@@ -112,6 +131,10 @@ func ParseToQuestionType(v string) (QuestionType, error) {
 	}
 
 	if _, ok := QTypeTextTypes[tmpQT]; ok {
+		return tmpQT, nil
+	}
+
+	if _, ok := QTypeExternalQuestions[tmpQT]; ok {
 		return tmpQT, nil
 	}
 

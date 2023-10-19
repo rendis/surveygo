@@ -8,7 +8,7 @@ import (
 // Types:
 // - types.QTypeInformation
 type InformationText struct {
-	types.Base
+	types.QBase
 
 	// Text is the text to be displayed.
 	// Validations:

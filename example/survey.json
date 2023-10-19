@@ -156,6 +156,31 @@
         "min": 5,
         "max": 1000
       }
+    },
+
+    "phone_codes": {
+      "nameId": "phone_codes",
+      "visible": true,
+      "type": "external_question",
+      "label": "Select your country",
+      "required": true,
+      "value": {
+        "questionType": "single_select",
+        "externalType": "phone_codes",
+        "description": "Question filled with external data",
+        "src": "http://country.io/phone.json"
+      }
+    },
+
+    "phone-number": {
+        "nameId": "phone-number",
+        "visible": true,
+        "type": "telephone",
+        "label": "Enter your phone number",
+        "required": true,
+        "value": {
+            "placeholder": "Type your phone number"
+        }
     }
   },
 

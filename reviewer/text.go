@@ -11,9 +11,6 @@ import (
 // emailRegex is a regex to validate email.
 var emailRegex = regexp.MustCompile("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z]{2,})+$")
 
-// phoneRegex is a regex to validate phone number.
-var phoneRegex = regexp.MustCompile("^(\\+[1-9]\\d{1,2})\\d{8,15}$")
-
 // textAnswerReviewers is a map of text type to its review function.
 var textAnswerReviewers = map[types.QuestionType]func(question any, answer string) error{
 	types.QTypeTextArea:    reviewFreeText,
@@ -80,11 +77,6 @@ func reviewTelephone(questionValue any, answer string) error {
 	phone, _ := text.CastToTelephone(questionValue)
 	answer = strings.ReplaceAll(answer, " ", "")
 	answer = strings.ReplaceAll(answer, "-", "")
-
-	// validate phone format
-	if !phoneRegex.MatchString(answer) {
-		return fmt.Errorf("answer is not a valid telephone. got: '%s'", answer)
-	}
 
 	// validate country code
 	if phone.AllowedCountryCodes != nil && len(phone.AllowedCountryCodes) > 0 {

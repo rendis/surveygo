@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/rendis/surveygo/v2/question/types"
 	"github.com/rendis/surveygo/v2/question/types/choice"
+	"github.com/rendis/surveygo/v2/question/types/external"
 	"github.com/rendis/surveygo/v2/question/types/text"
 )
 
@@ -69,6 +70,8 @@ func (q *Question) UnmarshalJSON(b []byte) error {
 		realQuestion, err = getQuestionByType[text.Telephone](b)
 	case types.QTypeInformation:
 		realQuestion, err = getQuestionByType[text.InformationText](b)
+	case types.QTypeExternalQuestion:
+		realQuestion, err = getQuestionByType[external.ExternalQuestion](b)
 	default:
 		return fmt.Errorf("invalid question type: %s", bq.QTyp)
 	}

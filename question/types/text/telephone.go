@@ -6,9 +6,9 @@ import (
 )
 
 // Telephone represents a telephone question type.
-// Type: types.QTypeTelephone
+// QuestionType: types.QTypeTelephone
 type Telephone struct {
-	types.Base
+	types.QBase
 
 	// AllowedCountryCodes list of allowed country codes for the telephone field.
 	// Validations:

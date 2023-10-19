@@ -12,6 +12,7 @@
    - [Types of Questions](#types-of-questions)
    - [Choice](#choice)
    - [Text](#text)
+   - [External Question](#external-question)
 4. [Functions](#functions)
    - [operation.go](#operationgo)
    - [operation_de_serializers.go](#operation_de_serializersgo)
@@ -86,11 +87,15 @@ Structure representing a group of questions in a survey.
 - `input_text`: Free text
 - `information`: Information field, not editable
 
+#### External Questions:
+- `external_question`: External question
+
 ### Choice
 
 Structure for all questions in the `Choice` group.
 
 - `placeholder`: Placeholder text for the question. (Optional)
+- `default`: Default value for the question. Default value refers to the option `nameId`. (Optional)
 - `options`: Question options. (Required)
   - `nameId`: Option identifier. (Required)
   - `label`: Option label. (Required)
@@ -113,6 +118,17 @@ Structure for all questions in the `Choice` group.
 
 **Information** (`information`)
 -  `text`: Text to be displayed. (Required)
+
+### External Question
+Used to create an external questions.
+
+**External Question** (`external_question`)
+- `placeholder`: Placeholder for the question. (Optional)
+- `default`: Default value for the question. (Optional)
+- `questionType`: Type of the question. Refer to [Types of Questions](#types-of-questions). (Required)
+- `externalType`: Type of the external question. (Required)
+- `description`: Description of the external question. (Optional)
+- `src`: Source of the external question. (Optional)
 
 ## Functions
 

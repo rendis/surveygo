@@ -15,6 +15,8 @@ func GetQuestionReviewer(qt types.QuestionType) (QuestionReviewer, error) {
 		return ReviewChoice, nil
 	case types.IsTextType(qt):
 		return ReviewText, nil
+	case types.IsExternalType(qt):
+		return ReviewExternal, nil
 	}
 	return nil, fmt.Errorf("unknown question type: %s", qt)
 }

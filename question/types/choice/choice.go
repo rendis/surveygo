@@ -12,7 +12,12 @@ import (
 // - types.QTypeRadio
 // - types.QTypeCheckbox
 type Choice struct {
-	types.Base
+	types.QBase
+
+	// Default is the default value for the choice field.
+	// Validations:
+	// - optional
+	Default *string `json:"default" bson:"default" validate:"omitempty"`
 
 	// Options is a list of options for the choice field.
 	// Validations:

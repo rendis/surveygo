@@ -6,9 +6,9 @@ import (
 )
 
 // Email represents an email question type.
-// Type: types.QTypeEmail
+// QuestionType: types.QTypeEmail
 type Email struct {
-	types.Base
+	types.QBase
 
 	// AllowedDomains list of allowed domains for the email field.
 	// Validations:

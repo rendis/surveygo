@@ -10,7 +10,7 @@ import (
 // - types.QTypeInputText
 // - types.QTypeTextArea
 type FreeText struct {
-	types.Base
+	types.QBase
 
 	// Min is an optional minimum length for the text area field.
 	// Validations:

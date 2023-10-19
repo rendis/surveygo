@@ -52,6 +52,8 @@ func main() {
 		"would_attend_again": {"would_attend_again_yes"},
 		"name":               {"John Doe"},
 		"email":              {"john@example.com"},
+		"phone_codes":        {"+65"},
+		"phone-number":       {"12345678"},
 	}
 
 	// review answers
@@ -60,7 +62,7 @@ func main() {
 		log.Fatalf("Error checking survey: %v", err)
 	}
 
-	fmt.Printf("Resume: %+v\n", resume)
+	fmt.Printf("\nResume: %+v\n", resume)
 
 	// add new question
 	err = s.AddQuestionJson(newQuestion)
@@ -78,5 +80,5 @@ func main() {
 		log.Fatalf("Error checking survey: %v", err)
 	}
 
-	fmt.Printf("Resume: %+v\n", resume)
+	fmt.Printf("\nResume: %+v\n", resume)
 }
