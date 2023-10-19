@@ -14,10 +14,10 @@ import (
 type Choice struct {
 	types.QBase
 
-	// Default is the default value for the choice field.
+	// Defaults is the list of default values for the choice field.
 	// Validations:
 	// - optional
-	Default *string `json:"default" bson:"default" validate:"omitempty"`
+	Defaults []string `json:"defaults" bson:"defaults" validate:"omitempty"`
 
 	// Options is a list of options for the choice field.
 	// Validations:

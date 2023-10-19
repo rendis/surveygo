@@ -8,10 +8,10 @@ import "github.com/rendis/surveygo/v2/question/types"
 type ExternalQuestion struct {
 	types.QBase
 
-	// Default is the default value for the question.
+	// Defaults is the list of default values for the external question field.
 	// Validations:
 	// - optional
-	Default *string `json:"default" bson:"default" validate:"omitempty"`
+	Defaults []string `json:"defaults" bson:"defaults" validate:"omitempty"`
 
 	// QuestionType is the type of the external question.
 	QuestionType types.QuestionType `json:"questionType" bson:"questionType" validate:"required,questionType"`
