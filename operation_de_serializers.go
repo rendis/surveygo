@@ -8,13 +8,13 @@ import (
 
 // ------------ Deserializers ------------- //
 
-// Parse converts the given json string into a Survey instance.
-func Parse(jsonSurvey string) (*Survey, error) {
-	return ParseBytes([]byte(jsonSurvey))
+// ParseFromJsonStr converts the given json string into a Survey instance.
+func ParseFromJsonStr(jsonSurvey string) (*Survey, error) {
+	return ParseFromBytes([]byte(jsonSurvey))
 }
 
-// ParseBytes converts the given json byte slice into a Survey instance.
-func ParseBytes(b []byte) (*Survey, error) {
+// ParseFromBytes converts the given json byte slice into a Survey instance.
+func ParseFromBytes(b []byte) (*Survey, error) {
 	var survey = &Survey{}
 
 	// unmarshal the json survey into the survey struct

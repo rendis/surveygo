@@ -41,7 +41,7 @@ func main() {
 		panic(err)
 	}
 
-	s, err := surveygo.ParseBytes(f)
+	s, err := surveygo.ParseFromBytes(f)
 	if err != nil {
 		panic(err)
 	}
