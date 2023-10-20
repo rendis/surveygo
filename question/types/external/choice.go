@@ -6,29 +6,29 @@ import "github.com/rendis/surveygo/v2/question/types"
 // Types:
 // - types.QTypeExternalQuestion
 type ExternalQuestion struct {
-	types.QBase
+	types.QBase `bson:",inline"`
 
 	// Defaults is the list of default values for the external question field.
 	// Validations:
 	// - optional
-	Defaults []string `json:"defaults" bson:"defaults" validate:"omitempty"`
+	Defaults []string `json:"defaults,omitempty" bson:"defaults,omitempty" validate:"omitempty"`
 
 	// QuestionType is the type of the external question.
-	QuestionType types.QuestionType `json:"questionType" bson:"questionType" validate:"required,questionType"`
+	QuestionType types.QuestionType `json:"questionType,omitempty" bson:"questionType,omitempty" validate:"required,questionType"`
 
 	// ExternalType is the type of the external source.
 	// Validations:
 	// - required
 	// - min length: 1
-	ExternalType string `json:"externalType" bson:"externalType" validate:"required,min=1"`
+	ExternalType string `json:"externalType,omitempty" bson:"externalType,omitempty" validate:"required,min=1"`
 
 	// Description is a description for the choice field.
 	// Validations:
 	// - optional
-	Description *string `json:"description" bson:"description" validate:"omitempty"`
+	Description *string `json:"description,omitempty" bson:"description,omitempty" validate:"omitempty"`
 
 	// Src is the source of the external source.
 	// Validations:
 	// - optional
-	Src *string `json:"src" bson:"src" validate:"omitempty"`
+	Src *string `json:"src,omitempty" bson:"src,omitempty" validate:"omitempty"`
 }

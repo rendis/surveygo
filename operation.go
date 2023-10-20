@@ -10,9 +10,9 @@ import (
 )
 
 type InvalidAnswerError struct {
-	QuestionNameId string `json:"questionNameId" bson:"questionNameId"`
-	Answer         any    `json:"answer" bson:"answer"`
-	Error          string `json:"error" bson:"error"`
+	QuestionNameId string `json:"questionNameId,omitempty" bson:"questionNameId,omitempty"`
+	Answer         any    `json:"answer,omitempty" bson:"answer,omitempty"`
+	Error          string `json:"error,omitempty" bson:"error,omitempty"`
 }
 
 // SurveyResume contains the resume of a survey based on the answers provided.
@@ -20,25 +20,25 @@ type InvalidAnswerError struct {
 type SurveyResume struct {
 	//----- Questions Totals -----//
 	// TotalQuestions number of questions in the survey
-	TotalQuestions int `json:"totalQuestions" bson:"totalQuestions"`
+	TotalQuestions int `json:"totalQuestions,omitempty" bson:"totalQuestions,omitempty"`
 	// TotalRequiredQuestions number of required questions in the survey
-	TotalRequiredQuestions int `json:"totalRequiredQuestions" bson:"totalRequiredQuestions"`
+	TotalRequiredQuestions int `json:"totalRequiredQuestions,omitempty" bson:"totalRequiredQuestions,omitempty"`
 
 	//----- Answers Totals  -----//
 	// TotalQuestionsAnswered number of answered questions in the survey
-	TotalQuestionsAnswered int `json:"totalQuestionsAnswered" bson:"totalQuestionsAnswered"`
+	TotalQuestionsAnswered int `json:"totalQuestionsAnswered,omitempty" bson:"totalQuestionsAnswered,omitempty"`
 	// TotalRequiredQuestionsAnswered number of required questions answered in the survey
-	TotalRequiredQuestionsAnswered int `json:"totalRequiredQuestionsAnswered" bson:"totalRequiredQuestionsAnswered"`
+	TotalRequiredQuestionsAnswered int `json:"totalRequiredQuestionsAnswered,omitempty" bson:"totalRequiredQuestionsAnswered,omitempty"`
 	// UnansweredQuestions map of unanswered questions, key is the nameId of the question, value is true if the question is required
-	UnansweredQuestions map[string]bool `json:"unansweredQuestions" bson:"unansweredQuestions"`
+	UnansweredQuestions map[string]bool `json:"unansweredQuestions,omitempty" bson:"unansweredQuestions,omitempty"`
 
 	//----- Others Totals -----//
 	// ExternalSurveyIds map of external survey ids. Key: GroupNameId, Value: ExternalSurveyId
-	ExternalSurveyIds map[string]string `json:"externalSurveyIds" bson:"externalSurveyIds"`
+	ExternalSurveyIds map[string]string `json:"externalSurveyIds,omitempty" bson:"externalSurveyIds,omitempty"`
 
 	//----- Errors -----//
 	// InvalidAnswers list of invalid answers
-	InvalidAnswers []InvalidAnswerError `json:"invalidAnswers" bson:"invalidAnswers"`
+	InvalidAnswers []InvalidAnswerError `json:"invalidAnswers,omitempty" bson:"invalidAnswers,omitempty"`
 }
 
 // NewSurvey creates a new Survey instance with the given title, version, and description.

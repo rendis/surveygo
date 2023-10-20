@@ -8,11 +8,11 @@ import (
 // Types:
 // - types.QTypeInformation
 type InformationText struct {
-	types.QBase
+	types.QBase `bson:",inline"`
 
 	// Text is the text to be displayed.
 	// Validations:
 	// - required
 	// - min length: 1
-	Text string `json:"text" bson:"text" validate:"required,min=1"`
+	Text string `json:"text,omitempty" bson:"text,omitempty" validate:"required,min=1"`
 }

@@ -6,20 +6,20 @@ type Group struct {
 	// Validations:
 	// - required
 	// - valid name id
-	NameId string `json:"nameId" bson:"nameId" validate:"required,validNameId"`
+	NameId string `json:"nameId,omitempty" bson:"nameId,omitempty" validate:"required,validNameId"`
 
 	// Title is the title of the group.
 	// Validations:
 	// - optional
-	Title *string `json:"title" bson:"title" validate:"omitempty"`
+	Title *string `json:"title,omitempty" bson:"title,omitempty" validate:"omitempty"`
 
 	// Description is the description of the group.
 	// Validations:
 	// - optional
-	Description *string `json:"description" bson:"description" validate:"omitempty"`
+	Description *string `json:"description,omitempty" bson:"description,omitempty" validate:"omitempty"`
 
 	// Visible is a flag that indicates if the group is visible.
-	Visible bool `json:"visible" bson:"visible"`
+	Visible bool `json:"visible,omitempty" bson:"visible,omitempty"`
 
 	// IsExternalSurvey is a flag that indicates if the group is an external survey.
 	// When a group is an external survey, it means that:
@@ -27,14 +27,14 @@ type Group struct {
 	// - The question will be an external survey question id
 	// Validations:
 	// - validIfExternalSurvey
-	IsExternalSurvey bool `json:"isExternalSurvey" bson:"isExternalSurvey" validate:"validIfExternalSurvey"`
+	IsExternalSurvey bool `json:"isExternalSurvey,omitempty" bson:"isExternalSurvey,omitempty" validate:"validIfExternalSurvey"`
 
 	// QuestionsIds is a list of question ids that are associated with this group.
 	// Validations:
 	//	- required
 	// 	- each question id must be valid:
 	//		* length must be greater than 0
-	QuestionsIds []string `json:"questionsIds" bson:"questionsIds" validate:"required,dive,min=1"`
+	QuestionsIds []string `json:"questionsIds,omitempty" bson:"questionsIds,omitempty" validate:"required,dive,min=1"`
 }
 
 // RemoveQuestionId removes the question with the specified name ID from the group.

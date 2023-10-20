@@ -8,13 +8,13 @@ import (
 // Email represents an email question type.
 // QuestionType: types.QTypeEmail
 type Email struct {
-	types.QBase
+	types.QBase `bson:",inline"`
 
 	// AllowedDomains list of allowed domains for the email field.
 	// Validations:
 	// - optional
 	// - if defined, each domain must have a length of at least 1
-	AllowedDomains []string `json:"allowedDomains" bson:"allowedDomains" validate:"omitempty,dive,min=1"`
+	AllowedDomains []string `json:"allowedDomains,omitempty" bson:"allowedDomains,omitempty" validate:"omitempty,dive,min=1"`
 }
 
 // CastToEmail casts the given interface to an Email type.

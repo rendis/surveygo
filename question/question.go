@@ -8,6 +8,8 @@ import (
 	"github.com/rendis/surveygo/v2/question/types/choice"
 	"github.com/rendis/surveygo/v2/question/types/external"
 	"github.com/rendis/surveygo/v2/question/types/text"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/bsontype"
 )
 
 // BaseQuestion is a struct that contains common fields for all types of questions in a survey.
@@ -16,41 +18,42 @@ type BaseQuestion struct {
 	// Validations:
 	// - required
 	// - valid name id
-	NameId string `json:"nameId" bson:"nameId" validate:"required,validNameId"`
+	NameId string `json:"nameId,omitempty" bson:"nameId,omitempty" validate:"required,validNameId"`
 
 	// Visible is a flag that indicates if the question is visible.
-	Visible bool `json:"visible" bson:"visible"`
+	Visible bool `json:"visible,omitempty" bson:"visible,omitempty"`
 
 	// QTyp is the type of question, such as single_select, multi_select, radio, checkbox, or text_area.
 	// Validations:
 	// - required
 	// - must be a valid question type
-	QTyp types.QuestionType `json:"type" bson:"type" validate:"required,questionType"`
+	QTyp types.QuestionType `json:"type,omitempty" bson:"type,omitempty" validate:"required,questionType"`
 
 	// Label is a label for the question.
 	// Validations:
 	// - required
 	// - min length: 1
-	Label string `json:"label" bson:"label" validate:"required,min=1"`
+	Label string `json:"label,omitempty" bson:"label,omitempty" validate:"required,min=1"`
 
 	// Required indicates whether the question is required. Defaults to false.
-	Required bool `json:"required" bson:"required"`
+	Required bool `json:"required,omitempty" bson:"required,omitempty"`
 }
 
 // Question is a struct that represents a question in a survey.
 type Question struct {
 	// BaseQuestion contains common fields for all types of questions.
-	BaseQuestion
+	BaseQuestion `bson:",inline"`
 
 	// Value is the value of the question, which can be of different types depending on the type of question.
 	// Validations:
 	// - required
-	Value any `json:"value" bson:"value" validate:"required"`
+	Value any `json:"value,omitempty" bson:"value,omitempty" validate:"required"`
 }
 
 // UnmarshalJSON implements the json.Unmarshaler interface.
 func (q *Question) UnmarshalJSON(b []byte) error {
 	var bq BaseQuestion
+
 	if err := json.Unmarshal(b, &bq); err != nil {
 		return err
 	}
@@ -61,17 +64,17 @@ func (q *Question) UnmarshalJSON(b []byte) error {
 	// unmarshal the question based on its type
 	switch bq.QTyp {
 	case types.QTypeSingleSelect, types.QTypeMultipleSelect, types.QTypeRadio, types.QTypeCheckbox:
-		realQuestion, err = getQuestionByType[choice.Choice](b)
+		realQuestion, err = unmarshalJSONQuestionByType[choice.Choice](b)
 	case types.QTypeTextArea, types.QTypeInputText:
-		realQuestion, err = getQuestionByType[text.FreeText](b)
+		realQuestion, err = unmarshalJSONQuestionByType[text.FreeText](b)
 	case types.QTypeEmail:
-		realQuestion, err = getQuestionByType[text.Email](b)
+		realQuestion, err = unmarshalJSONQuestionByType[text.Email](b)
 	case types.QTypeTelephone:
-		realQuestion, err = getQuestionByType[text.Telephone](b)
+		realQuestion, err = unmarshalJSONQuestionByType[text.Telephone](b)
 	case types.QTypeInformation:
-		realQuestion, err = getQuestionByType[text.InformationText](b)
+		realQuestion, err = unmarshalJSONQuestionByType[text.InformationText](b)
 	case types.QTypeExternalQuestion:
-		realQuestion, err = getQuestionByType[external.ExternalQuestion](b)
+		realQuestion, err = unmarshalJSONQuestionByType[external.ExternalQuestion](b)
 	default:
 		return fmt.Errorf("invalid question type: %s", bq.QTyp)
 	}
@@ -84,8 +87,47 @@ func (q *Question) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
-// getQuestionByType returns a question of a specific type.
-func getQuestionByType[T any](b []byte) (*Question, error) {
+func (q *Question) UnmarshalBSONValue(typ bsontype.Type, b []byte) error {
+	var bq BaseQuestion
+
+	if err := bson.Unmarshal(b, &bq); err != nil {
+		return fmt.Errorf("BSON unmarshal error, %s", err)
+	}
+
+	var value any
+	var err error
+
+	// unmarshal the question based on its type
+	switch bq.QTyp {
+	case types.QTypeSingleSelect, types.QTypeMultipleSelect, types.QTypeRadio, types.QTypeCheckbox:
+		value, err = unmarshalBSONQuestionByType[choice.Choice](b)
+	case types.QTypeTextArea, types.QTypeInputText:
+		value, err = unmarshalBSONQuestionByType[text.FreeText](b)
+	case types.QTypeEmail:
+		value, err = unmarshalBSONQuestionByType[text.Email](b)
+	case types.QTypeTelephone:
+		value, err = unmarshalBSONQuestionByType[text.Telephone](b)
+	case types.QTypeInformation:
+		value, err = unmarshalBSONQuestionByType[text.InformationText](b)
+	case types.QTypeExternalQuestion:
+		value, err = unmarshalBSONQuestionByType[external.ExternalQuestion](b)
+	default:
+		return fmt.Errorf("invalid question type: %s", bq.QTyp)
+	}
+
+	if err != nil {
+		return errors.Join(fmt.Errorf("error unmarshalling question '%s'", bq.NameId), err)
+	}
+
+	*q = Question{
+		BaseQuestion: bq,
+		Value:        value,
+	}
+	return nil
+}
+
+// unmarshalJSONQuestionByType returns a question of a specific type.
+func unmarshalJSONQuestionByType[T any](b []byte) (*Question, error) {
 	// build a temporary struct with the base question and the value of the specific type
 	var tq = struct {
 		BaseQuestion
@@ -104,4 +146,20 @@ func getQuestionByType[T any](b []byte) (*Question, error) {
 		BaseQuestion: tq.BaseQuestion,
 		Value:        tq.Value,
 	}, nil
+}
+
+func unmarshalBSONQuestionByType[T any](b []byte) (*T, error) {
+	var tq = struct {
+		Value *T `bson:"value"`
+	}{}
+
+	if err := bson.Unmarshal(b, &tq); err != nil {
+		return nil, err
+	}
+
+	if tq.Value == nil {
+		return nil, fmt.Errorf("value is not defined")
+	}
+
+	return tq.Value, nil
 }

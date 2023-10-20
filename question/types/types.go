@@ -3,6 +3,8 @@ package types
 import (
 	"encoding/json"
 	"fmt"
+	"go.mongodb.org/mongo-driver/bson/bsontype"
+	"go.mongodb.org/mongo-driver/x/bsonx/bsoncore"
 )
 
 // QBase is a struct that contains common fields for all types of questions.
@@ -11,7 +13,7 @@ type QBase struct {
 	// Validations:
 	// - optional
 	// - min length: 1
-	Placeholder *string `json:"placeholder" bson:"placeholder" validate:"omitempty,min=1"`
+	Placeholder *string `json:"placeholder,omitempty" bson:"placeholder,omitempty" validate:"omitempty,min=1"`
 }
 
 // QuestionType represents the different types of questions that can exist in a survey.
@@ -74,6 +76,25 @@ func (s *QuestionType) UnmarshalJSON(b []byte) error {
 	if err != nil {
 		return fmt.Errorf("parse error, %s", err)
 	}
+	*s = t
+	return nil
+}
+
+func (s *QuestionType) UnmarshalBSONValue(typ bsontype.Type, raw []byte) error {
+	if typ != bsontype.String {
+		return fmt.Errorf("invalid bson value type '%s'", typ.String())
+	}
+
+	c, _, ok := bsoncore.ReadString(raw)
+	if !ok {
+		return fmt.Errorf("invalid bson value '%s'", string(raw))
+	}
+
+	t, err := ParseToQuestionType(c)
+	if err != nil {
+		return fmt.Errorf("parse error, %s", err)
+	}
+
 	*s = t
 	return nil
 }

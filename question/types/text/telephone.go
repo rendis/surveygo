@@ -8,13 +8,13 @@ import (
 // Telephone represents a telephone question type.
 // QuestionType: types.QTypeTelephone
 type Telephone struct {
-	types.QBase
+	types.QBase `bson:",inline"`
 
 	// AllowedCountryCodes list of allowed country codes for the telephone field.
 	// Validations:
 	// - optional
 	// - if defined, each country code must have a length of at least 1
-	AllowedCountryCodes []string `json:"allowedCountryCodes" bson:"allowedCountryCodes" validate:"omitempty,dive,min=1"`
+	AllowedCountryCodes []string `json:"allowedCountryCodes,omitempty" bson:"allowedCountryCodes,omitempty" validate:"omitempty,dive,min=1"`
 }
 
 // CastToTelephone casts the given interface to a Telephone type.

@@ -12,19 +12,19 @@ import (
 // - types.QTypeRadio
 // - types.QTypeCheckbox
 type Choice struct {
-	types.QBase
+	types.QBase `bson:",inline"`
 
 	// Defaults is the list of default values for the choice field.
 	// Validations:
 	// - optional
-	Defaults []string `json:"defaults" bson:"defaults" validate:"omitempty"`
+	Defaults []string `json:"defaults,omitempty" bson:"defaults,omitempty" validate:"omitempty"`
 
 	// Options is a list of options for the choice field.
 	// Validations:
 	// - required
 	// - at least one option
 	// - each option must be valid
-	Options []Option `json:"options" bson:"options" validate:"required,min=1,dive"`
+	Options []Option `json:"options,omitempty" bson:"options,omitempty" validate:"required,min=1,dive"`
 }
 
 // Option represents a single option in a choice widget.
@@ -33,18 +33,18 @@ type Option struct {
 	// Validations:
 	// - required
 	// - valid name id
-	NameId string `json:"nameId" bson:"nameId" validate:"required,validNameId"`
+	NameId string `json:"nameId,omitempty" bson:"nameId,omitempty" validate:"required,validNameId"`
 
 	// Label is a label for the option.
 	// Validations:
 	// - required
 	// - min length: 1
-	Label string `json:"label" bson:"label" validate:"required,min=1"`
+	Label string `json:"label,omitempty" bson:"label,omitempty" validate:"required,min=1"`
 
 	// GroupsIds is a list of group ids that are associated with this option.
 	// Validations:
 	// - optional
-	GroupsIds []string `json:"groupsIds" bson:"groupsIds" validate:"omitempty"`
+	GroupsIds []string `json:"groupsIds,omitempty" bson:"groupsIds,omitempty" validate:"omitempty"`
 }
 
 // GetOptionsGroups returns a map with each option and its associated groups.

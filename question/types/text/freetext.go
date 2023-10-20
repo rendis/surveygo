@@ -10,7 +10,7 @@ import (
 // - types.QTypeInputText
 // - types.QTypeTextArea
 type FreeText struct {
-	types.QBase
+	types.QBase `bson:",inline"`
 
 	// Min is an optional minimum length for the text area field.
 	// Validations:
@@ -18,7 +18,7 @@ type FreeText struct {
 	// - if defined:
 	//   * must be greater than or equal to 0
 	//   * if max is defined, must be less than to max
-	Min *int `json:"min" bson:"min" validate:"omitempty,min=0,ltfield=Max"`
+	Min *int `json:"min,omitempty" bson:"min,omitempty" validate:"omitempty,min=0,ltfield=Max"`
 
 	// Max is an optional maximum length for the text area field.
 	// Validations:
@@ -26,7 +26,7 @@ type FreeText struct {
 	// - if defined:
 	//   * must be greater than or equal to 0
 	//   * if min is defined, must be greater than to min
-	Max *int `json:"max" bson:"max" validate:"omitempty,min=0,gtfield=Min"`
+	Max *int `json:"max,omitempty" bson:"max,omitempty" validate:"omitempty,min=0,gtfield=Min"`
 }
 
 // CastToFreeText casts the given interface to a FreeText type.
