@@ -15,26 +15,34 @@ type InvalidAnswerError struct {
 	Error          string `json:"error,omitempty" bson:"error,omitempty"`
 }
 
-// SurveyResume contains the resume of a survey based on the answers provided.
-// All values are calculated based on the answers provided and over the visible components of the survey.
-type SurveyResume struct {
+type TotalsResume struct {
 	//----- Questions Totals -----//
-	// TotalQuestions number of questions in the survey
+	// TotalQuestions number of questions in the group
 	TotalQuestions int `json:"totalQuestions,omitempty" bson:"totalQuestions,omitempty"`
-	// TotalRequiredQuestions number of required questions in the survey
+	// TotalRequiredQuestions number of required questions in the group
 	TotalRequiredQuestions int `json:"totalRequiredQuestions,omitempty" bson:"totalRequiredQuestions,omitempty"`
 
 	//----- Answers Totals  -----//
-	// TotalQuestionsAnswered number of answered questions in the survey
+	// TotalQuestionsAnswered number of answered questions in the group
 	TotalQuestionsAnswered int `json:"totalQuestionsAnswered,omitempty" bson:"totalQuestionsAnswered,omitempty"`
-	// TotalRequiredQuestionsAnswered number of required questions answered in the survey
+	// TotalRequiredQuestionsAnswered number of required questions answered in the group
 	TotalRequiredQuestionsAnswered int `json:"totalRequiredQuestionsAnswered,omitempty" bson:"totalRequiredQuestionsAnswered,omitempty"`
 	// UnansweredQuestions map of unanswered questions, key is the nameId of the question, value is true if the question is required
 	UnansweredQuestions map[string]bool `json:"unansweredQuestions,omitempty" bson:"unansweredQuestions,omitempty"`
+}
+
+// SurveyResume contains the resume of a survey based on the answers provided.
+// All values are calculated based on the answers provided and over the visible components of the survey.
+type SurveyResume struct {
+	TotalsResume `json:",inline" bson:",inline"`
 
 	//----- Others Totals -----//
 	// ExternalSurveyIds map of external survey ids. Key: GroupNameId, Value: ExternalSurveyId
 	ExternalSurveyIds map[string]string `json:"externalSurveyIds,omitempty" bson:"externalSurveyIds,omitempty"`
+
+	//----- Groups -----//
+	// GroupsResume map of groups resume. Key: GroupNameId, Value: GroupResume
+	GroupsResume map[string]*TotalsResume `json:"groupsResume,omitempty" bson:"groupsResume,omitempty"`
 
 	//----- Errors -----//
 	// InvalidAnswers list of invalid answers
@@ -108,41 +116,45 @@ func (s *Survey) ReviewAnswers(ans Answers) (*SurveyResume, error) {
 // getSurveyResume returns the resume of the survey based on the answers provided.
 func (s *Survey) getSurveyResume(ans Answers) *SurveyResume {
 	var resume = &SurveyResume{
-		UnansweredQuestions: map[string]bool{},
-		ExternalSurveyIds:   map[string]string{},
+		TotalsResume: TotalsResume{
+			UnansweredQuestions: make(map[string]bool),
+		},
+		GroupsResume:      make(map[string]*TotalsResume),
+		ExternalSurveyIds: make(map[string]string),
 	}
 
-	questionWithGroup := s.getQuestionFromGroups()
+	questionWithGroup := s.getVisibleQuestionFromVisibleGroups()
 
-	for _, q := range s.Questions {
-		// skip invisible questions
-		if !q.Visible {
-			continue
-		}
+	for qId, gId := range questionWithGroup {
+		q := s.Questions[qId]
 
-		// skip questions in invisible groups
-		if groupNameId, ok := questionWithGroup[q.NameId]; ok {
-			g := s.Groups[groupNameId]
-			if !g.Visible {
-				continue
+		// init group resume if not exists
+		if _, ok := resume.GroupsResume[gId]; !ok {
+			resume.GroupsResume[gId] = &TotalsResume{
+				UnansweredQuestions: map[string]bool{},
 			}
 		}
 
 		// update totals
 		resume.TotalQuestions++
+		resume.GroupsResume[gId].TotalQuestions++
 		if q.Required {
 			resume.TotalRequiredQuestions++
+			resume.GroupsResume[gId].TotalRequiredQuestions++
 		}
 
 		// update answers
 		if _, ok := ans[q.NameId]; ok {
 			resume.TotalQuestionsAnswered++
+			resume.GroupsResume[gId].TotalQuestionsAnswered++
 			if q.Required {
 				resume.TotalRequiredQuestionsAnswered++
+				resume.GroupsResume[gId].TotalRequiredQuestionsAnswered++
 			}
 			continue
 		}
 		resume.UnansweredQuestions[q.NameId] = q.Required
+		resume.GroupsResume[gId].UnansweredQuestions[q.NameId] = q.Required
 	}
 
 	// update external survey ids
@@ -155,12 +167,19 @@ func (s *Survey) getSurveyResume(ans Answers) *SurveyResume {
 	return resume
 }
 
-// getQuestionFromGroups returns a maps with the questions and groups information.
-func (s *Survey) getQuestionFromGroups() map[string]string {
+// getVisibleQuestionFromVisibleGroups returns a maps with the visible questions within its visible groups nameId.
+func (s *Survey) getVisibleQuestionFromVisibleGroups() map[string]string {
 	var questionWithGroup = map[string]string{}
 	for _, g := range s.Groups {
+		// skip invisible group
+		if !g.Visible {
+			continue
+		}
 		for _, q := range g.QuestionsIds {
-			questionWithGroup[q] = g.NameId
+			// get only visible question
+			if s.Questions[q].Visible {
+				questionWithGroup[q] = g.NameId
+			}
 		}
 	}
 	return questionWithGroup

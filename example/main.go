@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/rendis/surveygo/v2"
 	"log"
@@ -80,5 +81,12 @@ func main() {
 		log.Fatalf("Error checking survey: %v", err)
 	}
 
-	fmt.Printf("\nResume: %+v\n", resume)
+	// resume to json
+	var surveyResumeJson []byte
+	surveyResumeJson, err = json.Marshal(resume)
+	if err != nil {
+		log.Fatalf("Error marshaling survey resume: %v", err)
+	}
+
+	fmt.Printf("\nSurvey Resume: %s\n", surveyResumeJson)
 }
