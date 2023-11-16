@@ -42,6 +42,48 @@ func (s *Survey) AddQuestionBytes(qb []byte) error {
 	return s.AddQuestion(q)
 }
 
+// AddOrUpdateQuestion adds a question to the survey if it does not exist, or updates it if it does.
+// It also validates the question and checks if the question is consistent with the survey.
+func (s *Survey) AddOrUpdateQuestion(q *question.Question) error {
+	if q == nil {
+		return errors.New("question is nil")
+	}
+
+	// check if question already exists
+	if _, ok := s.Questions[q.NameId]; ok {
+		return s.UpdateQuestion(q)
+	}
+
+	return s.AddQuestion(q)
+}
+
+// AddOrUpdateQuestionMap adds a question to the survey if it does not exist, or updates it if it does.
+// It also validates the question and checks if the question is consistent with the survey.
+func (s *Survey) AddOrUpdateQuestionMap(qm map[string]any) error {
+	b, _ := json.Marshal(qm)
+	return s.AddOrUpdateQuestionBytes(b)
+}
+
+// AddOrUpdateQuestionJson adds a question to the survey if it does not exist, or updates it if it does.
+// It also validates the question and checks if the question is consistent with the survey.
+func (s *Survey) AddOrUpdateQuestionJson(qs string) error {
+	return s.AddOrUpdateQuestionBytes([]byte(qs))
+}
+
+// AddOrUpdateQuestionBytes adds a question to the survey if it does not exist, or updates it if it does.
+// It also validates the question and checks if the question is consistent with the survey.
+func (s *Survey) AddOrUpdateQuestionBytes(qb []byte) error {
+	// unmarshal question
+	var q = &question.Question{}
+	err := json.Unmarshal(qb, q)
+	if err != nil {
+		return err
+	}
+
+	// add question to survey
+	return s.AddOrUpdateQuestion(q)
+}
+
 // UpdateQuestion updates an existing question in the survey.
 // It also validates the question and checks if the question is consistent with the survey.
 func (s *Survey) UpdateQuestion(uq *question.Question) error {
