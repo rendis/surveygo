@@ -5,6 +5,6 @@ import (
 )
 
 // ReviewExternal validates the answers for the given external type.
-func ReviewExternal(_ any, _ []string, _ types.QuestionType) error {
+func ReviewExternal(_ any, _ []any, _ types.QuestionType) error {
 	return nil
 }

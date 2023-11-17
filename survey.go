@@ -6,7 +6,7 @@ import (
 
 // Answers is a map with the answers provided by the user.
 // The key is the question NameId (Question.NameId).
-type Answers map[string][]string
+type Answers map[string][]any
 
 // Survey is a struct representation of a survey.
 type Survey struct {

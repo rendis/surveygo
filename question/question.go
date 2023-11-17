@@ -64,8 +64,10 @@ func (q *Question) UnmarshalJSON(b []byte) error {
 
 	// unmarshal the question based on its type
 	switch bq.QTyp {
-	case types.QTypeSingleSelect, types.QTypeMultipleSelect, types.QTypeRadio, types.QTypeCheckbox:
+	case types.QTypeSingleSelect, types.QTypeMultipleSelect, types.QTypeRadio, types.QTypeCheckbox, types.QTypeToggle:
 		realQuestion, err = unmarshalJSONQuestionByType[choice.Choice](b)
+	case types.QTypeSlider:
+		realQuestion, err = unmarshalJSONQuestionByType[choice.Slider](b)
 	case types.QTypeTextArea, types.QTypeInputText:
 		realQuestion, err = unmarshalJSONQuestionByType[text.FreeText](b)
 	case types.QTypeEmail:
@@ -108,8 +110,10 @@ func (q *Question) UnmarshalBSONValue(typ bsontype.Type, b []byte) error {
 
 	// unmarshal the question based on its type
 	switch bq.QTyp {
-	case types.QTypeSingleSelect, types.QTypeMultipleSelect, types.QTypeRadio, types.QTypeCheckbox:
+	case types.QTypeSingleSelect, types.QTypeMultipleSelect, types.QTypeRadio, types.QTypeCheckbox, types.QTypeToggle:
 		value, err = unmarshalBSONQuestionByType[choice.Choice](b)
+	case types.QTypeSlider:
+		value, err = unmarshalBSONQuestionByType[choice.Slider](b)
 	case types.QTypeTextArea, types.QTypeInputText:
 		value, err = unmarshalBSONQuestionByType[text.FreeText](b)
 	case types.QTypeEmail:

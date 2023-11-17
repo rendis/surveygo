@@ -14,15 +14,44 @@ type QBase struct {
 	// - optional
 	// - min length: 1
 	Placeholder *string `json:"placeholder,omitempty" bson:"placeholder,omitempty" validate:"omitempty,min=1"`
+
+	// Metadata is a map of key-value pairs that can be used to store additional information about the question.
+	// Validations:
+	// - optional
+	Metadata map[string]string `json:"metadata,omitempty" bson:"metadata,omitempty" validate:"omitempty"`
+
+	// Collapsible is a flag that indicates if the question is collapsible.
+	// Validations:
+	// - optional
+	Collapsible *bool `json:"collapsible,omitempty" bson:"collapsible,omitempty"`
+
+	// Collapsed is a flag that indicates if the question is collapsed.
+	// Validations:
+	// - optional
+	Collapsed *bool `json:"collapsed,omitempty" bson:"collapsed,omitempty"`
+
+	// Color is the color of the question.
+	// Validations:
+	// - optional
+	// - min length: 1
+	Color *string `json:"color,omitempty" bson:"color,omitempty" validate:"omitempty,min=1"`
 }
 
 // QuestionType represents the different types of questions that can exist in a survey.
 type QuestionType string
 
-// Any new type, depending on the type of question, should be added to the following:
-// - QTypeChoiceTypes if type is a choice type
-// - QTypeTextTypes if type is a text type
-// - QTypeAssetTypes if type is an asset type
+// Any new type, depending on the type of question, should be added to the following maps:
+// - Maps:
+//   - QTypeChoiceTypes if type is a choice type
+//   - QTypeTextTypes if type is a text type
+//   - QTypeAssetTypes if type is an asset type
+//
+// - Add to serde functions:
+//   - question.UnmarshalJSON
+//   - question.UnmarshalBSONValue
+//
+// - Add reviewer function to reviewer.GetQuestionReviewer
+//
 // if the new type cant be added to either of the above, then:
 // - add new types below
 // - create a new map of QuestionType and add the new types to it (e.g. QTypeChoiceTypes or QTypeTextTypes)
@@ -46,6 +75,12 @@ const (
 
 	// QTypeCheckbox represents a checkbox field type
 	QTypeCheckbox = "checkbox"
+
+	// QTypeToggle represents a toggle field type
+	QTypeToggle = "toggle"
+
+	// QTypeSlider represents a slider field type
+	QTypeSlider = "slider"
 
 	//------ Text types ------//
 
@@ -132,6 +167,8 @@ var QTypeChoiceTypes = map[QuestionType]bool{
 	QTypeMultipleSelect: true,
 	QTypeRadio:          true,
 	QTypeCheckbox:       true,
+	QTypeToggle:         true,
+	QTypeSlider:         true,
 }
 
 // QTypeTextTypes groups all text types.

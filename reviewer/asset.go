@@ -5,6 +5,6 @@ import (
 )
 
 // ReviewAsset validates the answers for an asset type.
-func ReviewAsset(_ any, _ []string, _ types.QuestionType) error {
+func ReviewAsset(_ any, _ []any, _ types.QuestionType) error {
 	return nil
 }
