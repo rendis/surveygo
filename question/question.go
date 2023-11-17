@@ -34,7 +34,7 @@ type BaseQuestion struct {
 	// Validations:
 	// - required
 	// - min length: 1
-	Label string `json:"label,omitempty" bson:"label,omitempty" validate:"required,min=1"`
+	Label string `json:"label,omitempty" bson:"label,omitempty" validate:"omitempty,min=1"`
 
 	// Required indicates whether the question is required. Defaults to false.
 	Required bool `json:"required,omitempty" bson:"required,omitempty"`
