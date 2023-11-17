@@ -110,6 +110,38 @@ func (s *Survey) UpdateGroupBytes(ug []byte) error {
 	return s.checkConsistency()
 }
 
+// AddOrUpdateGroup adds or updates a group in the survey given its representation as a map.
+// It also validates the group and checks if the group is consistent with the survey.
+func (s *Survey) AddOrUpdateGroup(g map[string]any) error {
+	b, _ := json.Marshal(g)
+	return s.AddOrUpdateGroupBytes(b)
+}
+
+// AddOrUpdateGroupJson adds or updates a group in the survey given its representation as a JSON string.
+// It also validates the group and checks if the group is consistent with the survey.
+func (s *Survey) AddOrUpdateGroupJson(g string) error {
+	return s.AddOrUpdateGroupBytes([]byte(g))
+}
+
+// AddOrUpdateGroupBytes adds or updates a group in the survey given its representation as a byte array.
+// It also validates the group and checks if the group is consistent with the survey.
+func (s *Survey) AddOrUpdateGroupBytes(g []byte) error {
+	// unmarshal group
+	var pg *question.Group
+	err := json.Unmarshal(g, pg)
+	if err != nil {
+		return err
+	}
+
+	// check if group already exists
+	if _, ok := s.Groups[pg.NameId]; ok {
+		return s.UpdateGroupBytes(g)
+	}
+
+	// add group to survey
+	return s.addGroup(pg)
+}
+
 // RemoveGroup removes a group from the survey given its nameId.
 // It also validates the group and checks if the group is consistent with the survey.
 func (s *Survey) RemoveGroup(groupNameId string) error {
