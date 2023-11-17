@@ -38,6 +38,34 @@ func (s *Survey) UpdateGroupsOrder(order []string) error {
 	return s.checkConsistency()
 }
 
+// EnableGroup enables a group in the survey.
+func (s *Survey) EnableGroup(groupNameId string) error {
+	// check if group exists
+	if _, ok := s.Groups[groupNameId]; !ok {
+		return fmt.Errorf("group '%s' not found", groupNameId)
+	}
+
+	// enable group
+	s.Groups[groupNameId].Disabled = false
+
+	// check consistency
+	return s.checkConsistency()
+}
+
+// DisableGroup disables a group in the survey.
+func (s *Survey) DisableGroup(groupNameId string) error {
+	// check if group exists
+	if _, ok := s.Groups[groupNameId]; !ok {
+		return fmt.Errorf("group '%s' not found", groupNameId)
+	}
+
+	// disable group
+	s.Groups[groupNameId].Disabled = true
+
+	// check consistency
+	return s.checkConsistency()
+}
+
 // AddGroup adds a group to the survey.
 // It also validates the group and checks if the group is consistent with the survey.
 func (s *Survey) AddGroup(g *question.Group) error {
@@ -102,7 +130,8 @@ func (s *Survey) UpdateGroupBytes(ug []byte) error {
 	// update group
 	group.Title = pg.Title
 	group.Description = pg.Description
-	group.Visible = pg.Visible
+	group.Hidden = pg.Hidden
+	group.Disabled = pg.Disabled
 	group.IsExternalSurvey = pg.IsExternalSurvey
 	group.QuestionsIds = pg.QuestionsIds
 

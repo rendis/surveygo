@@ -207,22 +207,19 @@
       "nameId": "grp-general",
       "title": "General Questions",
       "isExternalSurvey": false,
-      "questionsIds": ["logo", "event_rating", "favorite_game", "would_attend_again", "improvement_areas"],
-      "visible": true
+      "questionsIds": ["logo", "event_rating", "favorite_game", "would_attend_again", "improvement_areas"]
     },
     "grp-feedback": {
       "nameId": "grp-feedback",
       "title": "Feedback",
       "isExternalSurvey": false,
-      "questionsIds": ["feedback", "name", "email"],
-      "visible": true
+      "questionsIds": ["feedback", "name", "email"]
     },
     "grp_event_rating_opinion": {
       "nameId": "grp_event_rating_opinion",
       "title": "Event Rating Opinion",
       "isExternalSurvey": false,
-      "questionsIds": ["event_rating_improvement_opinion"],
-      "visible": true
+      "questionsIds": ["event_rating_improvement_opinion"]
     }
   },
 

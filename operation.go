@@ -123,7 +123,7 @@ func (s *Survey) getSurveyResume(ans Answers) *SurveyResume {
 		ExternalSurveyIds: make(map[string]string),
 	}
 
-	questionWithGroup := s.getVisibleQuestionFromVisibleGroups()
+	questionWithGroup := s.getVisibleQuestionFromActiveGroups()
 
 	for qId, gId := range questionWithGroup {
 		q := s.Questions[qId]
@@ -167,12 +167,13 @@ func (s *Survey) getSurveyResume(ans Answers) *SurveyResume {
 	return resume
 }
 
-// getVisibleQuestionFromVisibleGroups returns a maps with the visible questions within its visible groups nameId.
-func (s *Survey) getVisibleQuestionFromVisibleGroups() map[string]string {
+// getVisibleQuestionFromActiveGroups returns a maps with the visible questions within its active groups nameId.
+// and active groups are the groups that are visible and enabled.
+func (s *Survey) getVisibleQuestionFromActiveGroups() map[string]string {
 	var questionWithGroup = map[string]string{}
 	for _, g := range s.Groups {
-		// skip invisible group
-		if !g.Visible {
+		// skip hidden && disabled groups
+		if g.Hidden || g.Disabled {
 			continue
 		}
 		for _, q := range g.QuestionsIds {

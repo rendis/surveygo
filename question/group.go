@@ -18,8 +18,15 @@ type Group struct {
 	// - optional
 	Description *string `json:"description,omitempty" bson:"description,omitempty" validate:"omitempty"`
 
-	// Visible is a flag that indicates if the group is visible.
-	Visible bool `json:"visible,omitempty" bson:"visible,omitempty"`
+	// Hidden is a flag that indicates if the group is hidden (Default: false).
+	// Validations:
+	// - optional
+	Hidden bool `json:"hidden,omitempty" bson:"hidden,omitempty" validate:"omitempty"`
+
+	// Disabled is a flag that indicates if the group is disabled (Default: false).
+	// Validations:
+	// - optional
+	Disabled bool `json:"disabled,omitempty" bson:"disabled,omitempty" validate:"omitempty"`
 
 	// IsExternalSurvey is a flag that indicates if the group is an external survey.
 	// When a group is an external survey, it means that:
