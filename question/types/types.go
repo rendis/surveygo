@@ -22,10 +22,15 @@ type QuestionType string
 // Any new type, depending on the type of question, should be added to the following:
 // - QTypeChoiceTypes if type is a choice type
 // - QTypeTextTypes if type is a text type
+// - QTypeAssetTypes if type is an asset type
 // if the new type cant be added to either of the above, then:
-// - create a new slice of QuestionType and add the new type to it
-// - append the new slice to AllQuestionTypes
+// - add new types below
+// - create a new map of QuestionType and add the new types to it (e.g. QTypeChoiceTypes or QTypeTextTypes)
+// - create new struct for the new type (e.g. choice.Choice)
+// - add new map to ParseToQuestionType function
 // - add a new function to check if the new type is of the new slice (e.g. IsChoiceType or IsTextType)
+// - add reviewer function for the new type in reviewer.GetQuestionReviewer function
+// - add news struct to the switch case in question.UnmarshalJSON and question.UnmarshalBSONValue functions
 // - update this comment to include the new type :)
 const (
 	//------ Choice types ------//
@@ -58,6 +63,20 @@ const (
 
 	// QTypeInformation represents an information field type
 	QTypeInformation = "information"
+
+	//------ Asset types ------//
+
+	// QTypeImage represents an image field type
+	QTypeImage = "image"
+
+	// QTypeVideo represents a video field type
+	QTypeVideo = "video"
+
+	// QTypeAudio represents an audio field type
+	QTypeAudio = "audio"
+
+	// QTypeDocument represents a document field type
+	QTypeDocument = "document"
 
 	//------ External types ------//
 
@@ -129,6 +148,14 @@ var QTypeExternalQuestions = map[QuestionType]bool{
 	QTypeExternalQuestion: true,
 }
 
+// QTypeAssetTypes groups all asset types.
+var QTypeAssetTypes = map[QuestionType]bool{
+	QTypeImage:    true,
+	QTypeVideo:    true,
+	QTypeAudio:    true,
+	QTypeDocument: true,
+}
+
 // IsChoiceType returns true if the question type is a choice type, false otherwise.
 func IsChoiceType(qt QuestionType) bool {
 	return QTypeChoiceTypes[qt]
@@ -144,9 +171,15 @@ func IsExternalType(qt QuestionType) bool {
 	return QTypeExternalQuestions[qt]
 }
 
+// IsAssetType returns true if the question type is an asset type, false otherwise.
+func IsAssetType(qt QuestionType) bool {
+	return QTypeAssetTypes[qt]
+}
+
 // ParseToQuestionType takes a string and returns the corresponding QuestionType, or an error if the string is invalid.
 func ParseToQuestionType(v string) (QuestionType, error) {
 	tmpQT := QuestionType(v)
+
 	if _, ok := QTypeChoiceTypes[tmpQT]; ok {
 		return tmpQT, nil
 	}
@@ -156,6 +189,10 @@ func ParseToQuestionType(v string) (QuestionType, error) {
 	}
 
 	if _, ok := QTypeExternalQuestions[tmpQT]; ok {
+		return tmpQT, nil
+	}
+
+	if _, ok := QTypeAssetTypes[tmpQT]; ok {
 		return tmpQT, nil
 	}
 

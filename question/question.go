@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/rendis/surveygo/v2/question/types"
+	"github.com/rendis/surveygo/v2/question/types/asset"
 	"github.com/rendis/surveygo/v2/question/types/choice"
 	"github.com/rendis/surveygo/v2/question/types/external"
 	"github.com/rendis/surveygo/v2/question/types/text"
@@ -75,6 +76,14 @@ func (q *Question) UnmarshalJSON(b []byte) error {
 		realQuestion, err = unmarshalJSONQuestionByType[text.InformationText](b)
 	case types.QTypeExternalQuestion:
 		realQuestion, err = unmarshalJSONQuestionByType[external.ExternalQuestion](b)
+	case types.QTypeImage:
+		realQuestion, err = unmarshalJSONQuestionByType[asset.ImageAsset](b)
+	case types.QTypeVideo:
+		realQuestion, err = unmarshalJSONQuestionByType[asset.VideoAsset](b)
+	case types.QTypeAudio:
+		realQuestion, err = unmarshalJSONQuestionByType[asset.AudioAsset](b)
+	case types.QTypeDocument:
+		realQuestion, err = unmarshalJSONQuestionByType[asset.DocumentAsset](b)
 	default:
 		return fmt.Errorf("invalid question type: %s", bq.QTyp)
 	}
@@ -111,6 +120,14 @@ func (q *Question) UnmarshalBSONValue(typ bsontype.Type, b []byte) error {
 		value, err = unmarshalBSONQuestionByType[text.InformationText](b)
 	case types.QTypeExternalQuestion:
 		value, err = unmarshalBSONQuestionByType[external.ExternalQuestion](b)
+	case types.QTypeImage:
+		value, err = unmarshalBSONQuestionByType[asset.ImageAsset](b)
+	case types.QTypeVideo:
+		value, err = unmarshalBSONQuestionByType[asset.VideoAsset](b)
+	case types.QTypeAudio:
+		value, err = unmarshalBSONQuestionByType[asset.AudioAsset](b)
+	case types.QTypeDocument:
+		value, err = unmarshalBSONQuestionByType[asset.DocumentAsset](b)
 	default:
 		return fmt.Errorf("invalid question type: %s", bq.QTyp)
 	}

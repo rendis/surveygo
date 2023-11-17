@@ -181,6 +181,24 @@
         "value": {
             "placeholder": "Type your phone number"
         }
+    },
+
+    "logo": {
+      "nameId": "logo",
+      "visible": true,
+      "type": "image",
+      "label": "Upload your logo",
+      "required": true,
+      "value": {
+        "altText": "Logo",
+        "tags": ["logo", "image"],
+        "metadata": {
+          "width": 100,
+          "height": 100
+        },
+        "maxSize": 1000000,
+        "allowedContentTypes": ["image/*"]
+      }
     }
   },
 
@@ -189,7 +207,7 @@
       "nameId": "grp-general",
       "title": "General Questions",
       "isExternalSurvey": false,
-      "questionsIds": ["event_rating", "favorite_game", "would_attend_again", "improvement_areas"],
+      "questionsIds": ["logo", "event_rating", "favorite_game", "would_attend_again", "improvement_areas"],
       "visible": true
     },
     "grp-feedback": {

@@ -21,7 +21,7 @@ var textAnswerReviewers = map[types.QuestionType]func(question any, answer strin
 }
 
 // ReviewText validates format of the answers for the given text type.
-func ReviewText(questionValue any, answers []any, qt types.QuestionType) error {
+func ReviewText(questionValue any, answers []string, qt types.QuestionType) error {
 	if len(answers) != 1 {
 		return fmt.Errorf("text type can only have one answer. got: %v", answers)
 	}
@@ -30,7 +30,7 @@ func ReviewText(questionValue any, answers []any, qt types.QuestionType) error {
 	if !ok {
 		return fmt.Errorf("invalid text type '%s'. supported types: %v", qt, types.QTypeChoiceTypes)
 	}
-	return validator(questionValue, answers[0].(string))
+	return validator(questionValue, answers[0])
 }
 
 // reviewFreeText validates the answers for a text type.
@@ -91,6 +91,6 @@ func reviewTelephone(questionValue any, answer string) error {
 	return nil
 }
 
-func dummyReview(questionValue any, answer string) error {
+func dummyReview(_ any, _ string) error {
 	return nil
 }

@@ -13,6 +13,7 @@
     - [Choice](#choice)
     - [Text](#text)
     - [External Question](#external-question)
+    - [Asset](#asset)
 4. [Functions](#functions)
     - [operation.go](#operationgo)
     - [operation_de_serializers.go](#operation_de_serializersgo)
@@ -141,6 +142,65 @@ Used to create an external questions.
 - `externalType`: Type of the external question. (Required)
 - `description`: Description of the external question. (Optional)
 - `src`: Source of the external question. (Optional)
+
+### Asset
+
+The `Asset` category includes question types designed to handle various types of multimedia assets such as images, videos, audios, and documents. These types allow the incorporation and management of multimedia content in surveys.
+
+#### Types of Assets
+
+- `image`: For images.
+- `video`: For videos.
+- `audio`: For audio files.
+- `document`: For documents.
+
+#### ImageAsset
+
+Represents an image type question.
+
+**Fields**
+
+- `AltText`: Alternative text for improving accessibility. (Optional, max 255 characters)
+- `Tags`: Keywords associated with the image. (Optional)
+- `Metadata`: A map of key/value pairs for storing additional information. (Optional)
+- `MaxSize`: Maximum allowed file size in bytes. (Optional, must be a positive number)
+- `AllowedContentTypes`: List of permitted content types (e.g., "image/png", "image/jpeg"). (Optional)
+
+#### VideoAsset
+
+Represents a video type question.
+
+**Fields**
+
+- `Caption`: Description or additional information about the video. (Optional, max 255 characters)
+- `MaxSize`: Maximum allowed file size in bytes. (Optional, must be a positive number)
+- `Tags`: Keywords associated with the video. (Optional)
+- `Metadata`: A map of key/value pairs for storing additional information. (Optional)
+- `AllowedContentTypes`: List of permitted content types (e.g., "video/mp4", "video/ogg"). (Optional)
+
+#### AudioAsset
+
+Represents an audio type question.
+
+**Fields**
+
+- `Caption`: Description or additional information about the audio. (Optional, max 255 characters)
+- `MaxSize`: Maximum allowed file size in bytes. (Optional, must be a positive number)
+- `Tags`: Keywords associated with the audio. (Optional)
+- `Metadata`: A map of key/value pairs for storing additional information. (Optional)
+- `AllowedContentTypes`: List of permitted content types (e.g., "audio/mpeg", "audio/wav"). (Optional)
+
+#### DocumentAsset
+
+Represents a document type question.
+
+**Fields**
+
+- `Caption`: Description or additional information about the document. (Optional, max 255 characters)
+- `MaxSize`: Maximum allowed file size in bytes. (Optional, must be a positive number)
+- `Tags`: Keywords associated with the document. (Optional)
+- `Metadata`: A map of key/value pairs for storing additional information. (Optional)
+- `AllowedContentTypes`: List of permitted content types (e.g., "application/pdf", "application/msword"). (Optional)
 
 ## Functions
 

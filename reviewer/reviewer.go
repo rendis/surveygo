@@ -6,7 +6,7 @@ import (
 )
 
 // QuestionReviewer defines the function signature for a question validator.
-type QuestionReviewer func(question any, answers []any, qt types.QuestionType) error
+type QuestionReviewer func(question any, answers []string, qt types.QuestionType) error
 
 // GetQuestionReviewer returns the QuestionReviewer for the given question type.
 func GetQuestionReviewer(qt types.QuestionType) (QuestionReviewer, error) {
@@ -17,6 +17,8 @@ func GetQuestionReviewer(qt types.QuestionType) (QuestionReviewer, error) {
 		return ReviewText, nil
 	case types.IsExternalType(qt):
 		return ReviewExternal, nil
+	case types.IsAssetType(qt):
+		return ReviewAsset, nil
 	}
 	return nil, fmt.Errorf("unknown question type: %s", qt)
 }

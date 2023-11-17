@@ -47,7 +47,7 @@ func main() {
 		panic(err)
 	}
 
-	ans := map[string][]any{
+	ans := map[string][]string{
 		"event_rating":       {"good"},
 		"favorite_game":      {"zombie_apocalypse"},
 		"would_attend_again": {"would_attend_again_yes"},
@@ -72,7 +72,7 @@ func main() {
 	}
 
 	// add new answer
-	ans["favourite_game_song"] = []any{"song_cyberworld_2078"}
+	ans["favourite_game_song"] = []string{"song_cyberworld_2078"}
 
 	// review answers
 	resume, err = s.ReviewAnswers(ans)
