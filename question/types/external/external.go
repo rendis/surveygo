@@ -13,10 +13,7 @@ type ExternalQuestion struct {
 	// - optional
 	Defaults []string `json:"defaults,omitempty" bson:"defaults,omitempty" validate:"omitempty"`
 
-	// QuestionType is the type of the external question.
-	QuestionType types.QuestionType `json:"questionType,omitempty" bson:"questionType,omitempty" validate:"required,questionType"`
-
-	// ExternalType is the type of the external source.
+	// ExternalType is the type of the external question field
 	// Validations:
 	// - required
 	// - min length: 1
