@@ -127,7 +127,7 @@ func (s *Survey) AddOrUpdateGroupJson(g string) error {
 // It also validates the group and checks if the group is consistent with the survey.
 func (s *Survey) AddOrUpdateGroupBytes(g []byte) error {
 	// unmarshal group
-	var pg *question.Group
+	var pg = new(question.Group)
 	err := json.Unmarshal(g, pg)
 	if err != nil {
 		return err
