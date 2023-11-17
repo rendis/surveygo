@@ -110,9 +110,9 @@ func (s *Survey) UpdateGroupBytes(ug []byte) error {
 	return s.checkConsistency()
 }
 
-// AddOrUpdateGroup adds or updates a group in the survey given its representation as a map.
+// AddOrUpdateGroupMap adds or updates a group in the survey given its representation as a map.
 // It also validates the group and checks if the group is consistent with the survey.
-func (s *Survey) AddOrUpdateGroup(g map[string]any) error {
+func (s *Survey) AddOrUpdateGroupMap(g map[string]any) error {
 	b, _ := json.Marshal(g)
 	return s.AddOrUpdateGroupBytes(b)
 }
