@@ -3,6 +3,7 @@ package surveygo
 import (
 	"errors"
 	"fmt"
+	"github.com/rendis/devtoolkit"
 	"github.com/rendis/surveygo/v2/question"
 	"github.com/rendis/surveygo/v2/question/types"
 	"github.com/rendis/surveygo/v2/question/types/choice"
@@ -42,11 +43,17 @@ type SurveyResume struct {
 
 	//----- Groups -----//
 	// GroupsResume map of groups resume. Key: GroupNameId, Value: GroupResume
-	GroupsResume map[string]*TotalsResume `json:"groupsResume,omitempty" bson:"groupsResume,omitempty"`
+	GroupsResume map[string]*GroupTotalsResume `json:"groupsResume,omitempty" bson:"groupsResume,omitempty"`
 
 	//----- Errors -----//
 	// InvalidAnswers list of invalid answers
-	InvalidAnswers []InvalidAnswerError `json:"invalidAnswers,omitempty" bson:"invalidAnswers,omitempty"`
+	InvalidAnswers []*InvalidAnswerError `json:"invalidAnswers,omitempty" bson:"invalidAnswers,omitempty"`
+}
+
+// GroupTotalsResume contains the resume of a group based on the answers provided.
+type GroupTotalsResume struct {
+	TotalsResume `json:",inline" bson:",inline"`
+	AnswerGroups int `json:"answersGroups,omitempty" bson:"answersGroups,omitempty"`
 }
 
 // NewSurvey creates a new Survey instance with the given title, version, and description.
@@ -84,77 +91,151 @@ func (s *Survey) ValidateSurvey() error {
 //   - value: if the question is required or not
 //   - error: if an error occurred
 func (s *Survey) ReviewAnswers(ans Answers) (*SurveyResume, error) {
-	var invalidAnswers []InvalidAnswerError
+	var invalidAnswers []*InvalidAnswerError
+
+	var correctAnswersCount = make(map[string]int)
+	var groupsCount = make(map[string]int)
 
 	for nameId, values := range ans {
-		q, ok := s.Questions[nameId]
-
-		if !ok {
+		// if nameId is a question
+		if s.Questions[nameId] != nil {
+			if invalid := s.reviewQuestion(nameId, values, correctAnswersCount); invalid != nil {
+				invalidAnswers = append(invalidAnswers, invalid)
+			}
 			continue
 		}
 
-		checker, err := reviewer.GetQuestionReviewer(q.QTyp)
-		if err != nil {
-			return nil, err
+		// if nameId is a group
+		if s.Groups[nameId] != nil {
+			if invalids := s.reviewGroup(nameId, values, correctAnswersCount, groupsCount); len(invalids) > 0 {
+				invalidAnswers = append(invalidAnswers, invalids...)
+			}
+			continue
 		}
 
-		if err = checker(q.Value, values, q.QTyp); err != nil {
-			invalidAnswers = append(invalidAnswers, InvalidAnswerError{
-				QuestionNameId: nameId,
-				Answer:         values,
-				Error:          err.Error(),
-			})
+		// if nameId is not a question or a group
+		invalidAnswers = append(invalidAnswers, &InvalidAnswerError{
+			QuestionNameId: nameId,
+			Answer:         values,
+			Error:          fmt.Sprintf("question '%s' not found", nameId),
+		})
+	}
+
+	if len(invalidAnswers) > 0 {
+		return &SurveyResume{InvalidAnswers: invalidAnswers}, nil
+	}
+
+	return s.getSurveyResume(correctAnswersCount, groupsCount), nil
+}
+
+// reviewQuestion verifies if the answer provided is valid for the given question.
+func (s *Survey) reviewQuestion(questionNameID string, answers []any, correctAnswersCount map[string]int) *InvalidAnswerError {
+	q := s.Questions[questionNameID]
+	reviewerFn, err := reviewer.GetQuestionReviewer(q.QTyp)
+	if err != nil {
+		return &InvalidAnswerError{
+			QuestionNameId: questionNameID,
+			Answer:         answers,
+			Error:          err.Error(),
 		}
 	}
 
-	resume := s.getSurveyResume(ans)
-	resume.InvalidAnswers = invalidAnswers
+	if err = reviewerFn(q.Value, answers, q.QTyp); err != nil {
+		return &InvalidAnswerError{
+			QuestionNameId: questionNameID,
+			Answer:         answers,
+			Error:          err.Error(),
+		}
+	}
 
-	return resume, nil
+	// update correct answers count
+	correctAnswersCount[questionNameID]++
+	return nil
+}
+
+// reviewGroup verifies if the answers provided are valid for the given group.
+func (s *Survey) reviewGroup(groupNameID string, nestedAnswers []any, correctAnswersCount map[string]int, groupsCount map[string]int) []*InvalidAnswerError {
+	groupAnswers, err := reviewer.ExtractGroupNestedAnswers(nestedAnswers)
+	if err != nil {
+		return []*InvalidAnswerError{{
+			QuestionNameId: groupNameID,
+			Answer:         nestedAnswers,
+			Error:          err.Error(),
+		}}
+	}
+	var invalidAnswers []*InvalidAnswerError
+
+	if err != nil {
+		invalidAnswers = append(invalidAnswers, &InvalidAnswerError{
+			QuestionNameId: groupNameID,
+			Answer:         nestedAnswers,
+			Error:          err.Error(),
+		})
+		return invalidAnswers
+	}
+
+	for _, groupedAnswers := range groupAnswers {
+		for questionNameID, answers := range groupedAnswers {
+			if invalid := s.reviewQuestion(questionNameID, answers, correctAnswersCount); invalid != nil {
+				invalidAnswers = append(invalidAnswers, invalid)
+			}
+		}
+	}
+
+	// update correct answers count
+	groupsCount[groupNameID] += len(groupAnswers)
+	return invalidAnswers
 }
 
 // getSurveyResume returns the resume of the survey based on the answers provided.
-func (s *Survey) getSurveyResume(ans Answers) *SurveyResume {
+func (s *Survey) getSurveyResume(correctAnswersCount map[string]int, groupsCount map[string]int) *SurveyResume {
 	var resume = &SurveyResume{
 		TotalsResume: TotalsResume{
 			UnansweredQuestions: make(map[string]bool),
 		},
-		GroupsResume:      make(map[string]*TotalsResume),
+		GroupsResume:      make(map[string]*GroupTotalsResume),
 		ExternalSurveyIds: make(map[string]string),
 	}
 
-	questionWithGroup := s.getVisibleQuestionFromActiveGroups()
+	visibleQuestionWithGroup := s.getVisibleQuestionFromActiveGroups()
 
-	for qId, gId := range questionWithGroup {
-		q := s.Questions[qId]
+	for questionId, groupId := range visibleQuestionWithGroup {
+		q := s.Questions[questionId]
 
 		// init group resume if not exists
-		if _, ok := resume.GroupsResume[gId]; !ok {
-			resume.GroupsResume[gId] = &TotalsResume{
-				UnansweredQuestions: map[string]bool{},
+		if _, ok := resume.GroupsResume[groupId]; !ok {
+			resume.GroupsResume[groupId] = &GroupTotalsResume{
+				TotalsResume: TotalsResume{
+					UnansweredQuestions: map[string]bool{},
+				},
+				AnswerGroups: groupsCount[groupId],
 			}
 		}
 
+		questionResponsesCount := correctAnswersCount[questionId]
+		questionOccurrenceCount := devtoolkit.IfThenElse(groupsCount[groupId] == 0, 1, groupsCount[groupId])
+
 		// update totals
-		resume.TotalQuestions++
-		resume.GroupsResume[gId].TotalQuestions++
+		resume.TotalQuestions += questionOccurrenceCount
+		resume.GroupsResume[groupId].TotalQuestions += questionOccurrenceCount
 		if q.Required {
-			resume.TotalRequiredQuestions++
-			resume.GroupsResume[gId].TotalRequiredQuestions++
+			resume.TotalRequiredQuestions += questionOccurrenceCount
+			resume.GroupsResume[groupId].TotalRequiredQuestions += questionOccurrenceCount
 		}
 
 		// update answers
-		if _, ok := ans[q.NameId]; ok {
-			resume.TotalQuestionsAnswered++
-			resume.GroupsResume[gId].TotalQuestionsAnswered++
-			if q.Required {
-				resume.TotalRequiredQuestionsAnswered++
-				resume.GroupsResume[gId].TotalRequiredQuestionsAnswered++
-			}
-			continue
+		resume.TotalQuestionsAnswered += questionResponsesCount
+		resume.GroupsResume[groupId].TotalQuestionsAnswered += questionResponsesCount
+		if q.Required {
+			resume.TotalRequiredQuestionsAnswered += questionResponsesCount
+			resume.GroupsResume[groupId].TotalRequiredQuestionsAnswered += questionResponsesCount
 		}
-		resume.UnansweredQuestions[q.NameId] = q.Required
-		resume.GroupsResume[gId].UnansweredQuestions[q.NameId] = q.Required
+
+		// update unanswered questions
+		if questionResponsesCount == 0 {
+			resume.UnansweredQuestions[q.NameId] = q.Required
+			resume.GroupsResume[groupId].UnansweredQuestions[q.NameId] = q.Required
+		}
 	}
 
 	// update external survey ids
@@ -171,15 +252,15 @@ func (s *Survey) getSurveyResume(ans Answers) *SurveyResume {
 // and active groups are the groups that are visible and enabled.
 func (s *Survey) getVisibleQuestionFromActiveGroups() map[string]string {
 	var questionWithGroup = map[string]string{}
-	for _, g := range s.Groups {
+	for _, group := range s.Groups {
 		// skip hidden && disabled groups
-		if g.Hidden || g.Disabled {
+		if group.Hidden || group.Disabled {
 			continue
 		}
-		for _, q := range g.QuestionsIds {
+		for _, questionNameId := range group.QuestionsIds {
 			// get only visible question
-			if s.Questions[q].Visible {
-				questionWithGroup[q] = g.NameId
+			if s.Questions[questionNameId].Visible {
+				questionWithGroup[questionNameId] = group.NameId
 			}
 		}
 	}

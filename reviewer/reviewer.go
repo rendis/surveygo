@@ -8,6 +8,11 @@ import (
 // QuestionReviewer defines the function signature for a question validator.
 type QuestionReviewer func(question any, answers []any, qt types.QuestionType) error
 
+// GroupAnswers is a map with the answers provided by the user.
+// Each item is a group of answers for the different questions in the group.
+// The key is the question NameId (Question.NameId).
+type GroupAnswers []map[string][]any
+
 // GetQuestionReviewer returns the QuestionReviewer for the given question type.
 func GetQuestionReviewer(qt types.QuestionType) (QuestionReviewer, error) {
 	switch {
@@ -21,4 +26,26 @@ func GetQuestionReviewer(qt types.QuestionType) (QuestionReviewer, error) {
 		return ReviewAsset, nil
 	}
 	return nil, fmt.Errorf("unknown question type: %s", qt)
+}
+
+// ExtractGroupNestedAnswers extracts the nested answers
+func ExtractGroupNestedAnswers(groupAnswersPack []any) (GroupAnswers, error) {
+	if len(groupAnswersPack) == 0 {
+		return nil, nil
+	}
+
+	var resp = make(GroupAnswers, 0)
+
+	for _, p := range groupAnswersPack {
+		answersPack, ok := p.([]map[string][]any)
+		if !ok {
+			return nil, fmt.Errorf("invalid answersPack answer type '%T' at index '%d', expected '[]map[string][]any'", p, len(resp))
+		}
+
+		for _, answers := range answersPack {
+			resp = append(resp, answers)
+		}
+	}
+
+	return resp, nil
 }
