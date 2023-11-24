@@ -47,6 +47,11 @@ type Group struct {
 	// 	- each id must be valid:
 	//		* length must be greater than 0
 	QuestionsIds []string `json:"questionsIds,omitempty" bson:"questionsIds,omitempty" validate:"required,dive,min=1"`
+
+	// Metadata is a map with additional metadata for the group.
+	// Validations:
+	// - optional
+	Metadata map[string]any `json:"metadata,omitempty" bson:"metadata,omitempty" validate:"omitempty"`
 }
 
 // RemoveQuestionId removes the question with the specified name ID from the group.
