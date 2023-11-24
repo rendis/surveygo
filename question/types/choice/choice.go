@@ -11,7 +11,6 @@ import (
 // - types.QTypeMultipleSelect
 // - types.QTypeRadio
 // - types.QTypeCheckbox
-// - types.QTypeToggle
 type Choice struct {
 	types.QBase `bson:",inline"`
 

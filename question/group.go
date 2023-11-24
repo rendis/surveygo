@@ -36,10 +36,15 @@ type Group struct {
 	// - validIfExternalSurvey
 	IsExternalSurvey bool `json:"isExternalSurvey,omitempty" bson:"isExternalSurvey,omitempty" validate:"validIfExternalSurvey"`
 
-	// QuestionsIds is a list of question ids that are associated with this group.
+	// AllowRepeat is a flag that indicates if the group can be repeated (Default: false).
+	// Validations:
+	// - optional
+	AllowRepeat bool `json:"allowRepeat,omitempty" bson:"allowRepeat,omitempty" validate:"omitempty"`
+
+	// QuestionsIds is a list of question ids that are associated with this group or the external survey id.
 	// Validations:
 	//	- required
-	// 	- each question id must be valid:
+	// 	- each id must be valid:
 	//		* length must be greater than 0
 	QuestionsIds []string `json:"questionsIds,omitempty" bson:"questionsIds,omitempty" validate:"required,dive,min=1"`
 }
