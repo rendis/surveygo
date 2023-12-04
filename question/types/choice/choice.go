@@ -33,7 +33,7 @@ type Option struct {
 	// Validations:
 	// - required
 	// - valid name id
-	NameId string `json:"nameId,omitempty" bson:"nameId,omitempty" validate:"required,validNameId"`
+	NameId string `json:"nameId" bson:"nameId" validate:"required,validNameId"`
 
 	// Label is a label for the option.
 	// Validations:

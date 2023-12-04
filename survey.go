@@ -10,6 +10,12 @@ type Answers map[string][]any
 
 // Survey is a struct representation of a survey.
 type Survey struct {
+	// NameId is the identifier of the survey.
+	// Validations:
+	// - required
+	// - valid name id
+	NameId string `json:"nameId" bson:"nameId" validate:"required,validNameId"`
+
 	// Title is the title of the survey.
 	// Validations:
 	//	- required

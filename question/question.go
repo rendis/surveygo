@@ -19,7 +19,7 @@ type BaseQuestion struct {
 	// Validations:
 	// - required
 	// - valid name id
-	NameId string `json:"nameId,omitempty" bson:"nameId,omitempty" validate:"required,validNameId"`
+	NameId string `json:"nameId" bson:"nameId" validate:"required,validNameId"`
 
 	// Visible is a flag that indicates if the question is visible.
 	Visible bool `json:"visible,omitempty" bson:"visible,omitempty"`
