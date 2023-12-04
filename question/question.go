@@ -38,6 +38,11 @@ type BaseQuestion struct {
 
 	// Required indicates whether the question is required. Defaults to false.
 	Required bool `json:"required,omitempty" bson:"required,omitempty"`
+
+	// Metadata is a map of key-value pairs that can be used to store additional information about the question.
+	// Validations:
+	// - optional
+	Metadata map[string]string `json:"metadata,omitempty" bson:"metadata,omitempty" validate:"omitempty"`
 }
 
 // Question is a struct that represents a question in a survey.
