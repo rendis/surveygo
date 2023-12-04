@@ -41,6 +41,12 @@ type Option struct {
 	// - min length: 1
 	Label string `json:"label,omitempty" bson:"label,omitempty" validate:"required,min=1"`
 
+	// Value is the value of the option.
+	// Validations:
+	// - optional
+	// - min length: 1
+	Value any `json:"value,omitempty" bson:"value,omitempty" validate:"omitempty,min=1"`
+
 	// GroupsIds is a list of group ids that are associated with this option.
 	// Validations:
 	// - optional
