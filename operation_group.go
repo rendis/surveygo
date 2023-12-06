@@ -31,11 +31,23 @@ func (s *Survey) UpdateGroupsOrder(order []string) error {
 		groups[id] = true
 	}
 
+	// check if there are errors
+	if len(errs) > 0 {
+		return errors.Join(errs...)
+	}
+
 	// update groups order
 	s.GroupsOrder = order
 
 	// check consistency
-	return s.checkConsistency()
+	if err := s.checkConsistency(); err != nil {
+		return err
+	}
+
+	// update positions
+	s.positionUpdater()
+
+	return nil
 }
 
 // EnableGroup enables a group in the survey.
@@ -69,7 +81,14 @@ func (s *Survey) DisableGroup(groupNameId string) error {
 // AddGroup adds a group to the survey.
 // It also validates the group and checks if the group is consistent with the survey.
 func (s *Survey) AddGroup(g *question.Group) error {
-	return s.addGroup(g)
+	if err := s.addGroup(g); err != nil {
+		return err
+	}
+
+	// update positions
+	s.positionUpdater()
+
+	return nil
 }
 
 // AddGroupMap adds a group to the survey given its representation as a map[string]any
@@ -96,7 +115,19 @@ func (s *Survey) AddGroupBytes(g []byte) error {
 	}
 
 	// add group to survey
-	return s.addGroup(pg)
+	return s.AddGroup(pg)
+}
+
+// UpdateGroup updates an existing group in the survey with the data provided.
+func (s *Survey) UpdateGroup(pg *question.Group) error {
+	if err := s.updateGroup(pg); err != nil {
+		return err
+	}
+
+	// update positions
+	s.positionUpdater()
+
+	return nil
 }
 
 // UpdateGroupMap updates an existing group in the survey with the data provided as a map.
@@ -122,21 +153,7 @@ func (s *Survey) UpdateGroupBytes(ug []byte) error {
 		return err
 	}
 
-	group, ok := s.Groups[pg.NameId]
-	if !ok {
-		return fmt.Errorf("group '%s' not found", pg.NameId)
-	}
-
-	// update group
-	group.Title = pg.Title
-	group.Description = pg.Description
-	group.Hidden = pg.Hidden
-	group.Disabled = pg.Disabled
-	group.IsExternalSurvey = pg.IsExternalSurvey
-	group.QuestionsIds = pg.QuestionsIds
-
-	// check consistency
-	return s.checkConsistency()
+	return s.UpdateGroup(pg)
 }
 
 // AddOrUpdateGroupMap adds or updates a group in the survey given its representation as a map.
@@ -164,11 +181,11 @@ func (s *Survey) AddOrUpdateGroupBytes(g []byte) error {
 
 	// check if group already exists
 	if _, ok := s.Groups[pg.NameId]; ok {
-		return s.UpdateGroupBytes(g)
+		return s.UpdateGroup(pg)
 	}
 
 	// add group to survey
-	return s.addGroup(pg)
+	return s.AddGroup(pg)
 }
 
 // RemoveGroup removes a group from the survey given its nameId.
@@ -201,7 +218,14 @@ func (s *Survey) RemoveGroup(groupNameId string) error {
 	delete(s.Groups, groupNameId)
 
 	// check consistency
-	return s.checkConsistency()
+	if err := s.checkConsistency(); err != nil {
+		return err
+	}
+
+	// update positions
+	s.positionUpdater()
+
+	return nil
 }
 
 // AddQuestionToGroup adds a question to a group in the survey.
@@ -225,7 +249,14 @@ func (s *Survey) AddQuestionToGroup(questionNameId, groupNameId string, position
 	s.Groups[groupNameId].AddQuestionId(questionNameId, position)
 
 	// check consistency
-	return s.checkConsistency()
+	if err := s.checkConsistency(); err != nil {
+		return err
+	}
+
+	// update positions
+	s.positionUpdater()
+
+	return nil
 }
 
 // RemoveQuestionFromGroup removes a question from a group in the survey.
@@ -248,7 +279,14 @@ func (s *Survey) RemoveQuestionFromGroup(questionNameId, groupNameId string) err
 	s.Groups[groupNameId].RemoveQuestionId(questionNameId)
 
 	// check consistency
-	return s.checkConsistency()
+	if err := s.checkConsistency(); err != nil {
+		return err
+	}
+
+	// update positions
+	s.positionUpdater()
+
+	return nil
 }
 
 // UpdateGroupQuestions updates the questions of a group in the survey.
@@ -273,7 +311,14 @@ func (s *Survey) UpdateGroupQuestions(groupNameId string, questionsIds []string)
 	s.Groups[groupNameId].QuestionsIds = questionsIds
 
 	// check consistency
-	return s.checkConsistency()
+	if err := s.checkConsistency(); err != nil {
+		return err
+	}
+
+	// update positions
+	s.positionUpdater()
+
+	return nil
 }
 
 // addGroup adds a group to the survey.
@@ -293,6 +338,26 @@ func (s *Survey) addGroup(pg *question.Group) error {
 
 	// add group to survey
 	s.Groups[pg.NameId] = pg
+
+	// check consistency
+	return s.checkConsistency()
+}
+
+// updateGroup updates an existing group in the survey with the data provided.
+// It also validates the group and checks if the group is consistent with the survey.
+func (s *Survey) updateGroup(pg *question.Group) error {
+	group, ok := s.Groups[pg.NameId]
+	if !ok {
+		return fmt.Errorf("group '%s' not found", pg.NameId)
+	}
+
+	// update group
+	group.Title = pg.Title
+	group.Description = pg.Description
+	group.Hidden = pg.Hidden
+	group.Disabled = pg.Disabled
+	group.IsExternalSurvey = pg.IsExternalSurvey
+	group.QuestionsIds = pg.QuestionsIds
 
 	// check consistency
 	return s.checkConsistency()

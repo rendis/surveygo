@@ -34,6 +34,9 @@ func ParseFromBytes(b []byte) (*Survey, error) {
 		return nil, err
 	}
 
+	// run position updater
+	survey.positionUpdater()
+
 	return survey, nil
 }
 

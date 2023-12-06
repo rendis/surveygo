@@ -12,7 +12,12 @@ import (
 // AddQuestion adds a question to the survey.
 // It also validates the question and checks if the question is consistent with the survey.
 func (s *Survey) AddQuestion(q *question.Question) error {
-	return s.addQuestion(q)
+	if err := s.addQuestion(q); err != nil {
+		return err
+	}
+
+	s.positionUpdater()
+	return nil
 }
 
 // AddQuestionMap adds a question to the survey given its representation as a map[string]any
@@ -104,7 +109,13 @@ func (s *Survey) UpdateQuestion(uq *question.Question) error {
 	q.Value = uq.Value
 
 	// check consistency
-	return s.checkConsistency()
+	if err := s.checkConsistency(); err != nil {
+		return err
+	}
+
+	// run position updater
+	s.positionUpdater()
+	return nil
 }
 
 // UpdateQuestionMap updates an existing question in the survey with the data provided as a map.
@@ -150,6 +161,8 @@ func (s *Survey) RemoveQuestion(questionNameId string) error {
 
 	// remove question from survey
 	delete(s.Questions, questionNameId)
+
+	s.positionUpdater()
 
 	return nil
 }

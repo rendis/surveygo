@@ -52,6 +52,13 @@ type Group struct {
 	// Validations:
 	// - optional
 	Metadata map[string]any `json:"metadata,omitempty" bson:"metadata,omitempty" validate:"omitempty"`
+
+	// Position is the position of the group in the survey.
+	// This field is calculated automatically by the system.
+	// Validations:
+	// - required
+	// - min: 1
+	Position int `json:"position,omitempty" bson:"position,omitempty" validate:"required,min=1"`
 }
 
 // RemoveQuestionId removes the question with the specified name ID from the group.

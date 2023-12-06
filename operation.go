@@ -361,3 +361,18 @@ func (s *Survey) checkConsistency() error {
 
 	return nil
 }
+
+// positionUpdater runs the position assignation for the survey.
+// It assigns a position to each question and group.
+func (s *Survey) positionUpdater() {
+	qPos := 1
+	gPos := 1
+	for _, g := range s.GroupsOrder {
+		s.Groups[g].Position = gPos
+		gPos++
+		for _, q := range s.Groups[g].QuestionsIds {
+			s.Questions[q].Position = qPos
+			qPos++
+		}
+	}
+}

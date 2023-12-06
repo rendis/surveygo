@@ -43,6 +43,13 @@ type BaseQuestion struct {
 	// Validations:
 	// - optional
 	Metadata map[string]string `json:"metadata,omitempty" bson:"metadata,omitempty" validate:"omitempty"`
+
+	// Position is the position of the question in the survey.
+	// This field is calculated automatically by the system.
+	// Validations:
+	// - required
+	// - min: 1
+	Position int `json:"position,omitempty" bson:"position,omitempty" validate:"required,min=1"`
 }
 
 // Question is a struct that represents a question in a survey.
