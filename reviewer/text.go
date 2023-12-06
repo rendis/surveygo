@@ -12,7 +12,7 @@ import (
 var emailRegex = regexp.MustCompile("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z]{2,})+$")
 
 // textAnswerReviewers is a map of text type to its review function.
-var textAnswerReviewers = map[types.QuestionType]func(question any, answer any) error{
+var textAnswerReviewers = map[types.QuestionType]func(question any, answer []any) error{
 	types.QTypeTextArea:    reviewFreeText,
 	types.QTypeInputText:   reviewFreeText,
 	types.QTypeEmail:       reviewEmail,
@@ -22,19 +22,20 @@ var textAnswerReviewers = map[types.QuestionType]func(question any, answer any) 
 
 // ReviewText validates format of the answers for the given text type.
 func ReviewText(questionValue any, answers []any, qt types.QuestionType) error {
-	if len(answers) != 1 {
-		return fmt.Errorf("text type can only have one answer. got: %v", answers)
-	}
-
 	validator, ok := textAnswerReviewers[qt]
 	if !ok {
 		return fmt.Errorf("invalid text type '%s'. supported types: %v", qt, types.QTypeChoiceTypes)
 	}
-	return validator(questionValue, answers[0])
+	return validator(questionValue, answers)
 }
 
 // reviewFreeText validates the answers for a text type.
-func reviewFreeText(questionValue any, answer any) error {
+func reviewFreeText(questionValue any, answers []any) error {
+	if len(answers) != 1 {
+		return fmt.Errorf("text type can only have one answer. got: %v", answers)
+	}
+
+	answer := answers[0]
 	freeText, _ := text.CastToFreeText(questionValue)
 
 	// cast answer to string
@@ -57,7 +58,12 @@ func reviewFreeText(questionValue any, answer any) error {
 }
 
 // reviewEmail validates the answers for an email type.
-func reviewEmail(questionValue any, answer any) error {
+func reviewEmail(questionValue any, answers []any) error {
+	if len(answers) != 1 {
+		return fmt.Errorf("text type can only have one answer. got: %v", answers)
+	}
+
+	answer := answers[0]
 	email, _ := text.CastToEmail(questionValue)
 
 	// cast answer to string
@@ -87,31 +93,37 @@ func reviewEmail(questionValue any, answer any) error {
 }
 
 // reviewTelephone validates the answers for a telephone type.
-func reviewTelephone(questionValue any, answer any) error {
+func reviewTelephone(questionValue any, answers []any) error {
+	if len(answers) == 0 || len(answers) > 2 {
+		return fmt.Errorf("text type can only have one [phone number] or two [country code, phone number] answers. got: %v", answers)
+	}
+
 	phone, _ := text.CastToTelephone(questionValue)
 
-	// cast answer to string
-	a, ok := answer.(string)
+	if len(phone.AllowedCountryCodes) == 0 {
+		return nil
+	}
+
+	countryCodeAnswer, ok := answers[0].(string)
 	if !ok {
-		return fmt.Errorf("answer is not a string. got: %v", answer)
-	}
-
-	a = strings.ReplaceAll(a, " ", "")
-	a = strings.ReplaceAll(a, "-", "")
-
-	// validate country code
-	if phone.AllowedCountryCodes != nil && len(phone.AllowedCountryCodes) > 0 {
-		for _, allowedCountryCode := range phone.AllowedCountryCodes {
-			if strings.HasPrefix(a, allowedCountryCode) {
-				return nil
-			}
+		// try to cast to int
+		countryCodeAnswerInt, ok := answers[0].(int)
+		if !ok {
+			return fmt.Errorf("answer country code must be a string or an int. got: %v", answers[0])
 		}
-		return fmt.Errorf("answer country code is not allowed. got '%s'", a)
+		countryCodeAnswer = fmt.Sprintf("%d", countryCodeAnswerInt)
 	}
 
-	return nil
+	// validate allowed country codes
+	for _, allowedCountryCode := range phone.AllowedCountryCodes {
+		if strings.HasPrefix(countryCodeAnswer, allowedCountryCode) {
+			return nil
+		}
+	}
+
+	return fmt.Errorf("answer country code is not allowed. got '%s'", countryCodeAnswer)
 }
 
-func dummyReview(_ any, _ any) error {
+func dummyReview(_ any, _ []any) error {
 	return nil
 }
