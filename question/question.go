@@ -42,7 +42,7 @@ type BaseQuestion struct {
 	// Metadata is a map of key-value pairs that can be used to store additional information about the question.
 	// Validations:
 	// - optional
-	Metadata map[string]string `json:"metadata,omitempty" bson:"metadata,omitempty" validate:"omitempty"`
+	Metadata map[string]any `json:"metadata,omitempty" bson:"metadata,omitempty" validate:"omitempty"`
 
 	// Position is the position of the question in the survey.
 	// This field is calculated automatically by the system.

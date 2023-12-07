@@ -18,7 +18,7 @@ type QBase struct {
 	// Metadata is a map of key-value pairs that can be used to store additional information about the question.
 	// Validations:
 	// - optional
-	Metadata map[string]string `json:"metadata,omitempty" bson:"metadata,omitempty" validate:"omitempty"`
+	Metadata map[string]any `json:"metadata,omitempty" bson:"metadata,omitempty" validate:"omitempty"`
 
 	// Collapsible is a flag that indicates if the question is collapsible.
 	// Validations:
