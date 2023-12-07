@@ -50,6 +50,9 @@ type BaseQuestion struct {
 	// - required
 	// - min: 1
 	Position int `json:"position,omitempty" bson:"position,omitempty" validate:"required,min=1"`
+
+	// Disabled indicates whether the question is disabled. Defaults to false.
+	Disabled bool `json:"disabled,omitempty" bson:"disabled,omitempty"`
 }
 
 // Question is a struct that represents a question in a survey.
