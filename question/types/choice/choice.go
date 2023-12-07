@@ -51,6 +51,11 @@ type Option struct {
 	// Validations:
 	// - optional
 	GroupsIds []string `json:"groupsIds,omitempty" bson:"groupsIds,omitempty" validate:"omitempty"`
+
+	// Metadata is a map of metadata for the option.
+	// Validations:
+	// - optional
+	Metadata map[string]string `json:"metadata,omitempty" bson:"metadata,omitempty" validate:"omitempty"`
 }
 
 // GetOptionsGroups returns a map with each option and its associated groups.
