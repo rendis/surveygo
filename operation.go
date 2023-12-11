@@ -259,7 +259,7 @@ func (s *Survey) getVisibleQuestionFromActiveGroups() map[string]string {
 		}
 		for _, questionNameId := range group.QuestionsIds {
 			// get only visible question
-			if s.Questions[questionNameId].Visible {
+			if q, ok := s.Questions[questionNameId]; ok && q.Visible {
 				questionWithGroup[questionNameId] = group.NameId
 			}
 		}
