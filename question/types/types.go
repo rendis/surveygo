@@ -35,6 +35,11 @@ type QBase struct {
 	// - optional
 	// - min length: 1
 	Color *string `json:"color,omitempty" bson:"color,omitempty" validate:"omitempty,min=1"`
+
+	// Defaults is the list of default values for the question.
+	// Validations:
+	// - optional
+	Defaults []string `json:"defaults,omitempty" bson:"defaults,omitempty" validate:"omitempty"`
 }
 
 // QuestionType represents the different types of questions that can exist in a survey.
@@ -98,6 +103,9 @@ const (
 
 	// QTypeInformation represents an information field type
 	QTypeInformation = "information"
+
+	// QTypeIdentificationNumber represents an identification number field type
+	QTypeIdentificationNumber = "identification_number"
 
 	//------ Asset types ------//
 
@@ -173,11 +181,12 @@ var QTypeChoiceTypes = map[QuestionType]bool{
 
 // QTypeTextTypes groups all text types.
 var QTypeTextTypes = map[QuestionType]bool{
-	QTypeTextArea:    true,
-	QTypeInputText:   true,
-	QTypeEmail:       true,
-	QTypeTelephone:   true,
-	QTypeInformation: true,
+	QTypeTextArea:             true,
+	QTypeInputText:            true,
+	QTypeEmail:                true,
+	QTypeTelephone:            true,
+	QTypeInformation:          true,
+	QTypeIdentificationNumber: true,
 }
 
 // QTypeExternalQuestions groups all external types.

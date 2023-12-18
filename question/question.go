@@ -49,7 +49,7 @@ type BaseQuestion struct {
 	// Validations:
 	// - required
 	// - min: 1
-	Position int `json:"position,omitempty" bson:"position,omitempty" validate:"required,min=1"`
+	Position int `json:"position,omitempty" bson:"position,omitempty" validate:"omitempty,min=1"`
 
 	// Disabled indicates whether the question is disabled. Defaults to false.
 	Disabled bool `json:"disabled,omitempty" bson:"disabled,omitempty"`
@@ -91,6 +91,8 @@ func (q *Question) UnmarshalJSON(b []byte) error {
 		realQuestion, err = unmarshalJSONQuestionByType[text.Telephone](b)
 	case types.QTypeInformation:
 		realQuestion, err = unmarshalJSONQuestionByType[text.InformationText](b)
+	case types.QTypeIdentificationNumber:
+		realQuestion, err = unmarshalJSONQuestionByType[text.IdentificationNumber](b)
 	case types.QTypeExternalQuestion:
 		realQuestion, err = unmarshalJSONQuestionByType[external.ExternalQuestion](b)
 	case types.QTypeImage:
@@ -137,6 +139,8 @@ func (q *Question) UnmarshalBSONValue(typ bsontype.Type, b []byte) error {
 		value, err = unmarshalBSONQuestionByType[text.Telephone](b)
 	case types.QTypeInformation:
 		value, err = unmarshalBSONQuestionByType[text.InformationText](b)
+	case types.QTypeIdentificationNumber:
+		value, err = unmarshalBSONQuestionByType[text.IdentificationNumber](b)
 	case types.QTypeExternalQuestion:
 		value, err = unmarshalBSONQuestionByType[external.ExternalQuestion](b)
 	case types.QTypeImage:

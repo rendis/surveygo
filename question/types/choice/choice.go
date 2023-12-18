@@ -14,11 +14,6 @@ import (
 type Choice struct {
 	types.QBase `bson:",inline"`
 
-	// Defaults is the list of default values for the choice field.
-	// Validations:
-	// - optional
-	Defaults []string `json:"defaults,omitempty" bson:"defaults,omitempty" validate:"omitempty"`
-
 	// Options is a list of options for the choice field.
 	// Validations:
 	// - required

@@ -13,11 +13,12 @@ var emailRegex = regexp.MustCompile("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-
 
 // textAnswerReviewers is a map of text type to its review function.
 var textAnswerReviewers = map[types.QuestionType]func(question any, answer []any) error{
-	types.QTypeTextArea:    reviewFreeText,
-	types.QTypeInputText:   reviewFreeText,
-	types.QTypeEmail:       reviewEmail,
-	types.QTypeTelephone:   reviewTelephone,
-	types.QTypeInformation: dummyReview,
+	types.QTypeTextArea:             reviewFreeText,
+	types.QTypeInputText:            reviewFreeText,
+	types.QTypeEmail:                reviewEmail,
+	types.QTypeTelephone:            reviewTelephone,
+	types.QTypeInformation:          dummyReview,
+	types.QTypeIdentificationNumber: dummyReview,
 }
 
 // ReviewText validates format of the answers for the given text type.

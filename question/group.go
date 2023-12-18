@@ -58,7 +58,7 @@ type Group struct {
 	// Validations:
 	// - required
 	// - min: 1
-	Position int `json:"position,omitempty" bson:"position,omitempty" validate:"required,min=1"`
+	Position int `json:"position,omitempty" bson:"position,omitempty" validate:"omitempty,min=1"`
 }
 
 // RemoveQuestionId removes the question with the specified name ID from the group.
