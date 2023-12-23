@@ -199,6 +199,19 @@
         "maxSize": 1000000,
         "allowedContentTypes": ["image/*"]
       }
+    },
+
+    "date_time": {
+      "nameId": "date_time",
+      "visible": true,
+      "type": "date_time",
+      "label": "Enter date and time",
+      "required": true,
+      "value": {
+        "placeholder": "Type date and time",
+        "type": "date",
+        "format": "2006-01-02"
+      }
     }
   },
 
@@ -219,7 +232,7 @@
       "nameId": "grp_event_rating_opinion",
       "title": "Event Rating Opinion",
       "isExternalSurvey": false,
-      "questionsIds": ["event_rating_improvement_opinion"]
+      "questionsIds": ["event_rating_improvement_opinion", "date_time"]
     }
   },
 

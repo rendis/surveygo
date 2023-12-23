@@ -6,6 +6,7 @@ import (
 	"github.com/rendis/surveygo/v2/question/types/text"
 	"regexp"
 	"strings"
+	"time"
 )
 
 // emailRegex is a regex to validate email.
@@ -17,6 +18,7 @@ var textAnswerReviewers = map[types.QuestionType]func(question any, answer []any
 	types.QTypeInputText:            reviewFreeText,
 	types.QTypeEmail:                reviewEmail,
 	types.QTypeTelephone:            reviewTelephone,
+	types.QTypeDateTime:             reviewDateTime,
 	types.QTypeInformation:          dummyReview,
 	types.QTypeIdentificationNumber: dummyReview,
 }
@@ -123,6 +125,29 @@ func reviewTelephone(questionValue any, answers []any) error {
 	}
 
 	return fmt.Errorf("answer country code is not allowed. got '%s'", countryCodeAnswer)
+}
+
+// reviewDateTime validates the answers for a date time type.
+func reviewDateTime(questionValue any, answers []any) error {
+	if len(answers) != 1 {
+		return fmt.Errorf("date time type can only have one answer. got: %v", answers)
+	}
+
+	answer, ok := answers[0].(string)
+	if !ok {
+		return fmt.Errorf("date time answer must be a string. got: %v", answers[0])
+	}
+
+	dateTime, _ := text.CastToDateTime(questionValue)
+
+	dateTimeFormat := dateTime.Format
+
+	// check if answer has the correct format
+	if _, err := time.Parse(dateTimeFormat, answer); err != nil {
+		return fmt.Errorf("answer is not a valid date time format '%s'. got: '%s'", dateTimeFormat, answer)
+	}
+
+	return nil
 }
 
 func dummyReview(_ any, _ []any) error {

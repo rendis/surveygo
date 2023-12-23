@@ -93,6 +93,8 @@ func (q *Question) UnmarshalJSON(b []byte) error {
 		realQuestion, err = unmarshalJSONQuestionByType[text.InformationText](b)
 	case types.QTypeIdentificationNumber:
 		realQuestion, err = unmarshalJSONQuestionByType[text.IdentificationNumber](b)
+	case types.QTypeDateTime:
+		realQuestion, err = unmarshalJSONQuestionByType[text.DateTime](b)
 	case types.QTypeExternalQuestion:
 		realQuestion, err = unmarshalJSONQuestionByType[external.ExternalQuestion](b)
 	case types.QTypeImage:
@@ -141,6 +143,8 @@ func (q *Question) UnmarshalBSONValue(typ bsontype.Type, b []byte) error {
 		value, err = unmarshalBSONQuestionByType[text.InformationText](b)
 	case types.QTypeIdentificationNumber:
 		value, err = unmarshalBSONQuestionByType[text.IdentificationNumber](b)
+	case types.QTypeDateTime:
+		value, err = unmarshalBSONQuestionByType[text.DateTime](b)
 	case types.QTypeExternalQuestion:
 		value, err = unmarshalBSONQuestionByType[external.ExternalQuestion](b)
 	case types.QTypeImage:

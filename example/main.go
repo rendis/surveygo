@@ -57,6 +57,7 @@ func main() {
 		"email":              {"john@example.com"},
 		"phone_codes":        {"+65"},
 		"phone-number":       {"12345678"},
+		"date_time":          {"2021-01-01"},
 	}
 
 	// review answers

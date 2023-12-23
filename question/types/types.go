@@ -107,6 +107,9 @@ const (
 	// QTypeIdentificationNumber represents an identification number field type
 	QTypeIdentificationNumber = "identification_number"
 
+	// QTypeDateTime represents a date time field type
+	QTypeDateTime = "date_time"
+
 	//------ Asset types ------//
 
 	// QTypeImage represents an image field type
@@ -187,6 +190,7 @@ var QTypeTextTypes = map[QuestionType]bool{
 	QTypeTelephone:            true,
 	QTypeInformation:          true,
 	QTypeIdentificationNumber: true,
+	QTypeDateTime:             true,
 }
 
 // QTypeExternalQuestions groups all external types.
