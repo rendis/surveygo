@@ -201,11 +201,11 @@
       }
     },
 
-    "date_time": {
-      "nameId": "date_time",
+    "birth_date": {
+      "nameId": "birth_date",
       "visible": true,
       "type": "date_time",
-      "label": "Enter date and time",
+      "label": "Enter your birth date",
       "required": true,
       "value": {
         "placeholder": "Type date and time",
@@ -232,7 +232,7 @@
       "nameId": "grp_event_rating_opinion",
       "title": "Event Rating Opinion",
       "isExternalSurvey": false,
-      "questionsIds": ["event_rating_improvement_opinion", "date_time"]
+      "questionsIds": ["event_rating_improvement_opinion", "birth_date"]
     }
   },
 
