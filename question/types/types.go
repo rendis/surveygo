@@ -173,13 +173,18 @@ func (s *QuestionType) MarshalJSON() ([]byte, error) {
 }
 
 // QTypeChoiceTypes groups all choice types.
-var QTypeChoiceTypes = map[QuestionType]bool{
+var QTypeChoiceTypes = joinMaps(QTypeSimpleChoiceTypes, QTypeComplexChoiceTypes)
+
+var QTypeSimpleChoiceTypes = map[QuestionType]bool{
 	QTypeSingleSelect:   true,
 	QTypeMultipleSelect: true,
 	QTypeRadio:          true,
 	QTypeCheckbox:       true,
-	QTypeToggle:         true,
-	QTypeSlider:         true,
+}
+
+var QTypeComplexChoiceTypes = map[QuestionType]bool{
+	QTypeToggle: true,
+	QTypeSlider: true,
 }
 
 // QTypeTextTypes groups all text types.
@@ -209,6 +214,16 @@ var QTypeAssetTypes = map[QuestionType]bool{
 // IsChoiceType returns true if the question type is a choice type, false otherwise.
 func IsChoiceType(qt QuestionType) bool {
 	return QTypeChoiceTypes[qt]
+}
+
+// IsSimpleChoiceType returns true if the question type is a simple choice type, false otherwise.
+func IsSimpleChoiceType(qt QuestionType) bool {
+	return QTypeSimpleChoiceTypes[qt]
+}
+
+// IsComplexChoiceType returns true if the question type is a complex choice type, false otherwise.
+func IsComplexChoiceType(qt QuestionType) bool {
+	return QTypeComplexChoiceTypes[qt]
 }
 
 // IsTextType returns true if the question type is a text type, false otherwise.
@@ -247,4 +262,14 @@ func ParseToQuestionType(v string) (QuestionType, error) {
 	}
 
 	return "", fmt.Errorf("invalid question type '%s'", v)
+}
+
+func joinMaps[T any](maps ...map[QuestionType]T) map[QuestionType]T {
+	res := make(map[QuestionType]T)
+	for _, m := range maps {
+		for k, v := range m {
+			res[k] = v
+		}
+	}
+	return res
 }

@@ -117,7 +117,7 @@ func (q *Question) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
-func (q *Question) UnmarshalBSONValue(typ bsontype.Type, b []byte) error {
+func (q *Question) UnmarshalBSONValue(_ bsontype.Type, b []byte) error {
 	var bq BaseQuestion
 
 	if err := bson.Unmarshal(b, &bq); err != nil {
