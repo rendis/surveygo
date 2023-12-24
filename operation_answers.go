@@ -83,7 +83,7 @@ func (s *Survey) TranslateAnswers(ans Answers) (Answers, error) {
 
 			var optionsMap = make(map[string]*choice.Option)
 			for _, option := range c.Options {
-				optionsMap[option.NameId] = option
+				optionsMap[option.NameId] = &option
 			}
 
 			for _, answer := range answers {

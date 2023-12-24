@@ -19,7 +19,7 @@ type Choice struct {
 	// - required
 	// - at least one option
 	// - each option must be valid
-	Options []*Option `json:"options,omitempty" bson:"options,omitempty" validate:"required,min=1,dive"`
+	Options []Option `json:"options,omitempty" bson:"options,omitempty" validate:"required,min=1,dive"`
 }
 
 // Option represents a single option in a choice widget.
