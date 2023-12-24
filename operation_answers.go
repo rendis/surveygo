@@ -75,15 +75,14 @@ func (s *Survey) TranslateAnswers(ans Answers) (Answers, error) {
 
 		// if simple choice type, the value is the value, if any, of the choice with the same nameID as the answer
 		if types.IsSimpleChoiceType(q.QTyp) {
-			translatedValues := make([]any, len(answers))
-			c, err := choice.CastToChoice(q)
+			c, err := choice.CastToChoice(q.Value)
 			if err != nil {
 				return nil, err
 			}
 
 			var optionsMap = make(map[string]*choice.Option)
 			for _, option := range c.Options {
-				optionsMap[option.NameId] = &option
+				optionsMap[option.NameId] = option
 			}
 
 			for _, answer := range answers {
@@ -98,14 +97,13 @@ func (s *Survey) TranslateAnswers(ans Answers) (Answers, error) {
 				}
 
 				// if the option has a value, use it, otherwise use the answered name id
-				if option.Value == nil {
+				if option.Value != nil {
 					res[nameId] = append(res[nameId], option.Value)
+					continue
 				}
 
 				res[nameId] = append(res[nameId], answeredNameId)
 			}
-
-			res[nameId] = translatedValues
 			continue
 		}
 
