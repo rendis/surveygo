@@ -58,12 +58,15 @@ func (s *Survey) ReviewAnswers(ans Answers) (*SurveyResume, error) {
 // Translations:
 // * text type: the value is the same passed in the answer
 // * simple choice type: the value is the value, if any, of the choice with the same nameID as the answer
-func (s *Survey) TranslateAnswers(ans Answers) (Answers, error) {
+func (s *Survey) TranslateAnswers(ans Answers, ignoreUnknownAnswers bool) (Answers, error) {
 	var res = make(Answers, len(ans))
 
 	for nameId, answers := range ans {
 		q, ok := s.Questions[nameId]
 		if !ok {
+			if ignoreUnknownAnswers {
+				continue
+			}
 			return nil, fmt.Errorf("question '%s' not found", nameId)
 		}
 
