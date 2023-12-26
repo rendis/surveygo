@@ -81,8 +81,11 @@ func (s *Survey) TranslateAnswers(ans Answers) (Answers, error) {
 			}
 
 			var optionsMap = make(map[string]*choice.Option)
+			var optionsValuesMap = make(map[any]*choice.Option)
+
 			for _, option := range c.Options {
 				optionsMap[option.NameId] = option
+				optionsValuesMap[option.Value] = option
 			}
 
 			for _, answer := range answers {
@@ -91,9 +94,14 @@ func (s *Survey) TranslateAnswers(ans Answers) (Answers, error) {
 					return nil, fmt.Errorf("invalid type, expected string, got '%T'", answer)
 				}
 
-				option, ok := optionsMap[answeredNameId]
+				var option *choice.Option
+				if option, ok = optionsMap[answeredNameId]; !ok {
+					// if the option is not found, try to find it in the options by value
+					option, ok = optionsValuesMap[answeredNameId]
+				}
+
 				if !ok {
-					return nil, fmt.Errorf("option '%s' not found", answeredNameId)
+					return nil, fmt.Errorf("option not found for question '%s' (searched by nameId and value '%s')", nameId, answeredNameId)
 				}
 
 				// if the option has a value, use it, otherwise use the answered name id
