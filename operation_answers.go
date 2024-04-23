@@ -123,6 +123,47 @@ func (s *Survey) TranslateAnswers(ans Answers, ignoreUnknownAnswers bool) (Answe
 	return res, nil
 }
 
+// GetDisabledQuestions returns a map with the name id of the disabled questions.
+// Questions are disabled:
+// * if the question is disabled
+// * if the group of the question is disabled
+func (s *Survey) GetDisabledQuestions() map[string]bool {
+	var disabledQuestions = make(map[string]bool)
+
+	for _, group := range s.Groups {
+		groupDisabled := group.Disabled
+		for _, questionNameId := range group.QuestionsIds {
+			if q, ok := s.Questions[questionNameId]; ok && (groupDisabled || q.Disabled) {
+				disabledQuestions[questionNameId] = true
+			}
+		}
+	}
+
+	return disabledQuestions
+}
+
+// GetEnabledQuestions returns a map with the name id of the enabled questions.
+// Questions are enabled:
+// * if the question is enabled and the group of the question is enabled
+func (s *Survey) GetEnabledQuestions() map[string]bool {
+	var enabledQuestions = make(map[string]bool)
+
+	for _, group := range s.Groups {
+		if group.Disabled {
+			continue
+		}
+
+		for _, questionNameId := range group.QuestionsIds {
+			if q, ok := s.Questions[questionNameId]; ok && !q.Disabled {
+				enabledQuestions[questionNameId] = true
+			}
+		}
+	}
+
+	return enabledQuestions
+
+}
+
 // reviewQuestion verifies if the answer provided is valid for the given question.
 func (s *Survey) reviewQuestion(questionNameID string, answers []any, correctAnswersCount map[string]int) *InvalidAnswerError {
 	q := s.Questions[questionNameID]
