@@ -8,7 +8,7 @@ import (
 // Telephone represents a telephone question type.
 // QuestionType: types.QTypeTelephone
 type Telephone struct {
-	types.QBase `bson:",inline"`
+	types.QBase `json:",inline" bson:",inline"`
 
 	// AllowedCountryCodes list of allowed country codes for the telephone field.
 	// Validations:

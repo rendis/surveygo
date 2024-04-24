@@ -12,7 +12,7 @@ import (
 // - types.QTypeRadio
 // - types.QTypeCheckbox
 type Choice struct {
-	types.QBase `bson:",inline"`
+	types.QBase `json:",inline" bson:",inline"`
 
 	// Options is a list of options for the choice field.
 	// Validations:

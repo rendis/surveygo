@@ -8,7 +8,7 @@ import (
 // Types:
 // - types.QTypeAudio
 type AudioAsset struct {
-	types.QBase `bson:",inline"`
+	types.QBase `json:",inline" bson:",inline"`
 
 	// Caption provides a description or additional information about the audio.
 	// Validations:

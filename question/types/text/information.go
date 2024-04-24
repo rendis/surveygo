@@ -8,7 +8,7 @@ import (
 // Types:
 // - types.QTypeInformation
 type InformationText struct {
-	types.QBase `bson:",inline"`
+	types.QBase `json:",inline" bson:",inline"`
 
 	// Text is the text to be displayed.
 	// Validations:

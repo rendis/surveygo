@@ -8,7 +8,7 @@ import (
 // Types:
 // - types.QTypeImage
 type ImageAsset struct {
-	types.QBase `bson:",inline"`
+	types.QBase `json:",inline" bson:",inline"`
 
 	// AltText provides alternative text for the image to improve accessibility.
 	// Validations:

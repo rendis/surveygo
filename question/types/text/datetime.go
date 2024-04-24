@@ -11,7 +11,7 @@ import (
 // DateTime represents a date time question type.
 // QuestionType: types.QTypeDateTime
 type DateTime struct {
-	types.QBase `bson:",inline"`
+	types.QBase `json:",inline" bson:",inline"`
 
 	// Format is the format of the date time field.
 	// Validations:

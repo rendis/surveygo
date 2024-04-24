@@ -6,7 +6,7 @@ import "github.com/rendis/surveygo/v2/question/types"
 // Types:
 // - types.QTypeExternalQuestion
 type ExternalQuestion struct {
-	types.QBase `bson:",inline"`
+	types.QBase `json:",inline" bson:",inline"`
 
 	// Defaults is the list of default values for the external question field.
 	// Validations:

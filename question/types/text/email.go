@@ -8,7 +8,7 @@ import (
 // Email represents an email question type.
 // QuestionType: types.QTypeEmail
 type Email struct {
-	types.QBase `bson:",inline"`
+	types.QBase `json:",inline" bson:",inline"`
 
 	// AllowedDomains list of allowed domains for the email field.
 	// Validations:

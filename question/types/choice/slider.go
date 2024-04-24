@@ -9,7 +9,7 @@ import (
 // Types:
 // - types.QTypeSlider
 type Slider struct {
-	types.QBase `bson:",inline"`
+	types.QBase `json:",inline" bson:",inline"`
 
 	// Min is the minimum value for the slider.
 	// Validations:

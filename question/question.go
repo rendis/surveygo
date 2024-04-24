@@ -58,7 +58,7 @@ type BaseQuestion struct {
 // Question is a struct that represents a question in a survey.
 type Question struct {
 	// BaseQuestion contains common fields for all types of questions.
-	BaseQuestion `bson:",inline"`
+	BaseQuestion `json:",inline" bson:",inline"`
 
 	// Value is the value of the question, which can be of different types depending on the type of question.
 	// Validations:

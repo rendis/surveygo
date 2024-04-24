@@ -7,5 +7,5 @@ import (
 // IdentificationNumber represents an identification number question type.
 // QuestionType: types.QTypeIdentificationNumber
 type IdentificationNumber struct {
-	types.QBase `bson:",inline"`
+	types.QBase `json:",inline" bson:",inline"`
 }

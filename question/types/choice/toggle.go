@@ -8,7 +8,7 @@ import (
 // Types:
 // - types.QTypeToggle
 type Toggle struct {
-	types.QBase `bson:",inline"`
+	types.QBase `json:",inline" bson:",inline"`
 
 	// Default is the default value for the toggle.
 	// Validations:

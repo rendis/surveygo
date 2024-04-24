@@ -10,7 +10,7 @@ import (
 // - types.QTypeInputText
 // - types.QTypeTextArea
 type FreeText struct {
-	types.QBase `bson:",inline"`
+	types.QBase `json:",inline" bson:",inline"`
 
 	// Min is an optional minimum length for the text area field.
 	// Validations:
