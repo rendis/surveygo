@@ -356,6 +356,7 @@ func (s *Survey) updateGroup(pg *question.Group) error {
 	group.Description = pg.Description
 	group.Hidden = pg.Hidden
 	group.Disabled = pg.Disabled
+	group.Metadata = pg.Metadata
 	group.IsExternalSurvey = pg.IsExternalSurvey
 	group.QuestionsIds = pg.QuestionsIds
 
