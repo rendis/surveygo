@@ -107,6 +107,8 @@ func (s *Survey) UpdateQuestion(uq *question.Question) error {
 	q.Label = uq.Label
 	q.Required = uq.Required
 	q.Value = uq.Value
+	q.Metadata = uq.Metadata
+	q.Disabled = uq.Disabled
 
 	// check consistency
 	if err := s.checkConsistency(); err != nil {
