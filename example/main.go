@@ -117,6 +117,8 @@ func main() {
 	}
 
 	var ans2Casted = make(map[string][]any)
+
+	// add grouped answers
 	for k, v := range ans2 {
 		ans2Casted[k] = []any{v}
 	}
@@ -128,13 +130,20 @@ func main() {
 
 	// review answers
 	resume3, err := s.ReviewAnswers(ans2Casted)
-
 	if resume3.InvalidAnswers != nil {
 		log.Print("Error checking survey for grouped answers")
 		for _, v := range resume3.InvalidAnswers {
 			fmt.Printf(" - Invalid answer: %s\n", v)
 		}
 	}
+
+	// translate answers
+	translation, err := s.TranslateAnswers(ans2Casted, false)
+	if err != nil {
+		log.Fatalf("Error translating survey: %v", err)
+	}
+
+	fmt.Printf("\nTranslated Answers: %+v\n", translation)
 
 	// resume to json
 	var surveyResumeJson []byte

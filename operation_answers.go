@@ -24,7 +24,7 @@ func (s *Survey) ReviewAnswers(ans Answers) (*SurveyResume, error) {
 
 	for nameId, values := range ans {
 		// if nameId is a question
-		if s.Questions[nameId] != nil {
+		if s.isQuestion(nameId) {
 			if invalid := s.reviewQuestion(nameId, values, correctAnswersCount); invalid != nil {
 				invalidAnswers = append(invalidAnswers, invalid)
 			}
@@ -32,7 +32,7 @@ func (s *Survey) ReviewAnswers(ans Answers) (*SurveyResume, error) {
 		}
 
 		// if nameId is a group
-		if s.Groups[nameId] != nil {
+		if s.isGroup(nameId) {
 			if invalids := s.reviewGroup(nameId, values, correctAnswersCount, groupsCount); len(invalids) > 0 {
 				invalidAnswers = append(invalidAnswers, invalids...)
 			}
@@ -62,62 +62,34 @@ func (s *Survey) TranslateAnswers(ans Answers, ignoreUnknownAnswers bool) (Answe
 	var res = make(Answers, len(ans))
 
 	for nameId, answers := range ans {
-		q, ok := s.Questions[nameId]
-		if !ok {
-			if ignoreUnknownAnswers {
-				continue
-			}
-			return nil, fmt.Errorf("question '%s' not found", nameId)
-		}
-
-		// if text type, the value is the same passed in the answer
-		if types.IsTextType(q.QTyp) {
-			res[nameId] = answers
-			continue
-		}
-
-		// if simple choice type, the value is the value, if any, of the choice with the same nameID as the answer
-		if types.IsSimpleChoiceType(q.QTyp) {
-			c, err := choice.CastToChoice(q.Value)
+		// if nameId is a question
+		if s.isQuestion(nameId) {
+			translations, err := s.translateAnswers(nameId, answers, ignoreUnknownAnswers)
 			if err != nil {
 				return nil, err
 			}
-
-			var optionsMap = make(map[string]*choice.Option)
-			var optionsValuesMap = make(map[any]*choice.Option)
-
-			for _, option := range c.Options {
-				optionsMap[option.NameId] = option
-				optionsValuesMap[option.Value] = option
-			}
-
-			for _, answer := range answers {
-				answeredNameId, ok := answer.(string)
-				if !ok {
-					return nil, fmt.Errorf("invalid type, expected string, got '%T'", answer)
-				}
-
-				var option *choice.Option
-				if option, ok = optionsMap[answeredNameId]; !ok {
-					// if the option is not found, try to find it in the options by value
-					option, ok = optionsValuesMap[answeredNameId]
-				}
-
-				if !ok {
-					return nil, fmt.Errorf("option not found for question '%s' (searched by nameId and value '%s')", nameId, answeredNameId)
-				}
-
-				// if the option has a value, use it, otherwise use the answered name id
-				if option.Value != nil {
-					res[nameId] = append(res[nameId], option.Value)
-					continue
-				}
-
-				res[nameId] = append(res[nameId], answeredNameId)
-			}
-			continue
+			res[nameId] = translations
 		}
 
+		// if nameId is a group
+		if s.isGroup(nameId) {
+			groupAnswers, err := reviewer.ExtractGroupNestedAnswers(answers)
+			if err != nil {
+				return nil, fmt.Errorf("invalid group answers for group '%s'. %s", nameId, err)
+			}
+
+			const groupQuestionTemplate = "group.%d.%s"
+			for i, groupAnswersPack := range groupAnswers {
+				for questionNameId, answersPack := range groupAnswersPack {
+					translations, err := s.translateAnswers(questionNameId, answersPack, ignoreUnknownAnswers)
+					if err != nil {
+						return nil, err
+					}
+					key := fmt.Sprintf(groupQuestionTemplate, i, questionNameId)
+					res[key] = translations
+				}
+			}
+		}
 	}
 
 	return res, nil
@@ -163,6 +135,74 @@ func (s *Survey) GetEnabledQuestions() map[string]bool {
 	return enabledQuestions
 
 }
+
+// translateAnswers translates the nameIDs of the answers to the values provided in each question (if any, otherwise the nameID is used).
+func (s *Survey) translateAnswers(nameId string, answers []any, ignoreUnknownAnswers bool) ([]any, error) {
+	if len(answers) == 0 {
+		return answers, nil
+	}
+
+	q, ok := s.Questions[nameId]
+	if !ok {
+		if ignoreUnknownAnswers {
+			return answers, nil
+		}
+		return nil, fmt.Errorf("question '%s' not found", nameId)
+	}
+
+	// if text type, the value is the same passed in the answer
+	if types.IsTextType(q.QTyp) {
+		return answers, nil
+	}
+
+	// if simple choice type the translation is the value
+	if types.IsSimpleChoiceType(q.QTyp) {
+		var res []any
+		c, err := choice.CastToChoice(q.Value)
+		if err != nil {
+			return nil, err
+		}
+
+		var optionsMap = make(map[string]*choice.Option)
+		var optionsValuesMap = make(map[any]*choice.Option)
+
+		for _, option := range c.Options {
+			optionsMap[option.NameId] = option
+			optionsValuesMap[option.Value] = option
+		}
+
+		for _, answer := range answers {
+			answeredNameId, ok := answer.(string)
+			if !ok {
+				return nil, fmt.Errorf("invalid type, expected string, got '%T'", answer)
+			}
+
+			var option *choice.Option
+			if option, ok = optionsMap[answeredNameId]; !ok {
+				// if the option is not found, try to find it in the options by value
+				option, ok = optionsValuesMap[answeredNameId]
+			}
+
+			if !ok {
+				return nil, fmt.Errorf("option not found for question '%s' (searched by nameId and value '%s')", nameId, answeredNameId)
+			}
+
+			// if the option has a value, use it, otherwise use the answered name id
+			if option.Value != nil {
+				res = append(res, option.Value)
+				continue
+			}
+
+			res = append(res, answeredNameId)
+		}
+
+		return res, nil
+	}
+
+	return answers, nil
+}
+
+func (s *Survey) translateGroupAnswers(groupNameID string) {}
 
 // reviewQuestion verifies if the answer provided is valid for the given question.
 func (s *Survey) reviewQuestion(questionNameID string, answers []any, correctAnswersCount map[string]int) *InvalidAnswerError {
@@ -293,4 +333,14 @@ func (s *Survey) getVisibleQuestionFromActiveGroups() map[string]string {
 		}
 	}
 	return questionWithGroup
+}
+
+func (s *Survey) isQuestion(nameId string) bool {
+	_, ok := s.Questions[nameId]
+	return ok
+}
+
+func (s *Survey) isGroup(nameId string) bool {
+	_, ok := s.Groups[nameId]
+	return ok
 }
