@@ -199,16 +199,8 @@ func (s *Survey) reviewGroup(groupNameID string, nestedAnswers []any, correctAns
 			Error:          err.Error(),
 		}}
 	}
-	var invalidAnswers []*InvalidAnswerError
 
-	if err != nil {
-		invalidAnswers = append(invalidAnswers, &InvalidAnswerError{
-			QuestionNameId: groupNameID,
-			Answer:         nestedAnswers,
-			Error:          err.Error(),
-		})
-		return invalidAnswers
-	}
+	var invalidAnswers []*InvalidAnswerError
 
 	for _, groupedAnswers := range groupAnswers {
 		for questionNameID, answers := range groupedAnswers {
