@@ -55,4 +55,7 @@ type Survey struct {
 	//	- required
 	//	- min length: 1
 	GroupsOrder []string `json:"groupsOrder,omitempty" bson:"groupsOrder,omitempty" validate:"required"`
+
+	// Metadata is a map with additional information about the survey.
+	Metadata map[string]any `json:"metadata,omitempty" bson:"metadata,omitempty" validate:"omitempty"`
 }
