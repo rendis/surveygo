@@ -8,6 +8,8 @@ import (
 	"github.com/rendis/surveygo/v2/reviewer"
 )
 
+const groupQuestionTemplate = "group.%d.%s"
+
 // ReviewAnswers verifies if the answers provided are valid for this survey.
 // Args:
 // * ans: the answers to check.
@@ -78,7 +80,6 @@ func (s *Survey) TranslateAnswers(ans Answers, ignoreUnknownAnswers bool) (Answe
 				return nil, fmt.Errorf("invalid group answers for group '%s'. %s", nameId, err)
 			}
 
-			const groupQuestionTemplate = "group.%d.%s"
 			for i, groupAnswersPack := range groupAnswers {
 				for questionNameId, answersPack := range groupAnswersPack {
 					translations, err := s.translateAnswers(questionNameId, answersPack, ignoreUnknownAnswers)
@@ -134,6 +135,45 @@ func (s *Survey) GetEnabledQuestions() map[string]bool {
 
 	return enabledQuestions
 
+}
+
+// GroupAnswersByType groups the answers by the type of the question.
+func (s *Survey) GroupAnswersByType(ans Answers) map[types.QuestionType]Answers {
+	var res = make(map[types.QuestionType]Answers)
+
+	for nameId, answers := range ans {
+		// if nameId is a question
+		if s.isQuestion(nameId) {
+			q := s.Questions[nameId]
+			if _, ok := res[q.QTyp]; !ok {
+				res[q.QTyp] = make(Answers)
+			}
+
+			res[q.QTyp][nameId] = answers
+		}
+
+		// if nameId is a group
+		if s.isGroup(nameId) {
+			groupAnswers, err := reviewer.ExtractGroupNestedAnswers(answers)
+			if err != nil {
+				continue
+			}
+
+			for _, groupAnswersPack := range groupAnswers {
+				for questionNameId, answersPack := range groupAnswersPack {
+					q := s.Questions[questionNameId]
+					if _, ok := res[q.QTyp]; !ok {
+						res[q.QTyp] = make(Answers)
+					}
+
+					key := fmt.Sprintf(groupQuestionTemplate, 0, questionNameId)
+					res[q.QTyp][key] = answersPack
+				}
+			}
+		}
+	}
+
+	return res
 }
 
 // translateAnswers translates the nameIDs of the answers to the values provided in each question (if any, otherwise the nameID is used).

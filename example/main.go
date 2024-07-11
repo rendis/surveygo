@@ -137,13 +137,17 @@ func main() {
 		}
 	}
 
-	// translate answers
+	// -------------  translate answers -------------- //
 	translation, err := s.TranslateAnswers(ans2Casted, false)
 	if err != nil {
 		log.Fatalf("Error translating survey: %v", err)
 	}
 
 	fmt.Printf("\nTranslated Answers: %+v\n", translation)
+
+	// -------------  group answers -------------- //
+	groupedAnswers := s.GroupAnswersByType(ans2Casted)
+	fmt.Printf("\nGrouped Answers: %+v\n", groupedAnswers)
 
 	// resume to json
 	var surveyResumeJson []byte
