@@ -43,10 +43,13 @@ type Group struct {
 
 	// QuestionsIds is a list of question ids that are associated with this group or the external survey id.
 	// Validations:
-	//	- required
-	// 	- each id must be valid:
-	//		* length must be greater than 0
-	QuestionsIds []string `json:"questionsIds,omitempty" bson:"questionsIds,omitempty" validate:"required,dive,min=1"`
+	//	- optional
+	QuestionsIds []string `json:"questionsIds,omitempty" bson:"questionsIds,omitempty"`
+
+	// GroupsOrder is a list of group name ids that defines the order of the groups in the group.
+	// Validations:
+	//	- optional
+	GroupsOrder []string `json:"groupsOrder,omitempty" bson:"groupsOrder,omitempty"`
 
 	// Metadata is a map with additional metadata for the group.
 	// Validations:

@@ -25,28 +25,9 @@ func (s *Survey) ReviewAnswers(ans Answers) (*SurveyResume, error) {
 	var groupsCount = make(map[string]int)
 
 	for nameId, values := range ans {
-		// if nameId is a question
-		if s.isQuestion(nameId) {
-			if invalid := s.reviewQuestion(nameId, values, correctAnswersCount); invalid != nil {
-				invalidAnswers = append(invalidAnswers, invalid)
-			}
-			continue
+		if invalids := s.reviewNameId(nameId, values, correctAnswersCount, groupsCount); invalids != nil {
+			invalidAnswers = append(invalidAnswers, invalids...)
 		}
-
-		// if nameId is a group
-		if s.isGroup(nameId) {
-			if invalids := s.reviewGroup(nameId, values, correctAnswersCount, groupsCount); len(invalids) > 0 {
-				invalidAnswers = append(invalidAnswers, invalids...)
-			}
-			continue
-		}
-
-		// if nameId is not a question or a group
-		invalidAnswers = append(invalidAnswers, &InvalidAnswerError{
-			QuestionNameId: nameId,
-			Answer:         values,
-			Error:          fmt.Sprintf("question '%s' not found", nameId),
-		})
 	}
 
 	if len(invalidAnswers) > 0 {
@@ -242,8 +223,6 @@ func (s *Survey) translateAnswers(nameId string, answers []any, ignoreUnknownAns
 	return answers, nil
 }
 
-func (s *Survey) translateGroupAnswers(groupNameID string) {}
-
 // reviewQuestion verifies if the answer provided is valid for the given question.
 func (s *Survey) reviewQuestion(questionNameID string, answers []any, correctAnswersCount map[string]int) *InvalidAnswerError {
 	q := s.Questions[questionNameID]
@@ -284,8 +263,8 @@ func (s *Survey) reviewGroup(groupNameID string, nestedAnswers []any, correctAns
 
 	for _, groupedAnswers := range groupAnswers {
 		for questionNameID, answers := range groupedAnswers {
-			if invalid := s.reviewQuestion(questionNameID, answers, correctAnswersCount); invalid != nil {
-				invalidAnswers = append(invalidAnswers, invalid)
+			if invalids := s.reviewNameId(questionNameID, answers, correctAnswersCount, groupsCount); invalids != nil {
+				invalidAnswers = append(invalidAnswers, invalids...)
 			}
 		}
 	}
@@ -293,6 +272,33 @@ func (s *Survey) reviewGroup(groupNameID string, nestedAnswers []any, correctAns
 	// update correct answers count
 	groupsCount[groupNameID] += len(groupAnswers)
 	return invalidAnswers
+}
+
+// reviewNameId verifies if the answers provided are valid for the given nameId.
+func (s *Survey) reviewNameId(nameId string, values []any, correctAnswersCount map[string]int, groupsCount map[string]int) []*InvalidAnswerError {
+	// if nameId is a question
+	if s.isQuestion(nameId) {
+		if invalid := s.reviewQuestion(nameId, values, correctAnswersCount); invalid != nil {
+			return []*InvalidAnswerError{invalid}
+		}
+		return nil
+	}
+
+	// if nameId is a group
+	if s.isGroup(nameId) {
+		if invalids := s.reviewGroup(nameId, values, correctAnswersCount, groupsCount); len(invalids) > 0 {
+			return invalids
+		}
+		return nil
+	}
+
+	// if nameId is not a question or a group
+	var invalid = &InvalidAnswerError{
+		QuestionNameId: nameId,
+		Answer:         values,
+		Error:          fmt.Sprintf("question '%s' not found", nameId),
+	}
+	return []*InvalidAnswerError{invalid}
 }
 
 // getSurveyResume returns the resume of the survey based on the answers provided.

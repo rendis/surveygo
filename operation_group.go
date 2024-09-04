@@ -206,11 +206,21 @@ func (s *Survey) RemoveGroup(groupNameId string) error {
 		}
 	}
 
-	// remove group from groups order
+	// remove group from survey groups order
 	for i, id := range s.GroupsOrder {
 		if id == groupNameId {
 			s.GroupsOrder = append(s.GroupsOrder[:i], s.GroupsOrder[i+1:]...)
 			break
+		}
+	}
+
+	// remove group from groups order in other groups
+	for _, g := range s.Groups {
+		for i, id := range g.GroupsOrder {
+			if id == groupNameId {
+				g.GroupsOrder = append(g.GroupsOrder[:i], g.GroupsOrder[i+1:]...)
+				break
+			}
 		}
 	}
 

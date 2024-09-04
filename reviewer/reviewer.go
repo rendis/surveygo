@@ -37,16 +37,14 @@ func ExtractGroupNestedAnswers(groupAnswersPack []any) (GroupAnswers, error) {
 	var resp = make(GroupAnswers, 0)
 
 	for _, p := range groupAnswersPack {
-		answersPack, ok := p.([]map[string][]any)
+		answersPack, ok := p.(map[string][]any)
 		if !ok {
 			return nil, fmt.Errorf(
-				"invalid answersPack, expected '[]map[string][]any', got '%T' at index '%d'", p, len(resp),
+				"invalid answersPack, expected 'map[string][]any', got '%T' at index '%d'", p, len(resp),
 			)
 		}
 
-		for _, answers := range answersPack {
-			resp = append(resp, answers)
-		}
+		resp = append(resp, answersPack)
 	}
 
 	return resp, nil

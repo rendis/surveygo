@@ -137,6 +137,7 @@ func (s *Survey) checkConsistency() error {
 			continue
 		}
 
+		// check questions
 		for _, questionNameId := range g.QuestionsIds {
 			// check if the question name id exists
 			if _, ok := s.Questions[questionNameId]; !ok {
@@ -149,6 +150,14 @@ func (s *Survey) checkConsistency() error {
 				continue
 			}
 			questionsProcessed[questionNameId] = true
+		}
+
+		// check groups in GroupsOrder
+		for _, groupNameId := range g.GroupsOrder {
+			// check if the group name id exists
+			if _, ok := s.Groups[groupNameId]; !ok {
+				errs = append(errs, fmt.Errorf("group id '%s' in groups order of group id '%s' not found", groupNameId, g.NameId))
+			}
 		}
 	}
 

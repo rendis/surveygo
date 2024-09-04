@@ -120,7 +120,9 @@ func main() {
 
 	// add grouped answers
 	for k, v := range ans2 {
-		ans2Casted[k] = []any{v}
+		for _, responses := range v {
+			ans2Casted[k] = append(ans2Casted[k], responses)
+		}
 	}
 
 	// add new answer
