@@ -41,13 +41,13 @@ func (s *Survey) ReviewAnswers(ans Answers) (*SurveyResume, error) {
 // Translations:
 // * text type: the value is the same passed in the answer
 // * simple choice type: the value is the value, if any, of the choice with the same nameID as the answer
-func (s *Survey) TranslateAnswers(ans Answers, ignoreUnknownAnswers bool) (Answers, error) {
+func (s *Survey) TranslateAnswers(ans Answers, ignoreUnknown bool) (Answers, error) {
 	var res = make(Answers, len(ans))
 
 	for nameId, answers := range ans {
 		// if nameId is a question
 		if s.isQuestion(nameId) {
-			translations, err := s.translateAnswers(nameId, answers, ignoreUnknownAnswers)
+			translations, err := s.translateAnswers(nameId, answers, ignoreUnknown)
 			if err != nil {
 				return nil, err
 			}
@@ -63,7 +63,7 @@ func (s *Survey) TranslateAnswers(ans Answers, ignoreUnknownAnswers bool) (Answe
 
 			for i, groupAnswersPack := range groupAnswers {
 				for questionNameId, answersPack := range groupAnswersPack {
-					translations, err := s.translateAnswers(questionNameId, answersPack, ignoreUnknownAnswers)
+					translations, err := s.translateAnswers(questionNameId, answersPack, ignoreUnknown)
 					if err != nil {
 						return nil, err
 					}
@@ -158,14 +158,14 @@ func (s *Survey) GroupAnswersByType(ans Answers) map[types.QuestionType]Answers 
 }
 
 // translateAnswers translates the nameIDs of the answers to the values provided in each question (if any, otherwise the nameID is used).
-func (s *Survey) translateAnswers(nameId string, answers []any, ignoreUnknownAnswers bool) ([]any, error) {
+func (s *Survey) translateAnswers(nameId string, answers []any, ignoreUnknown bool) ([]any, error) {
 	if len(answers) == 0 {
 		return answers, nil
 	}
 
 	q, ok := s.Questions[nameId]
 	if !ok {
-		if ignoreUnknownAnswers {
+		if ignoreUnknown {
 			return answers, nil
 		}
 		return nil, fmt.Errorf("question '%s' not found", nameId)
@@ -205,6 +205,10 @@ func (s *Survey) translateAnswers(nameId string, answers []any, ignoreUnknownAns
 			}
 
 			if !ok {
+				if ignoreUnknown {
+					res = append(res, answeredNameId)
+					continue
+				}
 				return nil, fmt.Errorf("option not found for question '%s' (searched by nameId and value '%s')", nameId, answeredNameId)
 			}
 
