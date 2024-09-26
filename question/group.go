@@ -57,7 +57,7 @@ type Group struct {
 	Metadata map[string]any `json:"metadata,omitempty" bson:"metadata,omitempty" validate:"omitempty"`
 
 	// Position is the position of the group in the survey.
-	// This field is calculated automatically by the system.
+	// The system calculates this field automatically.
 	// Validations:
 	// - required
 	// - min: 1
