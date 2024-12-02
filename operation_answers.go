@@ -124,7 +124,7 @@ func (s *Survey) GetRequiredQuestions() map[string]bool {
 
 	for _, group := range s.Groups {
 		for _, questionNameId := range group.QuestionsIds {
-			if q, ok := s.Questions[questionNameId]; ok {
+			if q, ok := s.Questions[questionNameId]; ok && q.Required {
 				requiredQuestions[questionNameId] = q.Required
 			}
 		}
