@@ -118,6 +118,52 @@ func (s *Survey) GetEnabledQuestions() map[string]bool {
 
 }
 
+// GetRequiredQuestions returns a map with the name id of the required questions.
+func (s *Survey) GetRequiredQuestions() map[string]bool {
+	var requiredQuestions = make(map[string]bool)
+
+	for _, group := range s.Groups {
+		for _, questionNameId := range group.QuestionsIds {
+			if q, ok := s.Questions[questionNameId]; ok {
+				requiredQuestions[questionNameId] = q.Required
+			}
+		}
+	}
+
+	return requiredQuestions
+}
+
+// GetOptionalQuestions returns a map with the name id of the optional questions.
+func (s *Survey) GetOptionalQuestions() map[string]bool {
+	var optionalQuestions = make(map[string]bool)
+
+	for _, group := range s.Groups {
+		for _, questionNameId := range group.QuestionsIds {
+			if q, ok := s.Questions[questionNameId]; ok && !q.Required {
+				optionalQuestions[questionNameId] = true
+			}
+		}
+	}
+
+	return optionalQuestions
+}
+
+// GetRequiredAndOptionalQuestions returns a map with the name id of the required and optional questions.
+// The value is true if the question is required, false otherwise.
+func (s *Survey) GetRequiredAndOptionalQuestions() map[string]bool {
+	var requiredAndOptionalQuestions = make(map[string]bool)
+
+	for _, group := range s.Groups {
+		for _, questionNameId := range group.QuestionsIds {
+			if q, ok := s.Questions[questionNameId]; ok {
+				requiredAndOptionalQuestions[questionNameId] = q.Required
+			}
+		}
+	}
+
+	return requiredAndOptionalQuestions
+}
+
 // GroupAnswersByType groups the answers by the type of the question.
 func (s *Survey) GroupAnswersByType(ans Answers) map[types.QuestionType]Answers {
 	var res = make(map[types.QuestionType]Answers)
