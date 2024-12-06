@@ -241,6 +241,9 @@ func (s *Survey) translateAnswers(nameId string, answers []any, ignoreUnknown bo
 		for _, answer := range answers {
 			answeredNameId, ok := answer.(string)
 			if !ok {
+				if ignoreUnknown {
+					continue
+				}
 				return nil, fmt.Errorf("invalid type, expected string, got '%T'", answer)
 			}
 
