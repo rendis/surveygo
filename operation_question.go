@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+
 	"github.com/rendis/surveygo/v2/question"
 	"github.com/rendis/surveygo/v2/question/types"
 	"github.com/rendis/surveygo/v2/question/types/choice"
@@ -189,6 +190,19 @@ func (s *Survey) GetQuestionsAssignments() map[string]string {
 	}
 
 	return questionsAssignation
+}
+
+// GetAssetQuestions returns all the asset questions in the survey.
+// Asset questions are questions that have a type of image, video, audio or document.
+func (s *Survey) GetAssetQuestions() []*question.Question {
+	var assetQuestions []*question.Question
+	for _, q := range s.Questions {
+		if types.IsAssetType(q.QTyp) {
+			assetQuestions = append(assetQuestions, q)
+		}
+	}
+
+	return assetQuestions
 }
 
 // addQuestion adds a question to the survey.
