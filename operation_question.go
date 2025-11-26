@@ -110,6 +110,7 @@ func (s *Survey) UpdateQuestion(uq *question.Question) error {
 	q.Value = uq.Value
 	q.Metadata = uq.Metadata
 	q.Disabled = uq.Disabled
+	q.DependsOn = uq.DependsOn
 
 	// check consistency
 	if err := s.checkConsistency(); err != nil {
@@ -160,6 +161,16 @@ func (s *Survey) RemoveQuestion(questionNameId string) error {
 		if removed := g.RemoveQuestionId(questionNameId); removed {
 			break
 		}
+	}
+
+	// remove DependsOn references to this question from other questions
+	for _, q := range s.Questions {
+		q.DependsOn = removeDependsOnByQuestion(q.DependsOn, questionNameId)
+	}
+
+	// remove DependsOn references to this question from groups
+	for _, g := range s.Groups {
+		g.DependsOn = removeDependsOnByQuestion(g.DependsOn, questionNameId)
 	}
 
 	// remove question from survey
@@ -243,4 +254,57 @@ func (s *Survey) addQuestion(q *question.Question) error {
 
 	// check consistency
 	return s.checkConsistency()
+}
+
+// removeDependsOnByQuestion removes all DependsOn conditions that reference the given questionNameId.
+// Only the specific conditions referencing the question are removed; other conditions in the AND group are kept.
+// If an AND group becomes empty (all conditions removed), the entire AND group is removed.
+// Returns nil if all AND groups are removed.
+//
+// Example 1 - Removing specific conditions, keeping others:
+//
+//	dependsOn = [
+//	  [ {questionNameId: "q1", optionNameId: "o1"}, {questionNameId: "q2", optionNameId: "o2"} ], // dependsOn: N0 (q1.o1 AND q2.o2)
+//	  [ {questionNameId: "q3", optionNameId: "o3"} ], // dependsOn: N1 (single condition, no q1)
+//	]
+//
+//	removeDependsOnByQuestion(dependsOn, "q1") returns:
+//	[
+//	  [ {questionNameId: "q2", optionNameId: "o2"} ], // dependsOn: N0 kept with only q2.o2 (q1.o1 removed)
+//	  [ {questionNameId: "q3", optionNameId: "o3"} ], // dependsOn: N1 kept unchanged
+//	]
+//
+// Example 2 - AND group removed when all conditions reference deleted question:
+//
+//	dependsOn = [
+//	  [ {questionNameId: "q1", optionNameId: "o1"} ], // dependsOn: N0 (single condition)
+//	  [ {questionNameId: "q2", optionNameId: "o2"} ], // dependsOn: N1 (no reference to q1)
+//	  [ {questionNameId: "q1", optionNameId: "o4"} ], // dependsOn: N2 (references q1)
+//	]
+//
+//	removeDependsOnByQuestion(dependsOn, "q1") returns:
+//	[
+//	  [ {questionNameId: "q2", optionNameId: "o2"} ], // dependsOn: N1 kept
+//	]
+//	// dependsOn: N0 and N2 removed because they only had conditions referencing q1
+func removeDependsOnByQuestion(dependsOn [][]question.DependsOn, questionNameId string) [][]question.DependsOn {
+	if len(dependsOn) == 0 {
+		return dependsOn
+	}
+
+	var result [][]question.DependsOn
+	for _, andGroup := range dependsOn {
+		// filter out conditions that reference the deleted question
+		var filteredAndGroup []question.DependsOn
+		for _, dep := range andGroup {
+			if dep.QuestionNameId != questionNameId {
+				filteredAndGroup = append(filteredAndGroup, dep)
+			}
+		}
+		// only keep AND groups that still have conditions
+		if len(filteredAndGroup) > 0 {
+			result = append(result, filteredAndGroup)
+		}
+	}
+	return result
 }

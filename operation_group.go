@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+
 	"github.com/rendis/surveygo/v2/question"
 	"github.com/rendis/surveygo/v2/question/types"
 	"github.com/rendis/surveygo/v2/question/types/choice"
@@ -369,6 +370,7 @@ func (s *Survey) updateGroup(pg *question.Group) error {
 	group.Metadata = pg.Metadata
 	group.IsExternalSurvey = pg.IsExternalSurvey
 	group.QuestionsIds = pg.QuestionsIds
+	group.DependsOn = pg.DependsOn
 
 	// check consistency
 	return s.checkConsistency()
