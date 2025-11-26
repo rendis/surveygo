@@ -183,11 +183,13 @@ Represents an image type question.
 
 **Fields**
 
-- `AltText`: Alternative text for improving accessibility. (Optional, max 255 characters)
-- `Tags`: Keywords associated with the image. (Optional)
-- `Metadata`: A map of key/value pairs for storing additional information. (Optional)
-- `MaxSize`: Maximum allowed file size in bytes. (Optional, must be a positive number)
-- `AllowedContentTypes`: List of permitted content types (e.g., "image/png", "image/jpeg"). (Optional)
+- `altText`: Alternative text for improving accessibility. (Optional, max 255 characters)
+- `tags`: Keywords associated with the image. (Optional)
+- `metadata`: A map of key/value pairs for storing additional information. (Optional)
+- `maxSize`: Maximum allowed file size in bytes. (Optional, must be a positive number)
+- `allowedContentTypes`: List of permitted content types (e.g., "image/png", "image/jpeg"). (Optional)
+- `maxFiles`: Maximum number of files that can be uploaded. (Optional, default: 1)
+- `minFiles`: Minimum number of files that must be uploaded. (Optional, default: 1)
 
 #### VideoAsset
 
@@ -195,11 +197,13 @@ Represents a video type question.
 
 **Fields**
 
-- `Caption`: Description or additional information about the video. (Optional, max 255 characters)
-- `MaxSize`: Maximum allowed file size in bytes. (Optional, must be a positive number)
-- `Tags`: Keywords associated with the video. (Optional)
-- `Metadata`: A map of key/value pairs for storing additional information. (Optional)
-- `AllowedContentTypes`: List of permitted content types (e.g., "video/mp4", "video/ogg"). (Optional)
+- `caption`: Description or additional information about the video. (Optional, max 255 characters)
+- `maxSize`: Maximum allowed file size in bytes. (Optional, must be a positive number)
+- `tags`: Keywords associated with the video. (Optional)
+- `metadata`: A map of key/value pairs for storing additional information. (Optional)
+- `allowedContentTypes`: List of permitted content types (e.g., "video/mp4", "video/ogg"). (Optional)
+- `maxFiles`: Maximum number of files that can be uploaded. (Optional, default: 1)
+- `minFiles`: Minimum number of files that must be uploaded. (Optional, default: 1)
 
 #### AudioAsset
 
@@ -207,11 +211,13 @@ Represents an audio type question.
 
 **Fields**
 
-- `Caption`: Description or additional information about the audio. (Optional, max 255 characters)
-- `MaxSize`: Maximum allowed file size in bytes. (Optional, must be a positive number)
-- `Tags`: Keywords associated with the audio. (Optional)
-- `Metadata`: A map of key/value pairs for storing additional information. (Optional)
-- `AllowedContentTypes`: List of permitted content types (e.g., "audio/mpeg", "audio/wav"). (Optional)
+- `caption`: Description or additional information about the audio. (Optional, max 255 characters)
+- `maxSize`: Maximum allowed file size in bytes. (Optional, must be a positive number)
+- `tags`: Keywords associated with the audio. (Optional)
+- `metadata`: A map of key/value pairs for storing additional information. (Optional)
+- `allowedContentTypes`: List of permitted content types (e.g., "audio/mpeg", "audio/wav"). (Optional)
+- `maxFiles`: Maximum number of files that can be uploaded. (Optional, default: 1)
+- `minFiles`: Minimum number of files that must be uploaded. (Optional, default: 1)
 
 #### DocumentAsset
 
@@ -219,11 +225,13 @@ Represents a document type question.
 
 **Fields**
 
-- `Caption`: Description or additional information about the document. (Optional, max 255 characters)
-- `MaxSize`: Maximum allowed file size in bytes. (Optional, must be a positive number)
-- `Tags`: Keywords associated with the document. (Optional)
-- `Metadata`: A map of key/value pairs for storing additional information. (Optional)
-- `AllowedContentTypes`: List of permitted content types (e.g., "application/pdf", "application/msword"). (Optional)
+- `caption`: Description or additional information about the document. (Optional, max 255 characters)
+- `maxSize`: Maximum allowed file size in bytes. (Optional, must be a positive number)
+- `tags`: Keywords associated with the document. (Optional)
+- `metadata`: A map of key/value pairs for storing additional information. (Optional)
+- `allowedContentTypes`: List of permitted content types (e.g., "application/pdf", "application/msword"). (Optional)
+- `maxFiles`: Maximum number of files that can be uploaded. (Optional, default: 1)
+- `minFiles`: Minimum number of files that must be uploaded. (Optional, default: 1)
 
 ## Functions
 
