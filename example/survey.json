@@ -15,21 +15,20 @@
         "placeholder": "Select an option",
         "options": [
           {
-            "nameId": "amazing",
+            "nameId": "rating_amazing",
             "label": "Amazing"
           },
           {
-            "nameId": "good",
+            "nameId": "rating_good",
             "label": "Good"
           },
           {
-            "nameId": "meh",
+            "nameId": "rating_meh",
             "label": "Meh"
           },
           {
-            "nameId": "terrible",
-            "label": "Terrible",
-            "groupsIds": ["grp_event_rating_opinion"]
+            "nameId": "rating_terrible",
+            "label": "Terrible"
           }
         ]
       }
@@ -44,19 +43,19 @@
       "value": {
         "options": [
           {
-            "nameId": "cyberworld_2078",
+            "nameId": "game_cyberworld_2078",
             "label": "Cyberworld 2078"
           },
           {
-            "nameId": "zombie_apocalypse",
+            "nameId": "game_zombie_apocalypse",
             "label": "Zombie Apocalypse"
           },
           {
-            "nameId": "fortress_siege",
+            "nameId": "game_fortress_siege",
             "label": "Fortress Siege"
           },
           {
-            "nameId": "rocket_adventure",
+            "nameId": "game_rocket_adventure",
             "label": "Rocket Adventure"
           }
         ]
@@ -72,20 +71,24 @@
       "value": {
         "options": [
           {
-            "nameId": "improvement_areas_food",
-            "label": "Food"
+            "nameId": "improve_food_beverages",
+            "label": "Food & Beverages"
           },
           {
-            "nameId": "improvement_areas_security",
-            "label": "Security"
+            "nameId": "improve_security_safety",
+            "label": "Security & Safety"
           },
           {
-            "nameId": "improvement_areas_game_selection",
+            "nameId": "improve_game_selection",
             "label": "Game Selection"
           },
           {
-            "nameId": "improvement_areas_staff",
-            "label": "Staff"
+            "nameId": "improve_staff_service",
+            "label": "Staff & Service"
+          },
+          {
+            "nameId": "improve_venue_facilities",
+            "label": "Venue & Facilities"
           }
         ]
       }
@@ -94,29 +97,199 @@
     "would_attend_again": {
       "nameId": "would_attend_again",
       "visible": true,
-      "type": "checkbox",
-      "label": "Would you attend again?",
-      "required": false,
+      "type": "radio",
+      "label": "Would you attend this event again?",
+      "required": true,
       "value": {
         "options": [
           {
-            "nameId": "would_attend_again_yes",
-            "label": "Yes"
+            "nameId": "attend_yes",
+            "label": "Yes, definitely!"
+          },
+          {
+            "nameId": "attend_maybe",
+            "label": "Maybe, depends on improvements"
+          },
+          {
+            "nameId": "attend_no",
+            "label": "No, I wouldn't"
           }
         ]
       }
     },
 
-    "feedback": {
-      "nameId": "feedback",
+    "negative_feedback": {
+      "nameId": "negative_feedback",
       "visible": true,
       "type": "text_area",
-      "label": "Any other comments or feedback?",
+      "label": "Please tell us what went wrong and how we can improve",
       "required": false,
       "value": {
-        "placeholder": "Type here",
+        "placeholder": "Share your concerns...",
+        "min": 10,
+        "max": 2000
+      },
+      "dependsOn": [
+        [
+          {
+            "questionNameId": "would_attend_again",
+            "optionNameId": "attend_no"
+          }
+        ],
+        [
+          {
+            "questionNameId": "event_rating",
+            "optionNameId": "rating_terrible"
+          }
+        ],
+        [
+          {
+            "questionNameId": "event_rating",
+            "optionNameId": "rating_meh"
+          },
+          {
+            "questionNameId": "would_attend_again",
+            "optionNameId": "attend_maybe"
+          }
+        ]
+      ]
+    },
+
+    "specific_food_beverages_feedback": {
+      "nameId": "specific_food_beverages_feedback",
+      "visible": true,
+      "type": "text_area",
+      "label": "What specific issues did you have with the food?",
+      "required": false,
+      "value": {
+        "placeholder": "Tell us about your food experience...",
         "min": 5,
         "max": 1000
+      },
+      "dependsOn": [
+        [
+          {
+            "questionNameId": "improvement_areas",
+            "optionNameId": "improve_food_beverages"
+          }
+        ]
+      ]
+    },
+
+    "specific_security_safety_feedback": {
+      "nameId": "specific_security_safety_feedback",
+      "visible": true,
+      "type": "text_area",
+      "label": "What security concerns did you experience?",
+      "required": false,
+      "value": {
+        "placeholder": "Describe your security concerns...",
+        "min": 5,
+        "max": 1000
+      },
+      "dependsOn": [
+        [
+          {
+            "questionNameId": "improvement_areas",
+            "optionNameId": "improve_security_safety"
+          }
+        ]
+      ]
+    },
+
+    "critical_feedback": {
+      "nameId": "critical_feedback",
+      "visible": true,
+      "type": "text_area",
+      "label": "We noticed you had a really poor experience. Please help us understand what happened.",
+      "required": true,
+      "value": {
+        "placeholder": "Please provide detailed feedback...",
+        "min": 20,
+        "max": 3000
+      },
+      "dependsOn": [
+        [
+          {
+            "questionNameId": "event_rating",
+            "optionNameId": "rating_terrible"
+          },
+          {
+            "questionNameId": "would_attend_again",
+            "optionNameId": "attend_no"
+          }
+        ],
+        [
+          {
+            "questionNameId": "event_rating",
+            "optionNameId": "rating_terrible"
+          },
+          {
+            "questionNameId": "improvement_areas",
+            "optionNameId": "improve_security_safety"
+          }
+        ],
+        [
+          {
+            "questionNameId": "event_rating",
+            "optionNameId": "rating_terrible"
+          },
+          {
+            "questionNameId": "improvement_areas",
+            "optionNameId": "improve_staff"
+          }
+        ]
+      ]
+    },
+
+    "positive_feedback": {
+      "nameId": "positive_feedback",
+      "visible": true,
+      "type": "text_area",
+      "label": "What did you love most about the event?",
+      "required": false,
+      "value": {
+        "placeholder": "Share what made your experience great...",
+        "min": 5,
+        "max": 1000
+      },
+      "dependsOn": [
+        [
+          {
+            "questionNameId": "event_rating",
+            "optionNameId": "rating_amazing"
+          }
+        ],
+        [
+          {
+            "questionNameId": "event_rating",
+            "optionNameId": "rating_good"
+          },
+          {
+            "questionNameId": "would_attend_again",
+            "optionNameId": "attend_yes"
+          }
+        ]
+      ]
+    },
+
+    "contact_preference": {
+      "nameId": "contact_preference",
+      "visible": true,
+      "type": "radio",
+      "label": "Would you like to be contacted about future events?",
+      "required": true,
+      "value": {
+        "options": [
+          {
+            "nameId": "contact_yes",
+            "label": "Yes, keep me updated"
+          },
+          {
+            "nameId": "contact_no",
+            "label": "No, thanks"
+          }
+        ]
       }
     },
 
@@ -124,12 +297,12 @@
       "nameId": "name",
       "visible": true,
       "type": "input_text",
-      "label": "Enter your name",
+      "label": "Your full name",
       "required": true,
       "value": {
-        "placeholder": "Type your name",
-        "min": 3,
-        "max": 1000
+        "placeholder": "John Doe",
+        "min": 2,
+        "max": 100
       }
     },
 
@@ -137,67 +310,59 @@
       "nameId": "email",
       "visible": true,
       "type": "email",
-      "label": "Enter your email if you'd like to participate in future events",
+      "label": "Your email address",
       "required": true,
       "value": {
-        "placeholder": "you@example.com",
-        "allowedDomains": ["example.com", "example.org"]
+        "placeholder": "you@example.com"
       }
     },
 
-    "event_rating_improvement_opinion": {
-      "nameId": "event_rating_improvement_opinion",
+    "phone_number": {
+      "nameId": "phone_number",
       "visible": true,
-      "type": "text_area",
-      "label": "What could be improved?",
+      "type": "telephone",
+      "label": "Your phone number (optional)",
       "required": false,
       "value": {
-        "placeholder": "Type here",
-        "min": 5,
-        "max": 1000
+        "placeholder": "+1 (555) 123-4567"
       }
     },
 
-    "phone_codes": {
-      "nameId": "phone_codes",
+    "preferred_contact_method": {
+      "nameId": "preferred_contact_method",
       "visible": true,
-      "type": "external_question",
-      "label": "Select your country",
+      "type": "radio",
+      "label": "How would you prefer to be contacted?",
       "required": true,
       "value": {
-        "questionType": "single_select",
-        "externalType": "phone_codes",
-        "description": "Question filled with external data",
-        "src": "http://country.io/phone.json"
+        "options": [
+          {
+            "nameId": "method_email",
+            "label": "Email"
+          },
+          {
+            "nameId": "method_phone",
+            "label": "Phone"
+          },
+          {
+            "nameId": "method_both",
+            "label": "Either is fine"
+          }
+        ]
       }
     },
 
-    "phone-number": {
-        "nameId": "phone-number",
-        "visible": true,
-        "type": "telephone",
-        "label": "Enter your phone number",
-        "required": true,
-        "value": {
-            "placeholder": "Type your phone number"
-        }
-    },
-
-    "logo": {
-      "nameId": "logo",
+    "event_photo": {
+      "nameId": "event_photo",
       "visible": true,
       "type": "image",
-      "label": "Upload your logo",
-      "required": true,
+      "label": "Share a photo from the event (optional)",
+      "required": false,
       "value": {
-        "altText": "Logo",
-        "tags": ["logo", "image"],
-        "metadata": {
-          "width": 100,
-          "height": 100
-        },
-        "maxSize": 1000000,
-        "allowedContentTypes": ["image/*"]
+        "altText": "Event photo",
+        "tags": ["event", "photo", "user-submitted"],
+        "maxSize": 5000000,
+        "allowedContentTypes": ["image/jpeg", "image/png", "image/webp"]
       }
     },
 
@@ -205,10 +370,10 @@
       "nameId": "birth_date",
       "visible": true,
       "type": "date_time",
-      "label": "Enter your birth date",
+      "label": "Your birth date (for age verification)",
       "required": true,
       "value": {
-        "placeholder": "Type date and time",
+        "placeholder": "Select your birth date",
         "type": "date",
         "format": "2006-01-02"
       }
@@ -220,21 +385,57 @@
       "nameId": "grp-general",
       "title": "General Questions",
       "isExternalSurvey": false,
-      "questionsIds": ["logo", "event_rating", "favorite_game", "would_attend_again", "improvement_areas"]
+      "questionsIds": ["name", "email", "phone_number", "preferred_contact_method", "birth_date"],
+      "dependsOn": [
+        [
+          {
+            "questionNameId": "contact_preference",
+            "optionNameId": "contact_yes"
+          }
+        ]
+      ]
     },
-    "grp-feedback": {
-      "nameId": "grp-feedback",
-      "title": "Feedback",
+
+    "grp_media": {
+      "nameId": "grp_media",
+      "title": "Share Your Memories",
+      "description": "Upload photos from the event",
       "isExternalSurvey": false,
-      "questionsIds": ["feedback", "name", "email"]
+      "questionsIds": ["event_photo"],
+      "dependsOn": [
+        [
+          {
+            "questionNameId": "event_rating",
+            "optionNameId": "rating_amazing"
+          }
+        ],
+        [
+          {
+            "questionNameId": "event_rating",
+            "optionNameId": "rating_good"
+          }
+        ],
+        [
+          {
+            "questionNameId": "contact_preference",
+            "optionNameId": "contact_yes"
+          },
+          {
+            "questionNameId": "would_attend_again",
+            "optionNameId": "attend_yes"
+          }
+        ]
+      ]
     },
-    "grp_event_rating_opinion": {
-      "nameId": "grp_event_rating_opinion",
-      "title": "Event Rating Opinion",
+
+    "grp_closing": {
+      "nameId": "grp_closing",
+      "title": "Final Step",
+      "description": "Almost done!",
       "isExternalSurvey": false,
-      "questionsIds": ["event_rating_improvement_opinion", "birth_date"]
+      "questionsIds": ["contact_preference"]
     }
   },
 
-  "groupsOrder": ["grp-general", "grp-feedback"]
+  "groupsOrder": ["grp_event_experience", "grp_detailed_feedback", "grp_closing", "grp_contact_info", "grp_media"]
 }
