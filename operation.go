@@ -3,6 +3,7 @@ package surveygo
 import (
 	"errors"
 	"fmt"
+
 	"github.com/rendis/surveygo/v2/question"
 	"github.com/rendis/surveygo/v2/question/types"
 	"github.com/rendis/surveygo/v2/question/types/choice"
@@ -87,6 +88,9 @@ func (s *Survey) checkConsistency() error {
 	// check questions
 	optionsProcessed := map[string]bool{} // key: option name id, value: true if the option was processed
 	groupsProcessed := map[string]bool{}  // key: group name id, value: true if the group was processed
+	// build option map for DependsOn validation
+	questionOptions := map[string]map[string]bool{} // key: question name id, value: map of option name ids
+
 	for k, q := range s.Questions {
 		if k != q.NameId {
 			errs = append(errs, fmt.Errorf("question key '%s' does not match question name id '%s'", k, q.NameId))
@@ -99,6 +103,13 @@ func (s *Survey) checkConsistency() error {
 
 		c, _ := choice.CastToChoice(q.Value)
 		var options = c.GetOptionsGroups() // key: option name id, value: list of group name ids
+
+		// build option map for this question (for DependsOn validation)
+		questionOptions[q.NameId] = make(map[string]bool)
+		for optionNameId := range options {
+			questionOptions[q.NameId][optionNameId] = true
+		}
+
 		for optionNameId, groupsIds := range options {
 
 			// check if the option name id was processed
@@ -124,6 +135,12 @@ func (s *Survey) checkConsistency() error {
 		}
 	}
 
+	// check DependsOn references for questions
+	for _, q := range s.Questions {
+		depErrs := s.validateDependsOn(q.DependsOn, "question", q.NameId, questionOptions)
+		errs = append(errs, depErrs...)
+	}
+
 	// check groups
 	questionsProcessed := map[string]bool{} // key: question name id, value: true if the question was processed
 	for k, g := range s.Groups {
@@ -132,10 +149,14 @@ func (s *Survey) checkConsistency() error {
 			continue
 		}
 
-		// skip external groups
+		// skip external groups for question checks
 		if g.IsExternalSurvey {
 			continue
 		}
+
+		// check DependsOn references for this group
+		depErrs := s.validateDependsOn(g.DependsOn, "group", g.NameId, questionOptions)
+		errs = append(errs, depErrs...)
 
 		// check questions
 		for _, questionNameId := range g.QuestionsIds {
@@ -197,4 +218,56 @@ func (s *Survey) positionUpdater() {
 			qPos++
 		}
 	}
+}
+
+// validateDependsOn validates DependsOn references for a question or group.
+// Parameters:
+//   - dependsOn: the DependsOn slice to validate
+//   - entityType: "question" or "group" (for error messages)
+//   - entityNameId: the nameId of the entity being validated
+//   - questionOptions: map of questionNameId -> optionNameIds for choice questions
+//
+// Returns a slice of errors found during validation.
+func (s *Survey) validateDependsOn(
+	dependsOn [][]question.DependsOn,
+	entityType string,
+	entityNameId string,
+	questionOptions map[string]map[string]bool,
+) []error {
+	var errs []error
+
+	for orIdx, orGroup := range dependsOn {
+		for andIdx, dep := range orGroup {
+			// check if the referenced question exists
+			refQuestion, exists := s.Questions[dep.QuestionNameId]
+			if !exists {
+				errs = append(errs, fmt.Errorf(
+					"%s '%s' DependsOn[%d][%d]: referenced question '%s' does not exist",
+					entityType, entityNameId, orIdx, andIdx, dep.QuestionNameId,
+				))
+				continue
+			}
+
+			// check if the referenced question is a choice type
+			if !types.IsChoiceType(refQuestion.QTyp) {
+				errs = append(errs, fmt.Errorf(
+					"%s '%s' DependsOn[%d][%d]: referenced question '%s' is not a choice type (type: %s)",
+					entityType, entityNameId, orIdx, andIdx, dep.QuestionNameId, refQuestion.QTyp,
+				))
+				continue
+			}
+
+			// check if the referenced option exists on the referenced question
+			if opts, ok := questionOptions[dep.QuestionNameId]; ok {
+				if !opts[dep.OptionNameId] {
+					errs = append(errs, fmt.Errorf(
+						"%s '%s' DependsOn[%d][%d]: option '%s' does not exist on question '%s'",
+						entityType, entityNameId, orIdx, andIdx, dep.OptionNameId, dep.QuestionNameId,
+					))
+				}
+			}
+		}
+	}
+
+	return errs
 }

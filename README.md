@@ -58,7 +58,8 @@ Structure representing a question within a survey.
 - `type`: Type of the question. (Required)
 - `label`: Question label. (Required)
 - `required`: Indicates if the question is mandatory to answer. (Required)
-- `Value`: Object representing the value of the question. Varies depending on the type of question. (Required)
+- `dependsOn`: Conditional visibility based on other question selections. (Optional)
+- `value`: Object representing the value of the question. Varies depending on the type of question. (Required)
 
 ### Group
 
@@ -73,6 +74,28 @@ Structure representing a group of questions in a survey.
 - `isExternalSurvey`: Indicates if the group is an external survey. (Optional)
 - `questionsIds`: Identifiers of the questions that belong to the group. (Required)
   <br>If the group is an external survey, this field will indicate the identifier of the external survey.
+- `dependsOn`: Conditional visibility based on other question selections. (Optional)
+
+### DependsOn (Conditional Logic)
+
+Both questions and groups can have a `dependsOn` field that controls their visibility based on selections in other questions.
+
+**Structure**: `dependsOn` is an array of arrays (`[][]DependsOn`):
+- **Outer array**: OR conditions (if ANY group matches, the element is visible)
+- **Inner array**: AND conditions (ALL conditions in a group must match)
+
+**Example** - Show element if user selected "terrible" rating OR (selected "meh" AND would not attend):
+```json
+"dependsOn": [
+  [{ "questionNameId": "rating", "optionNameId": "terrible" }],
+  [
+    { "questionNameId": "rating", "optionNameId": "meh" },
+    { "questionNameId": "attendance", "optionNameId": "would_not_attend" }
+  ]
+]
+```
+
+**Note**: `dependsOn` can only reference choice-type questions (single_select, multi_select, radio, checkbox, toggle).
 
 ## Question Structures
 
