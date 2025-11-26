@@ -62,6 +62,10 @@ type Group struct {
 	// - required
 	// - min: 1
 	Position int `json:"position,omitempty" bson:"position,omitempty" validate:"omitempty,min=1"`
+
+	// DependsOn is a list of lists of questions and options that the group depends on.
+	// The outer lists are evaluated as logical OR, and the inner lists are evaluated as logical AND.
+	DependsOn [][]DependsOn `json:"dependsOn,omitempty" bson:"dependsOn,omitempty"`
 }
 
 // RemoveQuestionId removes the question with the specified name ID from the group.

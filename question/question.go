@@ -53,6 +53,10 @@ type BaseQuestion struct {
 
 	// Disabled indicates whether the question is disabled. Defaults to false.
 	Disabled bool `json:"disabled,omitempty" bson:"disabled,omitempty"`
+
+	// DependsOn is a list of lists of questions and options that the question depends on.
+	// The outer lists are evaluated as logical OR, and the inner lists are evaluated as logical AND.
+	DependsOn [][]DependsOn `json:"dependsOn,omitempty" bson:"dependsOn,omitempty"`
 }
 
 // Question is a struct that represents a question in a survey.
