@@ -1,0 +1,462 @@
+{
+  "nameId": "post_purchase_survey",
+  "title": "How was your shopping experience?",
+  "version": "1.0.0",
+  "description": "Help us improve by sharing your feedback about your recent order",
+
+  "questions": {
+    "overall_satisfaction": {
+      "nameId": "overall_satisfaction",
+      "visible": true,
+      "type": "radio",
+      "label": "How satisfied are you with your overall shopping experience?",
+      "required": true,
+      "value": {
+        "options": [
+          { "nameId": "sat_very_satisfied", "label": "Very Satisfied" },
+          { "nameId": "sat_satisfied", "label": "Satisfied" },
+          { "nameId": "sat_neutral", "label": "Neutral" },
+          { "nameId": "sat_dissatisfied", "label": "Dissatisfied" },
+          { "nameId": "sat_very_dissatisfied", "label": "Very Dissatisfied" }
+        ]
+      }
+    },
+
+    "product_quality": {
+      "nameId": "product_quality",
+      "visible": true,
+      "type": "radio",
+      "label": "How would you rate the quality of the product(s) you received?",
+      "required": true,
+      "value": {
+        "options": [
+          { "nameId": "quality_excellent", "label": "Excellent" },
+          { "nameId": "quality_good", "label": "Good" },
+          { "nameId": "quality_average", "label": "Average" },
+          { "nameId": "quality_poor", "label": "Poor" },
+          { "nameId": "quality_very_poor", "label": "Very Poor" }
+        ]
+      }
+    },
+
+    "product_as_described": {
+      "nameId": "product_as_described",
+      "visible": true,
+      "type": "radio",
+      "label": "Was the product as described on our website?",
+      "required": true,
+      "value": {
+        "options": [
+          { "nameId": "described_yes", "label": "Yes, exactly as described" },
+          { "nameId": "described_mostly", "label": "Mostly, with minor differences" },
+          { "nameId": "described_no", "label": "No, significantly different" }
+        ]
+      }
+    },
+
+    "delivery_speed": {
+      "nameId": "delivery_speed",
+      "visible": true,
+      "type": "radio",
+      "label": "How satisfied are you with the delivery speed?",
+      "required": true,
+      "value": {
+        "options": [
+          { "nameId": "delivery_faster", "label": "Faster than expected" },
+          { "nameId": "delivery_on_time", "label": "On time" },
+          { "nameId": "delivery_slight_delay", "label": "Slightly delayed" },
+          { "nameId": "delivery_very_late", "label": "Very late" }
+        ]
+      }
+    },
+
+    "packaging_condition": {
+      "nameId": "packaging_condition",
+      "visible": true,
+      "type": "radio",
+      "label": "How was the packaging condition upon arrival?",
+      "required": true,
+      "value": {
+        "options": [
+          { "nameId": "packaging_perfect", "label": "Perfect condition" },
+          { "nameId": "packaging_minor_damage", "label": "Minor damage, product OK" },
+          { "nameId": "packaging_damaged", "label": "Damaged, product affected" }
+        ]
+      }
+    },
+
+    "would_recommend": {
+      "nameId": "would_recommend",
+      "visible": true,
+      "type": "radio",
+      "label": "How likely are you to recommend us to a friend or colleague?",
+      "required": true,
+      "value": {
+        "options": [
+          { "nameId": "recommend_definitely", "label": "Definitely would" },
+          { "nameId": "recommend_probably", "label": "Probably would" },
+          { "nameId": "recommend_not_sure", "label": "Not sure" },
+          { "nameId": "recommend_probably_not", "label": "Probably not" },
+          { "nameId": "recommend_definitely_not", "label": "Definitely not" }
+        ]
+      }
+    },
+
+    "issues_experienced": {
+      "nameId": "issues_experienced",
+      "visible": true,
+      "type": "multi_select",
+      "label": "Did you experience any of the following issues?",
+      "required": false,
+      "value": {
+        "options": [
+          { "nameId": "issue_wrong_item", "label": "Received wrong item" },
+          { "nameId": "issue_missing_item", "label": "Missing item from order" },
+          { "nameId": "issue_defective", "label": "Defective/damaged product" },
+          { "nameId": "issue_size_fit", "label": "Size/fit issues" },
+          { "nameId": "issue_checkout", "label": "Checkout problems" },
+          { "nameId": "issue_payment", "label": "Payment issues" },
+          { "nameId": "issue_tracking", "label": "Tracking/communication issues" },
+          { "nameId": "issue_none", "label": "No issues" }
+        ]
+      }
+    },
+
+    "wrong_item_details": {
+      "nameId": "wrong_item_details",
+      "visible": true,
+      "type": "text_area",
+      "label": "Please describe what you ordered vs. what you received",
+      "required": true,
+      "value": {
+        "placeholder": "I ordered... but received...",
+        "min": 10,
+        "max": 1000
+      },
+      "dependsOn": [
+        [
+          { "questionNameId": "issues_experienced", "optionNameId": "issue_wrong_item" }
+        ]
+      ]
+    },
+
+    "missing_item_details": {
+      "nameId": "missing_item_details",
+      "visible": true,
+      "type": "text_area",
+      "label": "Please list the missing item(s)",
+      "required": true,
+      "value": {
+        "placeholder": "Item name, quantity...",
+        "min": 5,
+        "max": 500
+      },
+      "dependsOn": [
+        [
+          { "questionNameId": "issues_experienced", "optionNameId": "issue_missing_item" }
+        ]
+      ]
+    },
+
+    "defective_product_photo": {
+      "nameId": "defective_product_photo",
+      "visible": true,
+      "type": "image",
+      "label": "Please upload a photo of the defective/damaged product",
+      "required": false,
+      "value": {
+        "altText": "Defective product photo",
+        "maxSize": 10000000,
+        "allowedContentTypes": ["image/jpeg", "image/png", "image/webp"],
+        "maxFiles": 3,
+        "minFiles": 1
+      },
+      "dependsOn": [
+        [
+          { "questionNameId": "issues_experienced", "optionNameId": "issue_defective" }
+        ],
+        [
+          { "questionNameId": "packaging_condition", "optionNameId": "packaging_damaged" }
+        ]
+      ]
+    },
+
+    "size_fit_details": {
+      "nameId": "size_fit_details",
+      "visible": true,
+      "type": "radio",
+      "label": "What was the size/fit issue?",
+      "required": true,
+      "value": {
+        "options": [
+          { "nameId": "fit_too_small", "label": "Too small" },
+          { "nameId": "fit_too_large", "label": "Too large" },
+          { "nameId": "fit_different_expected", "label": "Different from size chart" }
+        ]
+      },
+      "dependsOn": [
+        [
+          { "questionNameId": "issues_experienced", "optionNameId": "issue_size_fit" }
+        ]
+      ]
+    },
+
+    "dissatisfaction_reason": {
+      "nameId": "dissatisfaction_reason",
+      "visible": true,
+      "type": "text_area",
+      "label": "We're sorry to hear about your experience. Please tell us what went wrong so we can make it right.",
+      "required": true,
+      "value": {
+        "placeholder": "Please share details about your experience...",
+        "min": 20,
+        "max": 2000
+      },
+      "dependsOn": [
+        [
+          { "questionNameId": "overall_satisfaction", "optionNameId": "sat_dissatisfied" }
+        ],
+        [
+          { "questionNameId": "overall_satisfaction", "optionNameId": "sat_very_dissatisfied" }
+        ],
+        [
+          { "questionNameId": "would_recommend", "optionNameId": "recommend_definitely_not" }
+        ],
+        [
+          { "questionNameId": "would_recommend", "optionNameId": "recommend_probably_not" },
+          { "questionNameId": "product_quality", "optionNameId": "quality_poor" }
+        ],
+        [
+          { "questionNameId": "would_recommend", "optionNameId": "recommend_probably_not" },
+          { "questionNameId": "product_quality", "optionNameId": "quality_very_poor" }
+        ]
+      ]
+    },
+
+    "critical_issue_callback": {
+      "nameId": "critical_issue_callback",
+      "visible": true,
+      "type": "radio",
+      "label": "Would you like a customer service representative to contact you?",
+      "required": true,
+      "value": {
+        "options": [
+          { "nameId": "callback_yes_urgent", "label": "Yes, as soon as possible" },
+          { "nameId": "callback_yes_anytime", "label": "Yes, anytime is fine" },
+          { "nameId": "callback_no", "label": "No, that's not necessary" }
+        ]
+      },
+      "dependsOn": [
+        [
+          { "questionNameId": "overall_satisfaction", "optionNameId": "sat_very_dissatisfied" },
+          { "questionNameId": "issues_experienced", "optionNameId": "issue_wrong_item" }
+        ],
+        [
+          { "questionNameId": "overall_satisfaction", "optionNameId": "sat_very_dissatisfied" },
+          { "questionNameId": "issues_experienced", "optionNameId": "issue_defective" }
+        ],
+        [
+          { "questionNameId": "packaging_condition", "optionNameId": "packaging_damaged" },
+          { "questionNameId": "product_quality", "optionNameId": "quality_very_poor" }
+        ]
+      ]
+    },
+
+    "positive_feedback": {
+      "nameId": "positive_feedback",
+      "visible": true,
+      "type": "text_area",
+      "label": "Thank you! What did you love most about your experience?",
+      "required": false,
+      "value": {
+        "placeholder": "Share what made your experience great...",
+        "min": 5,
+        "max": 1000
+      },
+      "dependsOn": [
+        [
+          { "questionNameId": "overall_satisfaction", "optionNameId": "sat_very_satisfied" }
+        ],
+        [
+          { "questionNameId": "overall_satisfaction", "optionNameId": "sat_satisfied" },
+          { "questionNameId": "would_recommend", "optionNameId": "recommend_definitely" }
+        ]
+      ]
+    },
+
+    "testimonial_permission": {
+      "nameId": "testimonial_permission",
+      "visible": true,
+      "type": "radio",
+      "label": "May we use your feedback as a testimonial on our website?",
+      "required": false,
+      "value": {
+        "options": [
+          { "nameId": "testimonial_yes_name", "label": "Yes, with my name" },
+          { "nameId": "testimonial_yes_anonymous", "label": "Yes, but keep me anonymous" },
+          { "nameId": "testimonial_no", "label": "No, please don't" }
+        ]
+      },
+      "dependsOn": [
+        [
+          { "questionNameId": "overall_satisfaction", "optionNameId": "sat_very_satisfied" },
+          { "questionNameId": "would_recommend", "optionNameId": "recommend_definitely" }
+        ]
+      ]
+    },
+
+    "improvement_suggestions": {
+      "nameId": "improvement_suggestions",
+      "visible": true,
+      "type": "text_area",
+      "label": "Any suggestions for how we can improve?",
+      "required": false,
+      "value": {
+        "placeholder": "Your ideas help us get better...",
+        "min": 5,
+        "max": 1000
+      }
+    },
+
+    "subscribe_newsletter": {
+      "nameId": "subscribe_newsletter",
+      "visible": true,
+      "type": "radio",
+      "label": "Would you like to receive exclusive offers and updates?",
+      "required": true,
+      "value": {
+        "options": [
+          { "nameId": "subscribe_yes", "label": "Yes, sign me up!" },
+          { "nameId": "subscribe_no", "label": "No thanks" }
+        ]
+      }
+    },
+
+    "callback_phone": {
+      "nameId": "callback_phone",
+      "visible": true,
+      "type": "telephone",
+      "label": "Best phone number to reach you",
+      "required": true,
+      "value": {
+        "placeholder": "+1 (555) 123-4567"
+      }
+    },
+
+    "callback_time": {
+      "nameId": "callback_time",
+      "visible": true,
+      "type": "radio",
+      "label": "Preferred time for callback",
+      "required": true,
+      "value": {
+        "options": [
+          { "nameId": "time_morning", "label": "Morning (9am - 12pm)" },
+          { "nameId": "time_afternoon", "label": "Afternoon (12pm - 5pm)" },
+          { "nameId": "time_evening", "label": "Evening (5pm - 8pm)" }
+        ]
+      }
+    }
+  },
+
+  "groups": {
+    "grp_experience": {
+      "nameId": "grp_experience",
+      "title": "Your Experience",
+      "description": "Tell us about your shopping experience",
+      "isExternalSurvey": false,
+      "questionsIds": [
+        "overall_satisfaction",
+        "product_quality",
+        "product_as_described",
+        "delivery_speed",
+        "packaging_condition",
+        "would_recommend"
+      ]
+    },
+
+    "grp_issues": {
+      "nameId": "grp_issues",
+      "title": "Issues & Problems",
+      "description": "Let us know if anything went wrong",
+      "isExternalSurvey": false,
+      "questionsIds": [
+        "issues_experienced",
+        "wrong_item_details",
+        "missing_item_details",
+        "defective_product_photo",
+        "size_fit_details"
+      ]
+    },
+
+    "grp_detailed_feedback": {
+      "nameId": "grp_detailed_feedback",
+      "title": "Tell Us More",
+      "description": "We'd love to hear more details",
+      "isExternalSurvey": false,
+      "questionsIds": [
+        "dissatisfaction_reason",
+        "positive_feedback",
+        "testimonial_permission",
+        "improvement_suggestions"
+      ],
+      "dependsOn": [
+        [
+          { "questionNameId": "overall_satisfaction", "optionNameId": "sat_very_satisfied" }
+        ],
+        [
+          { "questionNameId": "overall_satisfaction", "optionNameId": "sat_satisfied" }
+        ],
+        [
+          { "questionNameId": "overall_satisfaction", "optionNameId": "sat_dissatisfied" }
+        ],
+        [
+          { "questionNameId": "overall_satisfaction", "optionNameId": "sat_very_dissatisfied" }
+        ]
+      ]
+    },
+
+    "grp_callback": {
+      "nameId": "grp_callback",
+      "title": "Request a Callback",
+      "description": "We'll reach out to resolve your issue",
+      "isExternalSurvey": false,
+      "questionsIds": [
+        "critical_issue_callback",
+        "callback_phone",
+        "callback_time"
+      ],
+      "dependsOn": [
+        [
+          { "questionNameId": "overall_satisfaction", "optionNameId": "sat_very_dissatisfied" }
+        ],
+        [
+          { "questionNameId": "issues_experienced", "optionNameId": "issue_wrong_item" }
+        ],
+        [
+          { "questionNameId": "issues_experienced", "optionNameId": "issue_defective" }
+        ],
+        [
+          { "questionNameId": "packaging_condition", "optionNameId": "packaging_damaged" }
+        ]
+      ]
+    },
+
+    "grp_closing": {
+      "nameId": "grp_closing",
+      "title": "Almost Done!",
+      "description": "Just one more question",
+      "isExternalSurvey": false,
+      "questionsIds": ["subscribe_newsletter"]
+    }
+  },
+
+  "groupsOrder": [
+    "grp_experience",
+    "grp_issues",
+    "grp_detailed_feedback",
+    "grp_callback",
+    "grp_closing"
+  ]
+}
+

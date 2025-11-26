@@ -111,6 +111,22 @@ type DependsOn struct {
 - Only removes the specific condition referencing the deleted question
 - If an AND group becomes empty, the entire AND group is removed
 
+### Asset File Constraints
+All asset types (image, video, audio, document) in `question/types/asset/` have `MaxFiles` and `MinFiles` fields.
+
+**Default value handling**:
+- Both fields default to 0 when not specified in JSON (due to `omitempty`)
+- Consuming code should treat 0 as default value of 1
+- This is NOT handled by the library - consuming applications must implement this logic
+
+**Validation tags**:
+```go
+MaxFiles int `json:"maxFiles,omitempty" bson:"maxFiles,omitempty" validate:"omitempty,min=1"`
+MinFiles int `json:"minFiles,omitempty" bson:"minFiles,omitempty" validate:"omitempty,min=0"`
+```
+
+**Note**: The `reviewer/asset.go` currently does not validate file count constraints - this should be implemented by consuming applications or added to the reviewer in the future.
+
 ### Validation Workflow
 1. Structural validation using validator tags
 2. Consistency checks for cross-references

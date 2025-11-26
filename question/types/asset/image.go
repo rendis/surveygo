@@ -36,4 +36,18 @@ type ImageAsset struct {
 	// Validations:
 	// - optional
 	AllowedContentTypes []string `json:"allowedContentTypes,omitempty" bson:"allowedContentTypes,omitempty" validate:"omitempty"`
+
+	// MaxFiles is the maximum number of files that can be uploaded.
+	// Validations:
+	// - optional
+	// - if defined, must be >= 1
+	// Note: consuming code should treat 0 as default value of 1
+	MaxFiles int `json:"maxFiles,omitempty" bson:"maxFiles,omitempty" validate:"omitempty,min=1"`
+
+	// MinFiles is the minimum number of files that must be uploaded.
+	// Validations:
+	// - optional
+	// - if defined, must be >= 0
+	// Note: consuming code should treat 0 as default value of 1
+	MinFiles int `json:"minFiles,omitempty" bson:"minFiles,omitempty" validate:"omitempty,min=0"`
 }
