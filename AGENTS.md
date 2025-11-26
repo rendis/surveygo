@@ -111,6 +111,29 @@ type DependsOn struct {
 - Only removes the specific condition referencing the deleted question
 - If an AND group becomes empty, the entire AND group is removed
 
+**Visibility Engine** (`operation_answers.go`):
+The visibility engine evaluates `dependsOn` conditions against provided answers during `ReviewAnswers()`.
+
+Functions:
+- `evaluateDependsOn(dependsOn, ans)` - Main entry point, evaluates OR logic (any AND group matches = visible)
+- `evaluateAndGroup(andGroup, ans)` - Evaluates AND logic (all conditions must be true)
+- `evaluateCondition(dep, ans)` - Checks if `questionNameId` exists in answers with `optionNameId` selected
+
+Usage in `getVisibleQuestionFromActiveGroups(ans)`:
+```go
+// Groups are visible if: !Hidden && !Disabled && dependsOn satisfied
+if !s.evaluateDependsOn(group.DependsOn, ans) {
+    continue  // skip group
+}
+
+// Questions are visible if: Visible && dependsOn satisfied
+if !s.evaluateDependsOn(q.DependsOn, ans) {
+    continue  // skip question
+}
+```
+
+**Behavior**: Questions/groups with unsatisfied `dependsOn` are excluded from `getSurveyResume()`, meaning they don't count toward totals and required questions with unsatisfied conditions are not expected to be answered.
+
 ### Asset File Constraints
 All asset types (image, video, audio, document) in `question/types/asset/` have `MaxFiles` and `MinFiles` fields.
 

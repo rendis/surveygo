@@ -2,7 +2,9 @@ package surveygo
 
 import (
 	"fmt"
+
 	"github.com/rendis/devtoolkit"
+	"github.com/rendis/surveygo/v2/question"
 	"github.com/rendis/surveygo/v2/question/types"
 	"github.com/rendis/surveygo/v2/question/types/choice"
 	"github.com/rendis/surveygo/v2/reviewer"
@@ -34,7 +36,7 @@ func (s *Survey) ReviewAnswers(ans Answers) (*SurveyResume, error) {
 		return &SurveyResume{InvalidAnswers: invalidAnswers}, nil
 	}
 
-	return s.getSurveyResume(correctAnswersCount, groupsCount), nil
+	return s.getSurveyResume(ans, correctAnswersCount, groupsCount), nil
 }
 
 // TranslateAnswers translates the nameIDs of the answers to the values provided in each question (if any, otherwise the nameID is used).
@@ -355,7 +357,7 @@ func (s *Survey) reviewNameId(nameId string, values []any, correctAnswersCount m
 }
 
 // getSurveyResume returns the resume of the survey based on the answers provided.
-func (s *Survey) getSurveyResume(correctAnswersCount map[string]int, groupsCount map[string]int) *SurveyResume {
+func (s *Survey) getSurveyResume(ans Answers, correctAnswersCount map[string]int, groupsCount map[string]int) *SurveyResume {
 	var resume = &SurveyResume{
 		TotalsResume: TotalsResume{
 			UnansweredQuestions: make(map[string]bool),
@@ -364,7 +366,7 @@ func (s *Survey) getSurveyResume(correctAnswersCount map[string]int, groupsCount
 		ExternalSurveyIds: make(map[string]string),
 	}
 
-	visibleQuestionWithGroup := s.getVisibleQuestionFromActiveGroups()
+	visibleQuestionWithGroup := s.getVisibleQuestionFromActiveGroups(ans)
 
 	for questionId, groupId := range visibleQuestionWithGroup {
 		q := s.Questions[questionId]
@@ -415,23 +417,90 @@ func (s *Survey) getSurveyResume(correctAnswersCount map[string]int, groupsCount
 	return resume
 }
 
-// getVisibleQuestionFromActiveGroups returns a maps with the visible questions within its active groups nameId.
-// and active groups are the groups that are visible and enabled.
-func (s *Survey) getVisibleQuestionFromActiveGroups() map[string]string {
+// getVisibleQuestionFromActiveGroups returns a map with the visible questions within its active groups nameId.
+// Active groups are groups that are visible, enabled, and satisfy their dependsOn conditions.
+// Visible questions are questions that are visible and satisfy their dependsOn conditions.
+func (s *Survey) getVisibleQuestionFromActiveGroups(ans Answers) map[string]string {
 	var questionWithGroup = map[string]string{}
 	for _, group := range s.Groups {
 		// skip hidden && disabled groups
 		if group.Hidden || group.Disabled {
 			continue
 		}
+
+		// skip groups that don't satisfy their dependsOn conditions
+		if !s.evaluateDependsOn(group.DependsOn, ans) {
+			continue
+		}
+
 		for _, questionNameId := range group.QuestionsIds {
-			// get only visible question
-			if q, ok := s.Questions[questionNameId]; ok && q.Visible {
-				questionWithGroup[questionNameId] = group.NameId
+			q, ok := s.Questions[questionNameId]
+			if !ok {
+				continue
 			}
+
+			// skip non-visible questions
+			if !q.Visible {
+				continue
+			}
+
+			// skip questions that don't satisfy their dependsOn conditions
+			if !s.evaluateDependsOn(q.DependsOn, ans) {
+				continue
+			}
+
+			questionWithGroup[questionNameId] = group.NameId
 		}
 	}
 	return questionWithGroup
+}
+
+// evaluateDependsOn checks if the dependsOn conditions are satisfied based on the provided answers.
+// Returns true if:
+// - dependsOn is empty (no conditions)
+// - At least one OR group (outer array) is satisfied, where an OR group is satisfied if ALL its AND conditions (inner array) are met
+func (s *Survey) evaluateDependsOn(dependsOn [][]question.DependsOn, ans Answers) bool {
+	// no dependsOn means always visible
+	if len(dependsOn) == 0 {
+		return true
+	}
+
+	// check each OR group - at least one must be satisfied
+	for _, andGroup := range dependsOn {
+		if s.evaluateAndGroup(andGroup, ans) {
+			return true
+		}
+	}
+
+	return false
+}
+
+// evaluateAndGroup checks if all conditions in an AND group are satisfied.
+func (s *Survey) evaluateAndGroup(andGroup []question.DependsOn, ans Answers) bool {
+	for _, dep := range andGroup {
+		if !s.evaluateCondition(dep, ans) {
+			return false
+		}
+	}
+	return true
+}
+
+// evaluateCondition checks if a single dependsOn condition is satisfied.
+// A condition is satisfied if the referenced question has the referenced option selected in the answers.
+func (s *Survey) evaluateCondition(dep question.DependsOn, ans Answers) bool {
+	answers, ok := ans[dep.QuestionNameId]
+	if !ok {
+		return false
+	}
+
+	// check if any answer matches the required optionNameId
+	for _, answer := range answers {
+		if ansStr, ok := answer.(string); ok && ansStr == dep.OptionNameId {
+			return true
+		}
+	}
+
+	return false
 }
 
 func (s *Survey) isQuestion(nameId string) bool {

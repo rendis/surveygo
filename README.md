@@ -97,6 +97,11 @@ Both questions and groups can have a `dependsOn` field that controls their visib
 
 **Note**: `dependsOn` can only reference choice-type questions (single_select, multi_select, radio, checkbox, toggle).
 
+**Visibility during answer review**: When `ReviewAnswers()` is called, questions and groups with unsatisfied `dependsOn` conditions are automatically excluded from the survey resume. This means:
+- They are NOT counted in `TotalQuestions` or `TotalRequiredQuestions`
+- They do NOT appear in `UnansweredQuestions`
+- Required questions with unsatisfied `dependsOn` are not expected to be answered
+
 ## Question Structures
 
 ### Types of Questions
