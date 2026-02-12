@@ -245,3 +245,22 @@ MinFiles int `json:"minFiles,omitempty" bson:"minFiles,omitempty" validate:"omit
 - Standard library for JSON handling
 - `github.com/expr-lang/expr` for AnswerExpr expression evaluation
 - `github.com/go-echarts/go-echarts/v2` for tree visualization in render package
+
+## Agent Skill
+
+An [Agent Skill](https://agentskills.io/specification) is bundled at `skills/surveygo/`. It provides AI coding agents with structured guidance for consuming this library.
+
+**Structure:**
+
+- `skills/surveygo/SKILL.md` — Core: quick start, workflows, gotchas
+- `skills/surveygo/references/api.md` — Full exported API (structs, methods, signatures)
+- `skills/surveygo/references/question-types.md` — All question types with fields and cast functions
+- `skills/surveygo/references/render.md` — Render package API and output types
+
+**Installation (Claude Code):**
+
+```bash
+ln -s /path/to/surveygo/skills/surveygo ~/.claude/skills/surveygo
+```
+
+A distributable `skills/surveygo.skill` package is also available.

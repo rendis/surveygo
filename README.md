@@ -262,6 +262,18 @@ For the complete list of available functions and methods, please refer to the fi
 - [operation_group.go](operation_group.go): Operations on groups (add, remove, etc.).
 - [operation_question.go](operation_question.go): Operations on questions (add, remove, etc.).
 
+## Agent Skill
+
+An [Agent Skill](https://agentskills.io/specification) is included at [`skills/surveygo/`](skills/surveygo/) for AI coding agents (Claude Code, etc.). It provides structured guidance for consuming this library: workflows, API reference, question types, and render package docs.
+
+Install in Claude Code:
+
+```bash
+ln -s /path/to/surveygo/skills/surveygo ~/.claude/skills/surveygo
+```
+
+Or use the distributable package: `skills/surveygo.skill`
+
 ## Render Package
 
 The `render` package (`github.com/rendis/surveygo/v2/render`) provides survey output generation from survey definitions and answers.
