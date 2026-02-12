@@ -49,11 +49,11 @@ func buildSections(node *GroupNode, survey *surveygo.Survey, gqIndex map[string]
 		return buildGroupSection(node, survey, gqIndex, answers)
 	}
 
-	if len(node.Children) == 0 {
-		return []Section{buildRepeatTableSection(node, survey, gqIndex, answers)}
+	if node.RepeatDescendants > 0 || subtreeHasMultiSelect(node, gqIndex) {
+		return []Section{buildRepeatListSection(node, survey, gqIndex, answers)}
 	}
 
-	return []Section{buildRepeatListSection(node, survey, gqIndex, answers)}
+	return []Section{buildRepeatTableSection(node, survey, gqIndex, answers)}
 }
 
 func buildGroupSection(node *GroupNode, survey *surveygo.Survey, gqIndex map[string]GroupQuestions, answers surveygo.Answers) []Section {
@@ -87,12 +87,12 @@ func buildRepeatTableSection(node *GroupNode, survey *surveygo.Survey, gqIndex m
 		Title:  derefStr(grp.Title),
 	}
 
-	gq, ok := gqIndex[grp.NameId]
-	if !ok {
+	allQuestions := collectSubtreeQuestions(node, gqIndex)
+	if len(allQuestions) == 0 {
 		return sec
 	}
 
-	for _, qi := range gq.Questions {
+	for _, qi := range allQuestions {
 		col := Column{
 			NameId:    qi.NameId,
 			Label:     qi.Label,
@@ -112,7 +112,7 @@ func buildRepeatTableSection(node *GroupNode, survey *surveygo.Survey, gqIndex m
 	instances := extractGroupInstances(answers[grp.NameId])
 	for _, inst := range instances {
 		row := make(Row)
-		for _, qi := range gq.Questions {
+		for _, qi := range allQuestions {
 			row[qi.NameId] = resolveValue(qi, inst)
 		}
 		sec.Rows = append(sec.Rows, row)
@@ -224,6 +224,37 @@ func resolveValue(qi QuestionInfo, answers surveygo.Answers) any {
 	default:
 		return extractTextValue(ans)
 	}
+}
+
+// subtreeHasMultiSelect returns true if the node or any descendant has
+// multi_select or checkbox questions.
+func subtreeHasMultiSelect(node *GroupNode, gqIndex map[string]GroupQuestions) bool {
+	if gq, ok := gqIndex[node.NameId]; ok {
+		for _, qi := range gq.Questions {
+			if multiSelectTypes[qi.QuestionType] {
+				return true
+			}
+		}
+	}
+	for _, child := range node.Children {
+		if subtreeHasMultiSelect(child, gqIndex) {
+			return true
+		}
+	}
+	return false
+}
+
+// collectSubtreeQuestions collects all questions from the node and its
+// descendants in DFS order, flattening sub-group questions into a single slice.
+func collectSubtreeQuestions(node *GroupNode, gqIndex map[string]GroupQuestions) []QuestionInfo {
+	var all []QuestionInfo
+	if gq, ok := gqIndex[node.NameId]; ok {
+		all = append(all, gq.Questions...)
+	}
+	for _, child := range node.Children {
+		all = append(all, collectSubtreeQuestions(child, gqIndex)...)
+	}
+	return all
 }
 
 func fieldTypeFromQuestion(qi QuestionInfo) string {
