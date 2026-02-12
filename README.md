@@ -12,7 +12,7 @@
 <p align="center">
   <a href="https://go.dev"><img src="https://img.shields.io/badge/Go-1.25+-00ADD8?style=flat&logo=go" alt="Go Version"></a>
   <a href="https://pkg.go.dev/github.com/rendis/surveygo/v2"><img src="https://pkg.go.dev/badge/github.com/rendis/surveygo/v2.svg" alt="Go Reference"></a>
-  <a href="LICENSE"><img src="https://img.shields.io/badge/License-GPLv3-blue.svg" alt="License"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License"></a>
   <a href="https://goreportcard.com/report/github.com/rendis/surveygo"><img src="https://goreportcard.com/badge/github.com/rendis/surveygo" alt="Go Report Card"></a>
   <a href="https://github.com/rendis/surveygo/releases"><img src="https://img.shields.io/github/v/release/rendis/surveygo" alt="Latest Release"></a>
   <a href="https://github.com/rendis/surveygo/commits/master"><img src="https://img.shields.io/github/last-commit/rendis/surveygo" alt="Last Commit"></a>
@@ -351,7 +351,7 @@ Or use the distributable package: `skills/surveygo.skill`
 
 ## License
 
-[GPLv3](LICENSE) -- Copyright (c) rendis
+[MIT](LICENSE) -- Copyright (c) 2025 rendis
 
 ---
 
