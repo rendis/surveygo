@@ -57,6 +57,13 @@ type BaseQuestion struct {
 	// DependsOn is a list of lists of questions and options that the question depends on.
 	// The outer lists are evaluated as logical OR, and the inner lists are evaluated as logical AND.
 	DependsOn [][]DependsOn `json:"dependsOn,omitempty" bson:"dependsOn,omitempty"`
+
+	// AnswerExpr is an optional expression for custom answer processing,
+	// evaluated by the expr-lang/expr engine (https://github.com/expr-lang/expr).
+	// When set, the expression result replaces the default type-based extraction in outputs.
+	// Environment: ans ([]any) + options (map[nameId]label, only for choice types).
+	// When empty, default type-based logic applies.
+	AnswerExpr string `json:"answerExpr,omitempty" bson:"answerExpr,omitempty"`
 }
 
 // Question is a struct that represents a question in a survey.
