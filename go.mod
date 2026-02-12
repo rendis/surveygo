@@ -1,8 +1,10 @@
 module github.com/rendis/surveygo/v2
 
-go 1.20
+go 1.25
 
 require (
+	github.com/expr-lang/expr v1.17.7
+	github.com/go-echarts/go-echarts/v2 v2.4.6
 	github.com/go-playground/locales v0.14.1
 	github.com/go-playground/universal-translator v0.18.1
 	github.com/go-playground/validator/v10 v10.16.0
@@ -12,6 +14,7 @@ require (
 
 require (
 	github.com/gabriel-vasile/mimetype v1.4.3 // indirect
+	github.com/kr/text v0.2.0 // indirect
 	github.com/leodido/go-urn v1.2.4 // indirect
 	golang.org/x/crypto v0.16.0 // indirect
 	golang.org/x/net v0.19.0 // indirect
