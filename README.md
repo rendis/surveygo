@@ -26,7 +26,7 @@ Go library for building, validating, and rendering dynamic surveys with conditio
 
 <p align="center">
   <img src="assets/card-screenshot.png" alt="HTML Survey Card" width="400">
-  &nbsp;&nbsp;
+    
   <img src="assets/tree-screenshot.png" alt="Definition Tree" width="400">
 </p>
 
