@@ -106,12 +106,22 @@ type TipTapMark struct {
 	Attrs map[string]any `json:"attrs,omitempty"`
 }
 
+// CheckMark defines the strings used for selected/not-selected marks in CSV
+// output for multi-select, checkbox, and toggle columns.
+// When nil, defaults to "true"/"false".
+type CheckMark struct {
+	Selected    string
+	NotSelected string
+}
+
 // OutputOptions specifies which output formats to generate.
 type OutputOptions struct {
 	CSV    bool
 	JSON   bool
 	HTML   bool
 	TipTap bool
+
+	CheckMark *CheckMark // CSV boolean columns; nil = "true"/"false"
 }
 
 // HTMLResult contains HTML body and CSS as separate byte slices.

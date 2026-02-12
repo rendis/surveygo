@@ -22,7 +22,7 @@ type csvColumn struct {
 	optionID   string // non-empty for multi_select/checkbox boolean columns
 }
 
-func generateCSV(survey *surveygo.Survey, tree *GroupTree, questions []GroupQuestions, answers surveygo.Answers) ([]byte, error) {
+func generateCSV(survey *surveygo.Survey, tree *GroupTree, questions []GroupQuestions, answers surveygo.Answers, cm *CheckMark) ([]byte, error) {
 	gqIndex := make(map[string]GroupQuestions, len(questions))
 	for _, gq := range questions {
 		gqIndex[gq.GroupNameId] = gq
@@ -37,7 +37,7 @@ func generateCSV(survey *surveygo.Survey, tree *GroupTree, questions []GroupQues
 	// 2. Build rows via cartesian product DFS.
 	rows := []map[string]string{make(map[string]string)}
 	for _, root := range tree.Roots {
-		rows = fillRows(root, answers, survey, gqIndex, cols, rows)
+		rows = fillRows(root, answers, survey, gqIndex, cols, rows, cm)
 	}
 
 	// 3. Write CSV.
@@ -105,19 +105,19 @@ func buildColumns(node *GroupNode, survey *surveygo.Survey, gqIndex map[string]G
 	}
 }
 
-func fillRows(node *GroupNode, answers surveygo.Answers, survey *surveygo.Survey, gqIndex map[string]GroupQuestions, cols []csvColumn, rows []map[string]string) []map[string]string {
+func fillRows(node *GroupNode, answers surveygo.Answers, survey *surveygo.Survey, gqIndex map[string]GroupQuestions, cols []csvColumn, rows []map[string]string, cm *CheckMark) []map[string]string {
 	if node.AllowRepeat {
-		rows = expandRepeatGroup(node, answers, survey, gqIndex, cols, rows)
+		rows = expandRepeatGroup(node, answers, survey, gqIndex, cols, rows, cm)
 	} else {
-		fillGroupValues(node, answers, gqIndex, rows)
+		fillGroupValues(node, answers, gqIndex, rows, cm)
 		for _, child := range node.Children {
-			rows = fillRows(child, answers, survey, gqIndex, cols, rows)
+			rows = fillRows(child, answers, survey, gqIndex, cols, rows, cm)
 		}
 	}
 	return rows
 }
 
-func expandRepeatGroup(node *GroupNode, answers surveygo.Answers, survey *surveygo.Survey, gqIndex map[string]GroupQuestions, cols []csvColumn, rows []map[string]string) []map[string]string {
+func expandRepeatGroup(node *GroupNode, answers surveygo.Answers, survey *surveygo.Survey, gqIndex map[string]GroupQuestions, cols []csvColumn, rows []map[string]string, cm *CheckMark) []map[string]string {
 	instances := extractGroupInstances(answers[node.NameId])
 	if len(instances) == 0 {
 		return rows
@@ -127,7 +127,7 @@ func expandRepeatGroup(node *GroupNode, answers surveygo.Answers, survey *survey
 	for _, inst := range instances {
 		for _, row := range rows {
 			cloned := cloneRow(row)
-			fillGroupValues(node, inst, gqIndex, []map[string]string{cloned})
+			fillGroupValues(node, inst, gqIndex, []map[string]string{cloned}, cm)
 			expanded = append(expanded, cloned)
 		}
 	}
@@ -140,7 +140,7 @@ func expandRepeatGroup(node *GroupNode, answers surveygo.Answers, survey *survey
 		batch := expanded[start:end]
 
 		for _, child := range node.Children {
-			batch = fillRows(child, inst, survey, gqIndex, cols, batch)
+			batch = fillRows(child, inst, survey, gqIndex, cols, batch, cm)
 		}
 		result = append(result, batch...)
 	}
@@ -148,10 +148,15 @@ func expandRepeatGroup(node *GroupNode, answers surveygo.Answers, survey *survey
 	return result
 }
 
-func fillGroupValues(node *GroupNode, answers surveygo.Answers, gqIndex map[string]GroupQuestions, rows []map[string]string) {
+func fillGroupValues(node *GroupNode, answers surveygo.Answers, gqIndex map[string]GroupQuestions, rows []map[string]string, cm *CheckMark) {
 	gq, ok := gqIndex[node.NameId]
 	if !ok {
 		return
+	}
+
+	selMark, notSelMark := "true", "false"
+	if cm != nil {
+		selMark, notSelMark = cm.Selected, cm.NotSelected
 	}
 
 	for _, q := range gq.Questions {
@@ -173,16 +178,16 @@ func fillGroupValues(node *GroupNode, answers surveygo.Answers, gqIndex map[stri
 			}
 			for _, opt := range q.Options {
 				colName := optionHeader(q, opt)
-				val := "false"
+				val := notSelMark
 				if selected[opt.NameId] {
-					val = "true"
+					val = selMark
 				}
 				for _, row := range rows {
 					row[colName] = val
 				}
 			}
 		} else {
-			val := extractCSVValue(q.QuestionType, ans)
+			val := extractCSVValue(q.QuestionType, ans, selMark, notSelMark)
 			for _, row := range rows {
 				row[questionHeader(q)] = val
 			}
@@ -190,7 +195,7 @@ func fillGroupValues(node *GroupNode, answers surveygo.Answers, gqIndex map[stri
 	}
 }
 
-func extractCSVValue(qType string, ans []any) string {
+func extractCSVValue(qType string, ans []any, selMark, notSelMark string) string {
 	switch qType {
 	case "input_text", "email", "date_time", "identification_number":
 		return extractTextValue(ans)
@@ -205,7 +210,10 @@ func extractCSVValue(qType string, ans []any) string {
 		}
 		return val
 	case "toggle":
-		return fmt.Sprintf("%v", extractToggleValue(ans))
+		if extractToggleValue(ans) {
+			return selMark
+		}
+		return notSelMark
 	default:
 		return extractTextValue(ans)
 	}

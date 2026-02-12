@@ -7,7 +7,9 @@ import (
 )
 
 // AnswersToCSV generates a CSV from survey answers.
-func AnswersToCSV(survey *surveygo.Survey, answers surveygo.Answers) ([]byte, error) {
+// An optional CheckMark controls the strings used for selected/not-selected
+// marks in multi-select, checkbox, and toggle columns. Defaults to "true"/"false".
+func AnswersToCSV(survey *surveygo.Survey, answers surveygo.Answers, checkMark ...*CheckMark) ([]byte, error) {
 	tree, err := buildGroupTree(survey)
 	if err != nil {
 		return nil, fmt.Errorf("building group tree: %w", err)
@@ -16,7 +18,11 @@ func AnswersToCSV(survey *surveygo.Survey, answers surveygo.Answers) ([]byte, er
 	if err != nil {
 		return nil, fmt.Errorf("extracting questions: %w", err)
 	}
-	return generateCSV(survey, tree, questions, answers)
+	var cm *CheckMark
+	if len(checkMark) > 0 {
+		cm = checkMark[0]
+	}
+	return generateCSV(survey, tree, questions, answers, cm)
 }
 
 // AnswersToJSON builds a structured SurveyCard from survey answers.
@@ -70,7 +76,7 @@ func AnswersTo(survey *surveygo.Survey, answers surveygo.Answers, opts OutputOpt
 	result := &AnswersResult{}
 
 	if opts.CSV {
-		result.CSV, err = generateCSV(survey, tree, questions, answers)
+		result.CSV, err = generateCSV(survey, tree, questions, answers, opts.CheckMark)
 		if err != nil {
 			return nil, fmt.Errorf("generating CSV: %w", err)
 		}
