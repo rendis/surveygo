@@ -62,10 +62,11 @@ type SurveyCard struct {
     Sections []Section `json:"sections"`
 }
 
-// Section.Type determines which fields are populated:
-// - "group": uses Fields
-// - "repeat-table": uses Columns + Rows
-// - "repeat-list": uses Instances
+// Section.Type determined by truth table:
+//   AllowRepeat=false                                          → "group" (Fields)
+//   AllowRepeat=true, RepeatDescendants > 0                    → "repeat-list" (Instances)
+//   AllowRepeat=true, RepeatDescendants=0, has multi_select    → "repeat-list" (Instances)
+//   AllowRepeat=true, RepeatDescendants=0, no multi_select     → "repeat-table" (Columns+Rows, flattens descendant questions)
 type Section struct {
     Type      string     `json:"type"`
     NameId    string     `json:"nameId"`

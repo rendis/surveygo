@@ -86,7 +86,11 @@ Internal files (all unexported):
 - `tree.go`: `buildGroupTree` — DFS group hierarchy with cycle detection; computes `RepeatDescendants` (count of `AllowRepeat` descendants per node)
 - `questions.go`: `extractGroupQuestions` — adapts `*question.Question` → `QuestionInfo`
 - `expr_eval.go`: expr-lang/expr evaluation with silent fallback
-- `card.go`: `buildSurveyCard` — structured card with resolved answers
+- `card.go`: `buildSurveyCard` — structured card with resolved answers. Section type truth table:
+  - `AllowRepeat=false` → `group` (flat)
+  - `AllowRepeat=true, RepeatDescendants > 0` → `repeat-list`
+  - `AllowRepeat=true, RepeatDescendants=0, has multi_select/checkbox` → `repeat-list`
+  - `AllowRepeat=true, RepeatDescendants=0, no multi_select/checkbox` → `repeat-table` (flattens descendant questions into columns)
 - `csv.go`: `generateCSV` — cartesian product expansion for repeat groups
 - `html.go`: `generateHTML`, `defaultCSS` — HTML rendering
 - `tiptap.go`: `buildTipTapDoc` — TipTap document
