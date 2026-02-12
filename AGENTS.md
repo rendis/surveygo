@@ -70,7 +70,7 @@ Survey output generation. Single entry point in `render.go` — all other functi
 
 Public API (`render.go`):
 
-- `AnswersToCSV(survey, answers)` → CSV bytes
+- `AnswersToCSV(survey, answers, checkMark...*CheckMark)` → CSV bytes
 - `AnswersToJSON(survey, answers)` → `*SurveyCard`
 - `AnswersToHTML(survey, answers)` → `*HTMLResult` (HTML + CSS independent). `HTMLResult.WithCSSPath(path)` replaces CSS href
 - `AnswersToTipTap(survey, answers)` → `*TipTapNode`
@@ -81,7 +81,7 @@ Public API (`render.go`):
 
 Internal files (all unexported):
 
-- `types.go`: Types (GroupTree, SurveyCard, OutputOptions, AnswersResult, TreeResult, etc.)
+- `types.go`: Types (GroupTree, SurveyCard, OutputOptions, CheckMark, AnswersResult, TreeResult, etc.)
 - `answers.go`: Answer extraction helpers (extractTextValue, extractPhoneValue, etc.)
 - `tree.go`: `buildGroupTree` — DFS group hierarchy with cycle detection
 - `questions.go`: `extractGroupQuestions` — adapts `*question.Question` → `QuestionInfo`
@@ -137,6 +137,22 @@ Optional `AnswerExpr` field on `BaseQuestion` (`question/question.go`). Evaluate
 - Silent fallback: returns `(nil, false)` on error — lib never writes to stderr
 - Used by render package in `resolveValue()` (`card.go`) to override default type-based extraction
 - When empty, default per-type logic applies (ExtractTextValue, ExtractPhoneValue, etc.)
+
+### CheckMark (CSV Boolean Column Customization)
+
+`CheckMark` (`render/types.go`) customizes the strings used for selected/not-selected marks in CSV boolean columns (multi_select, checkbox, toggle).
+
+```go
+type CheckMark struct {
+    Selected    string // e.g. "x", "Yes", "✅"
+    NotSelected string // e.g. "", "No", "-"
+}
+```
+
+- Pass via `AnswersToCSV(survey, answers, &CheckMark{...})` or `OutputOptions.CheckMark`
+- When nil, defaults to `"true"`/`"false"` (backward-compatible)
+- Affects: multi_select, checkbox (one column per option), toggle (single column)
+- Does NOT affect single_select/radio (these write the option label, not a boolean)
 
 ### Survey Structure Rules
 
