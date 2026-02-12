@@ -80,6 +80,10 @@ func toEchartsTree(node *GroupNode) *opts.TreeData {
 		td.ItemStyle = &opts.ItemStyle{Color: "#2196F3", BorderColor: "#1565C0"}
 	}
 
+	if node.RepeatDescendants > 0 {
+		td.Name += fmt.Sprintf(" [%d\u21bb]", node.RepeatDescendants)
+	}
+
 	for _, child := range node.Children {
 		td.Children = append(td.Children, toEchartsTree(child))
 	}

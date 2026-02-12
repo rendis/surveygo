@@ -144,9 +144,10 @@ type GroupTree struct {
 }
 
 type GroupNode struct {
-    NameId      string       `json:"nameId"`
-    AllowRepeat bool         `json:"allowRepeat,omitempty"`
-    Children    []*GroupNode `json:"children,omitempty"`
+    NameId            string       `json:"nameId"`
+    AllowRepeat       bool         `json:"allowRepeat,omitempty"`
+    RepeatDescendants int          `json:"repeatDescendants"`          // count of AllowRepeat descendants (recursive, excludes self)
+    Children          []*GroupNode `json:"children,omitempty"`
 }
 ```
 

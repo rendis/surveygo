@@ -1,0 +1,11 @@
+{
+  "student_name": ["Agustin"],
+  "student_age": ["10"],
+  "student_type_select": ["new"],
+  "grp-new_student": [
+    {
+      "new_student_doc_type": ["birth_cert"],
+      "new_student_allergies": ["Ninguna"]
+    }
+  ]
+}

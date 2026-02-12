@@ -195,6 +195,63 @@ func TestBuildGroupTree_MissingGroup(t *testing.T) {
 	}
 }
 
+func TestBuildGroupTree_RepeatDescendants(t *testing.T) {
+	// Tree:
+	//   grp-root (not repeat)
+	//     grp-a (repeat)
+	//       grp-a1 (repeat)
+	//       grp-a2 (not repeat)
+	//     grp-b (not repeat)
+	//       grp-b1 (repeat)
+	//
+	// Expected RepeatDescendants:
+	//   grp-root = 3 (grp-a + grp-a1 + grp-b1)
+	//   grp-a    = 1 (grp-a1)
+	//   grp-a1   = 0
+	//   grp-a2   = 0
+	//   grp-b    = 1 (grp-b1)
+	//   grp-b1   = 0
+	survey := &surveygo.Survey{
+		NameId:      "test",
+		Title:       "Test",
+		Version:     "1",
+		GroupsOrder: []string{"grp-root"},
+		Groups: map[string]*question.Group{
+			"grp-root": {NameId: "grp-root", GroupsOrder: []string{"grp-a", "grp-b"}},
+			"grp-a":    {NameId: "grp-a", AllowRepeat: true, GroupsOrder: []string{"grp-a1", "grp-a2"}},
+			"grp-a1":   {NameId: "grp-a1", AllowRepeat: true},
+			"grp-a2":   {NameId: "grp-a2"},
+			"grp-b":    {NameId: "grp-b", GroupsOrder: []string{"grp-b1"}},
+			"grp-b1":   {NameId: "grp-b1", AllowRepeat: true},
+		},
+		Questions: map[string]*question.Question{},
+	}
+
+	tree, err := buildGroupTree(survey)
+	if err != nil {
+		t.Fatalf("unexpected error: %s", err)
+	}
+
+	want := map[string]int{
+		"grp-root": 3,
+		"grp-a":    1,
+		"grp-a1":   0,
+		"grp-a2":   0,
+		"grp-b":    1,
+		"grp-b1":   0,
+	}
+
+	for nameId, expected := range want {
+		node, ok := tree.Index[nameId]
+		if !ok {
+			t.Fatalf("node %q not found in index", nameId)
+		}
+		if node.RepeatDescendants != expected {
+			t.Errorf("%s: RepeatDescendants = %d, want %d", nameId, node.RepeatDescendants, expected)
+		}
+	}
+}
+
 func TestBuildGroupTree_MissingQuestion(t *testing.T) {
 	survey := &surveygo.Survey{
 		NameId:      "test",

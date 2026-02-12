@@ -1,0 +1,19 @@
+{
+  "student_name": ["Camila"],
+  "student_age": ["8"],
+  "student_type_select": ["new"],
+  "grp-new_student": [
+    {
+      "new_student_doc_type": ["birth_cert"],
+      "new_student_allergies": ["Polen, mariscos"]
+    },
+    {
+      "new_student_doc_type": ["passport"],
+      "new_student_allergies": ["Ninguna"]
+    },
+    {
+      "new_student_doc_type": ["birth_cert"],
+      "new_student_allergies": ["Lactosa"]
+    }
+  ]
+}

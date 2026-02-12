@@ -1,0 +1,66 @@
+{
+  "company_name": ["Tether SpA"],
+  "company_rut": ["76.543.210-K"],
+  "company_industry": ["tech"],
+  "addr_region": ["Metropolitana"],
+  "addr_comuna": ["Providencia"],
+  "addr_street": ["Av. Andrés Bello"],
+  "addr_number": ["2711"],
+  "addr_phone": ["+56", "222334455"],
+  "grp-departments": [
+    {
+      "dept_name": ["Ingeniería"],
+      "dept_floor": ["5"],
+      "dept_active": [true],
+      "grp-dept_employees": [
+        {
+          "emp_name": ["Ana Torres"],
+          "emp_rut": ["11.111.111-1"],
+          "emp_email": ["ana.torres@tether.cl"],
+          "emp_position": ["dev"],
+          "emp_contract_type": [["fulltime", "Jornada Completa"], ["remote", "Teletrabajo"]],
+          "emp_start_date": ["15/03/2021"]
+        },
+        {
+          "emp_name": ["Carlos Muñoz"],
+          "emp_rut": ["22.222.222-2"],
+          "emp_email": ["carlos.munoz@tether.cl"],
+          "emp_position": ["mgr"],
+          "emp_contract_type": [["fulltime", "Jornada Completa"]],
+          "emp_start_date": ["01/01/2019"]
+        },
+        {
+          "emp_name": ["Beatriz Vega"],
+          "emp_rut": ["33.333.333-3"],
+          "emp_email": ["beatriz.vega@tether.cl"],
+          "emp_position": ["analyst"],
+          "emp_contract_type": [["parttime", "Media Jornada"], ["remote", "Teletrabajo"]],
+          "emp_start_date": ["10/08/2023"]
+        }
+      ]
+    },
+    {
+      "dept_name": ["Recursos Humanos"],
+      "dept_floor": ["3"],
+      "dept_active": [true],
+      "grp-dept_employees": [
+        {
+          "emp_name": ["Daniela Ríos"],
+          "emp_rut": ["44.444.444-4"],
+          "emp_email": ["daniela.rios@tether.cl"],
+          "emp_position": ["admin"],
+          "emp_contract_type": [["fulltime", "Jornada Completa"]],
+          "emp_start_date": ["20/06/2020"]
+        },
+        {
+          "emp_name": ["Eduardo Pinto"],
+          "emp_rut": ["55.555.555-5"],
+          "emp_email": ["eduardo.pinto@tether.cl"],
+          "emp_position": ["mgr"],
+          "emp_contract_type": [["fulltime", "Jornada Completa"], ["remote", "Teletrabajo"]],
+          "emp_start_date": ["05/02/2018"]
+        }
+      ]
+    }
+  ]
+}

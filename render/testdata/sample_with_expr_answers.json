@@ -1,0 +1,20 @@
+{
+  "grp-person": [
+    {
+      "first_name": ["Juan"],
+      "last_name": ["Perez"],
+      "phone": ["+56", "912345678"],
+      "id_type": ["run"],
+      "emergency_contact": ["true"],
+      "permissions": [["pickup", "Retirar alumno"], ["digital", "Contenido digital"]]
+    },
+    {
+      "first_name": ["Maria"],
+      "last_name": ["Gonzalez"],
+      "phone": ["+56", "987654321"],
+      "id_type": ["passport"],
+      "emergency_contact": ["false"],
+      "permissions": [["pickup", "Retirar alumno"], ["medical", "Autorizacion medica"]]
+    }
+  ]
+}

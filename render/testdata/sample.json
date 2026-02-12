@@ -1,0 +1,198 @@
+{
+  "nameId": "reponsible-adults-info-survey",
+  "version": "1",
+  "title": "Registro público - Información adultos responsables",
+  "description": "Formulario para completar la información de los adultos responsables",
+  "groups": {
+    "grp-adult": {
+      "nameId": "grp-adult",
+      "title": "Adulto Responsable",
+      "description": "Agregar adulto responsable",
+      "groupsOrder": [
+        "grp-adult_name",
+        "grp-adult_id",
+        "grp-adult_contact_info",
+        "grp-adult_permissions_info",
+        "grp-adult_emergency_contact_info"
+      ],
+      "visible": true,
+      "allowRepeat": true
+    },
+    "grp-adult_name": {
+      "nameId": "grp-adult_name",
+      "title": "Identificación Adulto Responsable",
+      "description": "Nombre completo",
+      "questionsIds": [
+        "adult_first_name",
+        "adult_middle_name",
+        "adult_first_last_name",
+        "adult_second_last_name"
+      ],
+      "visible": true
+    },
+    "grp-adult_id": {
+      "nameId": "grp-adult_id",
+      "title": "Identificación Adulto Responsable",
+      "description": "Número identificación",
+      "questionsIds": ["adult_id_type", "adult_id_number"],
+      "visible": true
+    },
+    "grp-adult_contact_info": {
+      "nameId": "grp-adult_contact_info",
+      "title": "Identificación Adulto Responsable",
+      "description": "Contacto y relación con estudiante",
+      "questionsIds": [
+        "adult_email",
+        "adult_cellphone",
+        "adult_relationship_with_student"
+      ],
+      "visible": true
+    },
+    "grp-adult_permissions_info": {
+      "nameId": "grp-adult_permissions_info",
+      "title": "Permisos Asociados",
+      "description": "Permisos adulto responsable",
+      "questionsIds": ["adult_permissions"],
+      "visible": true
+    },
+    "grp-adult_emergency_contact_info": {
+      "nameId": "grp-adult_emergency_contact_info",
+      "title": "Permisos Asociados",
+      "description": "Permisos adulto responsable",
+      "questionsIds": ["adult_emergency_contact"],
+      "visible": true
+    }
+  },
+  "groupsOrder": ["grp-adult"],
+  "questions": {
+    "adult_first_name": {
+      "nameId": "adult_first_name",
+      "visible": true,
+      "type": "input_text",
+      "value": { "placeholder": "Primer Nombre" },
+      "metadata": { "requiredForFront": true }
+    },
+    "adult_middle_name": {
+      "nameId": "adult_middle_name",
+      "visible": true,
+      "type": "input_text",
+      "value": { "placeholder": "Segundo Nombre (opcional)" }
+    },
+    "adult_first_last_name": {
+      "nameId": "adult_first_last_name",
+      "visible": true,
+      "type": "input_text",
+      "value": { "placeholder": "Primer Apellido" },
+      "metadata": { "requiredForFront": true }
+    },
+    "adult_second_last_name": {
+      "nameId": "adult_second_last_name",
+      "visible": true,
+      "type": "input_text",
+      "value": { "placeholder": "Segundo Apellido (opcional)" }
+    },
+    "adult_id_type": {
+      "nameId": "adult_id_type",
+      "visible": true,
+      "type": "single_select",
+      "value": {
+        "placeholder": "Tipo de Identificación",
+        "defaults": ["run"],
+        "options": [
+          {
+            "nameId": "run",
+            "label": "RUN (Rol Único Nacional)",
+            "value": "1",
+            "metadata": { "validate": true }
+          },
+          {
+            "nameId": "ipa",
+            "label": "IPA (Identificador Provisorio del Apoderado)",
+            "value": "3",
+            "metadata": { "validate": true }
+          },
+          { "nameId": "passport", "label": "Pasaporte", "value": "4" }
+        ]
+      },
+      "metadata": { "requiredForFront": true }
+    },
+    "adult_id_number": {
+      "nameId": "adult_id_number",
+      "visible": true,
+      "type": "identification_number",
+      "value": {
+        "placeholder": "Número de Identificación",
+        "metadata": {
+          "error": "Número de identificación no cumple con el formato xxxxxxxx-x"
+        }
+      },
+      "metadata": { "requiredForFront": true }
+    },
+    "adult_email": {
+      "nameId": "adult_email",
+      "visible": true,
+      "type": "email",
+      "value": { "placeholder": "Correo" },
+      "metadata": { "requiredForFront": true }
+    },
+    "adult_relationship_with_student": {
+      "nameId": "adult_relationship_with_student",
+      "visible": true,
+      "type": "external_question",
+      "label": "Parentezco con el estudiante",
+      "metadata": {
+        "keyMapper": { "nameId": "id", "label": "relationship_name" },
+        "autocomplete": true,
+        "sourceUrl": "https://api.tether.education/core/chile/registration/relationship_types",
+        "requiredForFront": true
+      },
+      "value": {
+        "placeholder": "Seleccione un parentezco",
+        "externalType": "external_source_single_select"
+      }
+    },
+    "adult_cellphone": {
+      "nameId": "adult_cellphone",
+      "visible": true,
+      "type": "telephone",
+      "value": {
+        "placeholder": "Celular",
+        "metadata": {
+          "repeat": true,
+          "repeatLabel": "Escríbelo nuevamente",
+          "error": "Número de contacto no coincide",
+          "requiredForFront": true
+        }
+      }
+    },
+    "adult_permissions": {
+      "nameId": "adult_permissions",
+      "visible": true,
+      "type": "multi_select",
+      "label": "Seleccione los permisos que tiene el adulto responsable:",
+      "metadata": { "requiredForFront": true },
+      "value": {
+        "options": [
+          { "nameId": "pickup", "label": "Retirar al alumno del colegio" },
+          {
+            "nameId": "access_to_digital_content",
+            "label": "Recibir contenido digital del estudiante (fotos, videos, etc)"
+          }
+        ]
+      }
+    },
+    "adult_emergency_contact": {
+      "nameId": "adult_emergency_contact",
+      "visible": true,
+      "type": "radio",
+      "metadata": { "requiredForFront": true },
+      "value": {
+        "placeholder": "¿Desea que este adulto responsable sea un contacto de emergencia?",
+        "options": [
+          { "nameId": "true", "label": "Si" },
+          { "nameId": "false", "label": "No" }
+        ]
+      }
+    }
+  }
+}

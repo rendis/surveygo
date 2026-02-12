@@ -1,0 +1,7 @@
+{
+  "student_name": ["Matias"],
+  "student_age": ["15"],
+  "student_type_select": ["returning"],
+  "returning_prev_year": ["2024"],
+  "returning_reason": ["Reingreso por motivos familiares"]
+}

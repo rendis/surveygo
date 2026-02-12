@@ -14,3 +14,6 @@
 # Jetbrain
 .idea
 settings.local.json
+
+# Render test output (generated, not committed)
+render/testdata/output/

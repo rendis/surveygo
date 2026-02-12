@@ -1,0 +1,97 @@
+{
+  "nameId": "expr-test-survey",
+  "version": "1",
+  "title": "Test Survey - AnswerExpr",
+  "description": "Survey to test expr-lang answer processing",
+  "groups": {
+    "grp-person": {
+      "nameId": "grp-person",
+      "title": "Persona",
+      "groupsOrder": ["grp-person_name", "grp-person_contact", "grp-person_prefs"],
+      "visible": true,
+      "allowRepeat": true
+    },
+    "grp-person_name": {
+      "nameId": "grp-person_name",
+      "title": "Nombre",
+      "questionsIds": ["first_name", "last_name"],
+      "visible": true
+    },
+    "grp-person_contact": {
+      "nameId": "grp-person_contact",
+      "title": "Contacto",
+      "questionsIds": ["phone", "id_type", "emergency_contact"],
+      "visible": true
+    },
+    "grp-person_prefs": {
+      "nameId": "grp-person_prefs",
+      "title": "Preferencias",
+      "questionsIds": ["permissions"],
+      "visible": true
+    }
+  },
+  "groupsOrder": ["grp-person"],
+  "questions": {
+    "first_name": {
+      "nameId": "first_name",
+      "visible": true,
+      "type": "input_text",
+      "value": { "placeholder": "Primer Nombre" }
+    },
+    "last_name": {
+      "nameId": "last_name",
+      "visible": true,
+      "type": "input_text",
+      "value": { "placeholder": "Apellido" }
+    },
+    "phone": {
+      "nameId": "phone",
+      "visible": true,
+      "type": "telephone",
+      "value": { "placeholder": "Telefono" },
+      "answerExpr": "ans[1]"
+    },
+    "id_type": {
+      "nameId": "id_type",
+      "visible": true,
+      "type": "single_select",
+      "label": "Tipo Identificacion",
+      "value": {
+        "placeholder": "Tipo ID",
+        "options": [
+          { "nameId": "run", "label": "RUN", "value": "1" },
+          { "nameId": "passport", "label": "Pasaporte", "value": "2" }
+        ]
+      },
+      "answerExpr": "options[ans[0]]"
+    },
+    "emergency_contact": {
+      "nameId": "emergency_contact",
+      "visible": true,
+      "type": "radio",
+      "label": "Contacto de Emergencia",
+      "value": {
+        "placeholder": "Es contacto de emergencia?",
+        "options": [
+          { "nameId": "true", "label": "Si" },
+          { "nameId": "false", "label": "No" }
+        ]
+      },
+      "answerExpr": "options[ans[0]]"
+    },
+    "permissions": {
+      "nameId": "permissions",
+      "visible": true,
+      "type": "multi_select",
+      "label": "Permisos",
+      "value": {
+        "options": [
+          { "nameId": "pickup", "label": "Retirar alumno" },
+          { "nameId": "digital", "label": "Contenido digital" },
+          { "nameId": "medical", "label": "Autorizacion medica" }
+        ]
+      },
+      "answerExpr": "map(ans, options[#[0]]) | join(\", \")"
+    }
+  }
+}

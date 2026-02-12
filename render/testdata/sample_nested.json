@@ -1,0 +1,235 @@
+{
+  "nameId": "company-registry-survey",
+  "version": "1",
+  "title": "Registro de Empresa y Departamentos",
+  "description": "Formulario con grupos anidados en múltiples niveles",
+  "groups": {
+    "grp-company": {
+      "nameId": "grp-company",
+      "title": "Empresa",
+      "description": "Información de la empresa",
+      "groupsOrder": [
+        "grp-company_info",
+        "grp-company_address",
+        "grp-departments"
+      ],
+      "visible": true
+    },
+    "grp-company_info": {
+      "nameId": "grp-company_info",
+      "title": "Datos de la Empresa",
+      "description": "Nombre y RUT",
+      "questionsIds": ["company_name", "company_rut", "company_industry"],
+      "visible": true
+    },
+    "grp-company_address": {
+      "nameId": "grp-company_address",
+      "title": "Dirección",
+      "description": "Dirección completa",
+      "groupsOrder": [
+        "grp-addr_location",
+        "grp-addr_detail"
+      ],
+      "visible": true
+    },
+    "grp-addr_location": {
+      "nameId": "grp-addr_location",
+      "title": "Ubicación",
+      "description": "Región y comuna",
+      "questionsIds": ["addr_region", "addr_comuna"],
+      "visible": true
+    },
+    "grp-addr_detail": {
+      "nameId": "grp-addr_detail",
+      "title": "Detalle Dirección",
+      "description": "Calle y número",
+      "questionsIds": ["addr_street", "addr_number", "addr_phone"],
+      "visible": true
+    },
+    "grp-departments": {
+      "nameId": "grp-departments",
+      "title": "Departamentos",
+      "description": "Departamentos de la empresa",
+      "groupsOrder": [
+        "grp-dept_info",
+        "grp-dept_employees"
+      ],
+      "visible": true,
+      "allowRepeat": true
+    },
+    "grp-dept_info": {
+      "nameId": "grp-dept_info",
+      "title": "Info Departamento",
+      "description": "Nombre y piso",
+      "questionsIds": ["dept_name", "dept_floor", "dept_active"],
+      "visible": true
+    },
+    "grp-dept_employees": {
+      "nameId": "grp-dept_employees",
+      "title": "Empleados",
+      "description": "Empleados del departamento",
+      "groupsOrder": [
+        "grp-emp_basic",
+        "grp-emp_role"
+      ],
+      "visible": true,
+      "allowRepeat": true
+    },
+    "grp-emp_basic": {
+      "nameId": "grp-emp_basic",
+      "title": "Datos Empleado",
+      "description": "Nombre e identificación",
+      "questionsIds": ["emp_name", "emp_rut", "emp_email"],
+      "visible": true
+    },
+    "grp-emp_role": {
+      "nameId": "grp-emp_role",
+      "title": "Cargo",
+      "description": "Cargo y fecha ingreso",
+      "questionsIds": ["emp_position", "emp_contract_type", "emp_start_date"],
+      "visible": true
+    }
+  },
+  "groupsOrder": ["grp-company"],
+  "questions": {
+    "company_name": {
+      "nameId": "company_name",
+      "visible": true,
+      "type": "input_text",
+      "value": { "placeholder": "Razón Social" },
+      "metadata": { "requiredForFront": true }
+    },
+    "company_rut": {
+      "nameId": "company_rut",
+      "visible": true,
+      "type": "identification_number",
+      "value": { "placeholder": "RUT Empresa" },
+      "metadata": { "requiredForFront": true }
+    },
+    "company_industry": {
+      "nameId": "company_industry",
+      "visible": true,
+      "type": "single_select",
+      "value": {
+        "placeholder": "Rubro",
+        "options": [
+          { "nameId": "tech", "label": "Tecnología", "value": "1" },
+          { "nameId": "edu", "label": "Educación", "value": "2" },
+          { "nameId": "health", "label": "Salud", "value": "3" },
+          { "nameId": "retail", "label": "Retail", "value": "4" }
+        ]
+      }
+    },
+    "addr_region": {
+      "nameId": "addr_region",
+      "visible": true,
+      "type": "input_text",
+      "value": { "placeholder": "Región" }
+    },
+    "addr_comuna": {
+      "nameId": "addr_comuna",
+      "visible": true,
+      "type": "input_text",
+      "value": { "placeholder": "Comuna" }
+    },
+    "addr_street": {
+      "nameId": "addr_street",
+      "visible": true,
+      "type": "input_text",
+      "value": { "placeholder": "Calle" }
+    },
+    "addr_number": {
+      "nameId": "addr_number",
+      "visible": true,
+      "type": "input_text",
+      "value": { "placeholder": "Número" }
+    },
+    "addr_phone": {
+      "nameId": "addr_phone",
+      "visible": true,
+      "type": "telephone",
+      "value": { "placeholder": "Teléfono Oficina" }
+    },
+    "dept_name": {
+      "nameId": "dept_name",
+      "visible": true,
+      "type": "input_text",
+      "value": { "placeholder": "Nombre Departamento" },
+      "metadata": { "requiredForFront": true }
+    },
+    "dept_floor": {
+      "nameId": "dept_floor",
+      "visible": true,
+      "type": "input_text",
+      "value": { "placeholder": "Piso" }
+    },
+    "dept_active": {
+      "nameId": "dept_active",
+      "visible": true,
+      "type": "toggle",
+      "value": {
+        "placeholder": "¿Departamento activo?",
+        "options": [
+          { "nameId": "toggle-on", "label": "Sí" },
+          { "nameId": "toggle-off", "label": "No" }
+        ]
+      }
+    },
+    "emp_name": {
+      "nameId": "emp_name",
+      "visible": true,
+      "type": "input_text",
+      "value": { "placeholder": "Nombre Completo" },
+      "metadata": { "requiredForFront": true }
+    },
+    "emp_rut": {
+      "nameId": "emp_rut",
+      "visible": true,
+      "type": "identification_number",
+      "value": { "placeholder": "RUT Empleado" }
+    },
+    "emp_email": {
+      "nameId": "emp_email",
+      "visible": true,
+      "type": "email",
+      "value": { "placeholder": "Correo Empleado" }
+    },
+    "emp_position": {
+      "nameId": "emp_position",
+      "visible": true,
+      "type": "single_select",
+      "value": {
+        "placeholder": "Cargo",
+        "options": [
+          { "nameId": "dev", "label": "Desarrollador", "value": "1" },
+          { "nameId": "mgr", "label": "Gerente", "value": "2" },
+          { "nameId": "analyst", "label": "Analista", "value": "3" },
+          { "nameId": "admin", "label": "Administrativo", "value": "4" }
+        ]
+      }
+    },
+    "emp_contract_type": {
+      "nameId": "emp_contract_type",
+      "visible": true,
+      "type": "multi_select",
+      "label": "Tipo de Contrato",
+      "value": {
+        "options": [
+          { "nameId": "fulltime", "label": "Jornada Completa" },
+          { "nameId": "parttime", "label": "Media Jornada" },
+          { "nameId": "remote", "label": "Teletrabajo" }
+        ]
+      }
+    },
+    "emp_start_date": {
+      "nameId": "emp_start_date",
+      "visible": true,
+      "type": "date_time",
+      "value": {
+        "placeholder": "Fecha Ingreso",
+        "format": "dd/MM/yyyy",
+        "type": "date"
+      }
+    }
+  }
+}

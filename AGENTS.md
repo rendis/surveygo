@@ -83,7 +83,7 @@ Internal files (all unexported):
 
 - `types.go`: Types (GroupTree, SurveyCard, OutputOptions, CheckMark, AnswersResult, TreeResult, etc.)
 - `answers.go`: Answer extraction helpers (extractTextValue, extractPhoneValue, etc.)
-- `tree.go`: `buildGroupTree` — DFS group hierarchy with cycle detection
+- `tree.go`: `buildGroupTree` — DFS group hierarchy with cycle detection; computes `RepeatDescendants` (count of `AllowRepeat` descendants per node)
 - `questions.go`: `extractGroupQuestions` — adapts `*question.Question` → `QuestionInfo`
 - `expr_eval.go`: expr-lang/expr evaluation with silent fallback
 - `card.go`: `buildSurveyCard` — structured card with resolved answers

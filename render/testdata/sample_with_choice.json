@@ -1,0 +1,173 @@
+{
+  "nameId": "student-enrollment-survey",
+  "version": "1",
+  "title": "Matricula Estudiante",
+  "description": "Formulario de matricula con ramificacion por tipo de estudiante",
+  "groups": {
+    "grp-student": {
+      "nameId": "grp-student",
+      "title": "Estudiante",
+      "description": "Info estudiante",
+      "groupsOrder": [
+        "grp-student_basic",
+        "grp-student_type"
+      ],
+      "visible": true,
+      "allowRepeat": false
+    },
+    "grp-student_basic": {
+      "nameId": "grp-student_basic",
+      "title": "Info Basica",
+      "description": "Nombre del estudiante",
+      "questionsIds": ["student_name", "student_age"],
+      "visible": true
+    },
+    "grp-student_type": {
+      "nameId": "grp-student_type",
+      "title": "Tipo Estudiante",
+      "description": "Seleccion tipo de estudiante",
+      "questionsIds": ["student_type_select"],
+      "visible": true
+    },
+    "grp-new_student": {
+      "nameId": "grp-new_student",
+      "title": "Estudiante Nuevo",
+      "description": "Info para estudiante nuevo",
+      "groupsOrder": [
+        "grp-new_student_docs",
+        "grp-new_student_health"
+      ],
+      "visible": true,
+      "allowRepeat": true
+    },
+    "grp-new_student_docs": {
+      "nameId": "grp-new_student_docs",
+      "title": "Documentos",
+      "description": "Documentos requeridos",
+      "questionsIds": ["new_student_doc_type"],
+      "visible": true
+    },
+    "grp-new_student_health": {
+      "nameId": "grp-new_student_health",
+      "title": "Salud",
+      "description": "Info salud",
+      "questionsIds": ["new_student_allergies"],
+      "visible": true
+    },
+    "grp-transfer_student": {
+      "nameId": "grp-transfer_student",
+      "title": "Estudiante Trasladado",
+      "description": "Info para trasladados",
+      "questionsIds": ["transfer_origin_school", "transfer_reason"],
+      "visible": true
+    },
+    "grp-returning_student": {
+      "nameId": "grp-returning_student",
+      "title": "Estudiante Reingreso",
+      "description": "Info para reingreso",
+      "groupsOrder": ["grp-returning_details"],
+      "visible": true
+    },
+    "grp-returning_details": {
+      "nameId": "grp-returning_details",
+      "title": "Detalles Reingreso",
+      "description": "Detalle del reingreso",
+      "questionsIds": ["returning_prev_year", "returning_reason"],
+      "visible": true
+    }
+  },
+  "groupsOrder": ["grp-student"],
+  "questions": {
+    "student_name": {
+      "nameId": "student_name",
+      "visible": true,
+      "type": "input_text",
+      "label": "Nombre completo",
+      "value": { "placeholder": "Nombre del estudiante" }
+    },
+    "student_age": {
+      "nameId": "student_age",
+      "visible": true,
+      "type": "input_text",
+      "label": "Edad",
+      "value": { "placeholder": "Edad" }
+    },
+    "student_type_select": {
+      "nameId": "student_type_select",
+      "visible": true,
+      "type": "single_select",
+      "label": "Tipo de estudiante",
+      "value": {
+        "placeholder": "Seleccione tipo de estudiante",
+        "options": [
+          {
+            "nameId": "new",
+            "label": "Estudiante Nuevo",
+            "value": "new",
+            "groupsIds": ["grp-new_student"]
+          },
+          {
+            "nameId": "transfer",
+            "label": "Estudiante Trasladado",
+            "value": "transfer",
+            "groupsIds": ["grp-transfer_student"]
+          },
+          {
+            "nameId": "returning",
+            "label": "Estudiante Reingreso",
+            "value": "returning",
+            "groupsIds": ["grp-returning_student"]
+          }
+        ]
+      }
+    },
+    "new_student_doc_type": {
+      "nameId": "new_student_doc_type",
+      "visible": true,
+      "type": "single_select",
+      "label": "Tipo de documento",
+      "value": {
+        "placeholder": "Seleccione documento",
+        "options": [
+          { "nameId": "birth_cert", "label": "Certificado de nacimiento", "value": "1" },
+          { "nameId": "passport", "label": "Pasaporte", "value": "2" }
+        ]
+      }
+    },
+    "new_student_allergies": {
+      "nameId": "new_student_allergies",
+      "visible": true,
+      "type": "input_text",
+      "label": "Alergias",
+      "value": { "placeholder": "Indique alergias conocidas" }
+    },
+    "transfer_origin_school": {
+      "nameId": "transfer_origin_school",
+      "visible": true,
+      "type": "input_text",
+      "label": "Colegio de origen",
+      "value": { "placeholder": "Nombre del colegio anterior" }
+    },
+    "transfer_reason": {
+      "nameId": "transfer_reason",
+      "visible": true,
+      "type": "input_text",
+      "label": "Motivo del traslado",
+      "value": { "placeholder": "Indique motivo" }
+    },
+    "returning_prev_year": {
+      "nameId": "returning_prev_year",
+      "visible": true,
+      "type": "input_text",
+      "label": "Ultimo año cursado",
+      "value": { "placeholder": "Año" }
+    },
+    "returning_reason": {
+      "nameId": "returning_reason",
+      "visible": true,
+      "type": "input_text",
+      "label": "Motivo de reingreso",
+      "value": { "placeholder": "Indique motivo" }
+    }
+  }
+}

@@ -78,6 +78,13 @@ func buildNode(nameID string, visiting map[string]bool, survey *surveygo.Survey,
 		}
 	}
 
+	for _, c := range node.Children {
+		node.RepeatDescendants += c.RepeatDescendants
+		if c.AllowRepeat {
+			node.RepeatDescendants++
+		}
+	}
+
 	tree.Index[nameID] = node
 	return node, nil
 }

@@ -1,0 +1,30 @@
+{
+  "grp-adult": [
+    {
+      "adult_first_name": ["Luis"],
+      "adult_middle_name": [""],
+      "adult_first_last_name": ["Torres"],
+      "adult_second_last_name": [""],
+      "adult_id_type": ["run"],
+      "adult_id_number": ["55555555-5"],
+      "adult_email": ["luis@mail.com"],
+      "adult_cellphone": ["+56", "955555555"],
+      "adult_relationship_with_student": ["14", "Padre"],
+      "adult_permissions": [["pickup", "Retirar al alumno del colegio"]],
+      "adult_emergency_contact": [true]
+    },
+    {
+      "adult_first_name": [123],
+      "adult_middle_name": [false],
+      "adult_first_last_name": [null],
+      "adult_second_last_name": [{"nested": "object"}],
+      "adult_id_type": [[]],
+      "adult_id_number": [true],
+      "adult_email": [42.5],
+      "adult_cellphone": [null, null],
+      "adult_relationship_with_student": [123, 456],
+      "adult_permissions": [[123, 456], [null, "text"]],
+      "adult_emergency_contact": ["yes"]
+    }
+  ]
+}

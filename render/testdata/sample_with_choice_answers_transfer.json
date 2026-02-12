@@ -1,0 +1,7 @@
+{
+  "student_name": ["Valentina"],
+  "student_age": ["12"],
+  "student_type_select": ["transfer"],
+  "transfer_origin_school": ["Colegio San Ignacio"],
+  "transfer_reason": ["Cambio de domicilio"]
+}

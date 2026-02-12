@@ -4,9 +4,10 @@ import "bytes"
 
 // GroupNode represents a node in the group hierarchy tree.
 type GroupNode struct {
-	NameId      string       `json:"nameId"`
-	AllowRepeat bool         `json:"allowRepeat,omitempty"`
-	Children    []*GroupNode `json:"children,omitempty"`
+	NameId            string       `json:"nameId"`
+	AllowRepeat       bool         `json:"allowRepeat,omitempty"`
+	RepeatDescendants int          `json:"repeatDescendants"`
+	Children          []*GroupNode `json:"children,omitempty"`
 }
 
 // GroupTree holds the hierarchical tree and a flat index for O(1) lookup.

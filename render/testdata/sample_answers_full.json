@@ -1,0 +1,43 @@
+{
+  "grp-adult": [
+    {
+      "adult_first_name": ["Juan"],
+      "adult_middle_name": ["Carlos"],
+      "adult_first_last_name": ["Perez"],
+      "adult_second_last_name": ["Lopez"],
+      "adult_id_type": ["run"],
+      "adult_id_number": ["12345678-9"],
+      "adult_email": ["juan.perez@mail.com"],
+      "adult_cellphone": ["+56", "912345678"],
+      "adult_relationship_with_student": ["14", "Padre"],
+      "adult_permissions": [["pickup", "Retirar al alumno del colegio"], ["access_to_digital_content", "Recibir contenido digital del estudiante (fotos, videos, etc)"]],
+      "adult_emergency_contact": ["true"]
+    },
+    {
+      "adult_first_name": ["Maria"],
+      "adult_middle_name": ["Elena"],
+      "adult_first_last_name": ["Gonzalez"],
+      "adult_second_last_name": ["Diaz"],
+      "adult_id_type": ["ipa"],
+      "adult_id_number": ["98765432-1"],
+      "adult_email": ["maria.gonzalez@mail.com"],
+      "adult_cellphone": ["+56", "987654321"],
+      "adult_relationship_with_student": ["3", "Madre"],
+      "adult_permissions": [["pickup", "Retirar al alumno del colegio"]],
+      "adult_emergency_contact": ["false"]
+    },
+    {
+      "adult_first_name": ["Pedro"],
+      "adult_middle_name": [""],
+      "adult_first_last_name": ["Soto"],
+      "adult_second_last_name": ["Vargas"],
+      "adult_id_type": ["passport"],
+      "adult_id_number": ["AB1234567"],
+      "adult_email": ["pedro.soto@mail.com"],
+      "adult_cellphone": ["+1", "5551234567"],
+      "adult_relationship_with_student": ["7", "Tio/a"],
+      "adult_permissions": [["access_to_digital_content", "Recibir contenido digital del estudiante (fotos, videos, etc)"]],
+      "adult_emergency_contact": ["true"]
+    }
+  ]
+}

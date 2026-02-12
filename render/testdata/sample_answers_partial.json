@@ -1,0 +1,11 @@
+{
+  "grp-adult": [
+    {
+      "adult_first_name": ["Ana"],
+      "adult_first_last_name": ["Muñoz"],
+      "adult_id_type": ["run"],
+      "adult_id_number": ["11111111-1"],
+      "adult_emergency_contact": ["true"]
+    }
+  ]
+}

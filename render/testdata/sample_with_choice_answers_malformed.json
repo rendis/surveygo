@@ -1,0 +1,20 @@
+{
+  "student_name": "no_es_array",
+  "student_age": 10,
+  "student_type_select": null,
+  "grp-new_student": [
+    {
+      "new_student_doc_type": [999],
+      "new_student_allergies": null
+    },
+    "esto_no_es_un_objeto",
+    null,
+    {
+      "new_student_doc_type": true,
+      "new_student_allergies": [["nested"]]
+    }
+  ],
+  "campo_inventado": ["valor"],
+  "transfer_origin_school": [null],
+  "returning_prev_year": [true, 2024, "mezclado"]
+}

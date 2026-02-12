@@ -1,0 +1,46 @@
+{
+  "grp-adult": [
+    {
+      "adult_first_name": 12345,
+      "adult_middle_name": null,
+      "adult_first_last_name": true,
+      "adult_second_last_name": ["Valido"],
+      "adult_id_type": [999],
+      "adult_id_number": [null],
+      "adult_email": [true, false],
+      "adult_cellphone": [123, 456],
+      "adult_relationship_with_student": [null, null],
+      "adult_permissions": "no_es_un_array",
+      "adult_emergency_contact": ["no_es_bool"]
+    },
+    {
+      "adult_first_name": [["nested", "array"]],
+      "adult_middle_name": [{}],
+      "adult_first_last_name": [],
+      "adult_second_last_name": [null, "extra"],
+      "adult_id_type": [true],
+      "adult_id_number": [12345678],
+      "adult_email": [{"key": "value"}],
+      "adult_cellphone": [],
+      "adult_relationship_with_student": [],
+      "adult_permissions": [null, 123, true, {"bad": "structure"}],
+      "adult_emergency_contact": [null]
+    },
+    "esto_no_es_un_objeto",
+    null,
+    42,
+    true,
+    {
+      "adult_first_name": ["Roberto"],
+      "adult_first_last_name": ["Silva"],
+      "campo_que_no_existe": ["valor random"],
+      "adult_id_type": ["run"],
+      "adult_id_number": ["33333333-3"],
+      "adult_email": ["roberto@mail.com"],
+      "adult_cellphone": ["+56", "933333333"],
+      "adult_relationship_with_student": ["1", "Abuelo/a"],
+      "adult_permissions": [["pickup", "Retirar al alumno del colegio"]],
+      "adult_emergency_contact": [true]
+    }
+  ]
+}
