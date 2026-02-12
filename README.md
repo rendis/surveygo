@@ -1,103 +1,181 @@
-# Survey Processing Library Documentation
+<p align="center">
+  <img src="assets/gopher.png" alt="SurveyGo Gopher" width="250"/>
+</p>
+
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/banner-dark.svg">
+    <img alt="SurveyGo — Dynamic surveys with validation and multi-format rendering" src="assets/banner-light.svg" width="100%">
+  </picture>
+</p>
+
+<p align="center">
+  <a href="https://go.dev"><img src="https://img.shields.io/badge/Go-1.25+-00ADD8?style=flat&logo=go" alt="Go Version"></a>
+  <a href="https://pkg.go.dev/github.com/rendis/surveygo/v2"><img src="https://pkg.go.dev/badge/github.com/rendis/surveygo/v2.svg" alt="Go Reference"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-GPLv3-blue.svg" alt="License"></a>
+  <a href="https://goreportcard.com/report/github.com/rendis/surveygo"><img src="https://goreportcard.com/badge/github.com/rendis/surveygo" alt="Go Report Card"></a>
+  <a href="https://github.com/rendis/surveygo/releases"><img src="https://img.shields.io/github/v/release/rendis/surveygo" alt="Latest Release"></a>
+  <a href="https://github.com/rendis/surveygo/commits/master"><img src="https://img.shields.io/github/last-commit/rendis/surveygo" alt="Last Commit"></a>
+  <a href="https://github.com/rendis/surveygo"><img src="https://img.shields.io/github/repo-size/rendis/surveygo" alt="Repo Size"></a>
+  <a href="https://github.com/rendis/surveygo/graphs/contributors"><img src="https://img.shields.io/github/contributors/rendis/surveygo" alt="Contributors"></a>
+  <a href="#ai-agent-skill"><img src="https://img.shields.io/badge/AI_Agents-Skill_Available-8A2BE2?style=flat" alt="AI Agent Skill"></a>
+  <a href="https://deepwiki.com/rendis/surveygo"><img src="https://deepwiki.com/badge.svg" alt="Ask DeepWiki"></a>
+</p>
+
+Go library for building, validating, and rendering dynamic surveys with conditional logic, grouped questions, and multi-format output (CSV, HTML, JSON, TipTap).
 
 ## Table of Contents
 
-- [Survey Processing Library Documentation](#survey-processing-library-documentation)
-  - [Table of Contents](#table-of-contents)
-  - [Overview](#overview)
-    - [Definitions and Rules within a survey](#definitions-and-rules-within-a-survey)
-  - [Base Structures](#base-structures)
-    - [Survey](#survey)
-    - [Question](#question)
-    - [Group](#group)
-    - [DependsOn (Conditional Logic)](#dependson-conditional-logic)
-  - [Question Structures](#question-structures)
-    - [Types of Questions](#types-of-questions)
-      - [Choice](#choice)
-      - [Text](#text)
-      - [External Questions](#external-questions)
-    - [Choice](#choice-1)
-    - [Text](#text-1)
-    - [External Question](#external-question)
-    - [Asset](#asset)
-      - [Types of Assets](#types-of-assets)
-      - [ImageAsset](#imageasset)
-      - [VideoAsset](#videoasset)
-      - [AudioAsset](#audioasset)
-      - [DocumentAsset](#documentasset)
-  - [Functions](#functions)
-  - [Render Package](#render-package)
-    - [Usage](#usage)
-    - [Public API](#public-api)
-    - [AnswerExpr](#answerexpr)
+- [Table of Contents](#table-of-contents)
+- [Key Features](#key-features)
+- [Installation](#installation)
+- [Quick Start](#quick-start)
+  - [Parse \& Validate](#parse--validate)
+  - [Render Output](#render-output)
+  - [Build Programmatically](#build-programmatically)
+- [Question Types](#question-types)
+- [Conditional Logic (DependsOn)](#conditional-logic-dependson)
+- [Render Package](#render-package)
+  - [Answers to Outputs](#answers-to-outputs)
+  - [Definition Tree](#definition-tree)
+  - [CheckMark (CSV Boolean Columns)](#checkmark-csv-boolean-columns)
+- [AnswerExpr](#answerexpr)
+- [API Overview](#api-overview)
+  - [Construction \& Serialization](#construction--serialization)
+  - [Core Operations](#core-operations)
+  - [Question Management](#question-management)
+  - [Group Management](#group-management)
+  - [Query Helpers](#query-helpers)
+- [Testing](#testing)
+- [Documentation](#documentation)
+- [AI Agent Skill](#ai-agent-skill)
+  - [Install via skills.sh](#install-via-skillssh)
+  - [Install via symlink (Claude Code)](#install-via-symlink-claude-code)
+- [Tech Stack](#tech-stack)
+- [License](#license)
 
-## Overview
+## Key Features
 
-`surveygo` facilitates the creation and management of surveys. It provides data structures and methods for creating
-surveys, questions, and groups of questions, as well as handling validations.
+| Feature                  | Description                                                                                      |
+| ------------------------ | ------------------------------------------------------------------------------------------------ |
+| **20+ Question Types**   | Choice, text, asset, toggle, external, datetime                                                  |
+| **Conditional Logic**    | DependsOn (OR-of-ANDs) + option-triggered groups                                                 |
+| **Answer Validation**    | Type-specific reviewers with detailed error reporting                                            |
+| **Multi-Format Render**  | CSV, HTML, JSON (SurveyCard), TipTap in single pass                                              |
+| **Custom Expressions**   | [expr-lang/expr](https://github.com/expr-lang/expr) for answer transformation (AnswerExpr)       |
+| **Survey Visualization** | Interactive tree ([go-echarts](https://github.com/go-echarts/go-echarts)) + JSON group hierarchy |
+| **Runtime Modification** | Add/remove/update questions and groups dynamically                                               |
+| **Grouped Answers**      | Repeatable groups with cartesian CSV expansion                                                   |
+| **BSON Support**         | MongoDB-ready with BSON tags on all structs                                                      |
+| **Agent Skill**          | Built-in[AI coding agent](https://agentskills.io) guidance                                       |
 
-### Definitions and Rules within a survey
+## Installation
 
-- All `survey` structures will have a **unique** identifier called `nameId`.
-- Every reference to a `nameId` must be unique, or in other words:
-  - A question can only be associated with one group.
-  - A group can only be associated with one question or the initial set of groups `groupsOrder`.
+```bash
+go get github.com/rendis/surveygo/v2
+```
 
-## Base Structures
+```go
+import surveygo "github.com/rendis/surveygo/v2"
+import "github.com/rendis/surveygo/v2/render"
+```
 
-### Survey
+> **Requirements:** Go 1.25+
 
-Structure representing a complete survey.
+## Quick Start
 
-**Fields**
+### Parse & Validate
 
-- `title`: Survey title. (Required)
-- `version`: Survey version. (Required)
-- `description`: Survey description. (Optional)
-- `questions`: Map of questions. (Required)
-- `groups`: Map of groups. (Required)
-- `groupsOrder`: Order of the groups. (Required)
+```go
+// Parse survey from JSON
+survey, err := surveygo.ParseFromBytes(jsonData)
 
-### Question
+// Provide answers
+answers := surveygo.Answers{
+    "event_rating":  {"good"},
+    "favorite_game": {"zombie_apocalypse"},
+    "name":          {"John Doe"},
+    "email":         {"john@example.com"},
+}
 
-Structure representing a question within a survey.
+// Validate answers
+resume, err := survey.ReviewAnswers(answers)
+fmt.Printf("Answered: %d/%d\n", resume.TotalQuestionsAnswered, resume.TotalQuestions)
+fmt.Printf("Errors: %v\n", resume.InvalidAnswers)
+```
 
-**Fields**
+### Render Output
 
-- `nameId`: Question identifier. (Required)
-- `visible`: Indicates if the question is visible. (Required)
-- `type`: Type of the question. (Required)
-- `label`: Question label. (Required)
-- `required`: Indicates if the question is mandatory to answer. (Required)
-- `dependsOn`: Conditional visibility based on other question selections. (Optional)
-- `answerExpr`: Optional [expr-lang/expr](https://github.com/expr-lang/expr) expression for custom answer processing. When set, the expression result overrides default type-based extraction in render outputs. Environment: `ans` ([]any) + `options` (map[nameId]label, choice types only). (Optional)
-- `value`: Object representing the value of the question. Varies depending on the type of question. (Required)
+```go
+import "github.com/rendis/surveygo/v2/render"
 
-### Group
+// CSV
+csv, err := render.AnswersToCSV(survey, answers)
 
-Structure representing a group of questions in a survey.
+// HTML (independent CSS)
+html, err := render.AnswersToHTML(survey, answers)
+// html.HTML, html.CSS
+custom := html.WithCSSPath("/assets/survey.css") // replace CSS href
 
-**Fields**
+// TipTap document
+tiptap, err := render.AnswersToTipTap(survey, answers)
 
-- `nameId`: Group identifier. (Required)
-- `title`: Group title. (Optional)
-- `description`: Group description. (Optional)
-- `visible`: Indicates if the group is visible. (Required)
-- `isExternalSurvey`: Indicates if the group is an external survey. (Optional)
-- `questionsIds`: Identifiers of the questions that belong to the group. (Required)
-  <br>If the group is an external survey, this field will indicate the identifier of the external survey.
-- `dependsOn`: Conditional visibility based on other question selections. (Optional)
+// Multiple formats in one pass
+result, err := render.AnswersTo(survey, answers, render.OutputOptions{
+    CSV:  true,
+    JSON: true,
+    HTML: true,
+})
+// result.CSV, result.JSON, result.HTML, result.TipTap
+```
 
-### DependsOn (Conditional Logic)
+### Build Programmatically
 
-Both questions and groups can have a `dependsOn` field that controls their visibility based on selections in other questions.
+```go
+desc := "Annual feedback"
+survey, err := surveygo.NewSurvey("Event Survey", "1.0", &desc)
 
-**Structure**: `dependsOn` is an array of arrays (`[][]DependsOn`):
+// Add question from JSON
+err = survey.AddQuestionJson(`{
+    "nameId": "rating",
+    "visible": true,
+    "type": "radio",
+    "label": "How would you rate the event?",
+    "required": true,
+    "value": {
+        "options": [
+            {"nameId": "great", "label": "Great"},
+            {"nameId": "good", "label": "Good"},
+            {"nameId": "meh", "label": "Meh"}
+        ]
+    }
+}`)
 
-- **Outer array**: OR conditions (if ANY group matches, the element is visible)
-- **Inner array**: AND conditions (ALL conditions in a group must match)
+// Add to group
+err = survey.AddQuestionToGroup("rating", "grp-general", -1)
+```
 
-**Example** - Show element if user selected "terrible" rating OR (selected "meh" AND would not attend):
+See the [example/](example/) directory for complete working examples.
+
+## Question Types
+
+| Category     | Types                                                                                   | Description                                             |
+| ------------ | --------------------------------------------------------------------------------------- | ------------------------------------------------------- |
+| **Choice**   | `single_select`, `multi_select`, `radio`, `checkbox`                                    | Options with labels; can trigger groups via `groupsIds` |
+| **Toggle**   | `toggle`                                                                                | On/off switch with custom labels                        |
+| **Text**     | `input_text`, `text_area`, `email`, `telephone`, `information`, `identification_number` | Text input with type-specific validation                |
+| **DateTime** | `date_time`                                                                             | Date/time with configurable format                      |
+| **Asset**    | `image`, `video`, `audio`, `document`                                                   | File upload with size/type constraints                  |
+| **External** | `external_question`                                                                     | Integration with external survey systems                |
+
+> For complete field definitions and JSON structure, see [Survey Structure Reference](docs/SURVEY_STRUCTURE.md).
+
+## Conditional Logic (DependsOn)
+
+Questions and groups can have a `dependsOn` field that controls visibility based on selections in other questions. Structure is `[][]DependsOn` (OR of ANDs):
+
+- **Outer array**: OR conditions (any group matches = visible)
+- **Inner array**: AND conditions (all must match)
 
 ```json
 "dependsOn": [
@@ -109,229 +187,55 @@ Both questions and groups can have a `dependsOn` field that controls their visib
 ]
 ```
 
-**Note**: `dependsOn` can only reference choice-type questions (single_select, multi_select, radio, checkbox, toggle).
+This shows the element if the user selected "terrible" OR (selected "meh" AND would not attend).
 
-**Visibility during answer review**: When `ReviewAnswers()` is called, questions and groups with unsatisfied `dependsOn` conditions are automatically excluded from the survey resume. This means:
+During `ReviewAnswers()`, questions/groups with unsatisfied `dependsOn` are excluded from totals -- required questions with unmet conditions are not expected to be answered.
 
-- They are NOT counted in `TotalQuestions` or `TotalRequiredQuestions`
-- They do NOT appear in `UnansweredQuestions`
-- Required questions with unsatisfied `dependsOn` are not expected to be answered
-
-## Question Structures
-
-### Types of Questions
-
-#### Choice
-
-- `single_select`: Single select
-- `multi_select`: Multiple select
-- `radio`: Single select
-- `checkbox`: Multiple select
-
-#### Text
-
-- `email`: Email
-- `telephone`: Telephone
-- `text_area`: Free text
-- `input_text`: Free text
-- `information`: Information field, not editable
-
-#### External Questions
-
-- `external_question`: External question
-
-### Choice
-
-Structure for all questions in the `Choice` group.
-
-- `placeholder`: Placeholder text for the question. (Optional)
-- `defaults`: List of default values for the question. Each value must be a valid `nameId` of an option. (Optional)
-- `options`: Question options. (Required)
-  - `nameId`: Option identifier. (Required)
-  - `label`: Option label. (Required)
-  - `groupsIds`: Identifiers of the groups to be displayed when the option is selected. (Optional)
-
-### Text
-
-**Email** (`email`)
-
-- `placeholder`: Placeholder text for the question. (Optional)
-- `allowedDomains`: Allowed domains for the email. (Optional)
-
-**Telephone** (`telephone`)
-
-- `placeholder`: Placeholder text for the question. (Optional)
-- `allowedCountryCodes`: List of allowed country codes. (Optional)
-
-**FreeText** (`input_text` and `text_area`)
-
-- `placeholder`: Placeholder text for the question. (Optional)
-- `min`: Minimum length of the text. (Optional)
-- `max`: Maximum length of the text. (Optional)
-
-**Information** (`information`)
-
-- `text`: Text to be displayed. (Required)
-
-### External Question
-
-Used to create an external questions.
-
-**External Question** (`external_question`)
-
-- `placeholder`: Placeholder for the question. (Optional)
-- `defaults`: List of default values for the question. (Optional)
-- `questionType`: Type of the question. Refer to [Types of Questions](#types-of-questions). (Required)
-- `externalType`: Type of the external question. (Required)
-- `description`: Description of the external question. (Optional)
-- `src`: Source of the external question. (Optional)
-
-### Asset
-
-The `Asset` category includes question types designed to handle various types of multimedia assets such as images, videos, audios, and documents. These types allow the incorporation and management of multimedia content in surveys.
-
-#### Types of Assets
-
-- `image`: For images.
-- `video`: For videos.
-- `audio`: For audio files.
-- `document`: For documents.
-
-#### ImageAsset
-
-Represents an image type question.
-
-**Fields**
-
-- `altText`: Alternative text for improving accessibility. (Optional, max 255 characters)
-- `tags`: Keywords associated with the image. (Optional)
-- `metadata`: A map of key/value pairs for storing additional information. (Optional)
-- `maxSize`: Maximum allowed file size in bytes. (Optional, must be a positive number)
-- `allowedContentTypes`: List of permitted content types (e.g., "image/png", "image/jpeg"). (Optional)
-- `maxFiles`: Maximum number of files that can be uploaded. (Optional, default: 1)
-- `minFiles`: Minimum number of files that must be uploaded. (Optional, default: 1)
-
-#### VideoAsset
-
-Represents a video type question.
-
-**Fields**
-
-- `caption`: Description or additional information about the video. (Optional, max 255 characters)
-- `maxSize`: Maximum allowed file size in bytes. (Optional, must be a positive number)
-- `tags`: Keywords associated with the video. (Optional)
-- `metadata`: A map of key/value pairs for storing additional information. (Optional)
-- `allowedContentTypes`: List of permitted content types (e.g., "video/mp4", "video/ogg"). (Optional)
-- `maxFiles`: Maximum number of files that can be uploaded. (Optional, default: 1)
-- `minFiles`: Minimum number of files that must be uploaded. (Optional, default: 1)
-
-#### AudioAsset
-
-Represents an audio type question.
-
-**Fields**
-
-- `caption`: Description or additional information about the audio. (Optional, max 255 characters)
-- `maxSize`: Maximum allowed file size in bytes. (Optional, must be a positive number)
-- `tags`: Keywords associated with the audio. (Optional)
-- `metadata`: A map of key/value pairs for storing additional information. (Optional)
-- `allowedContentTypes`: List of permitted content types (e.g., "audio/mpeg", "audio/wav"). (Optional)
-- `maxFiles`: Maximum number of files that can be uploaded. (Optional, default: 1)
-- `minFiles`: Minimum number of files that must be uploaded. (Optional, default: 1)
-
-#### DocumentAsset
-
-Represents a document type question.
-
-**Fields**
-
-- `caption`: Description or additional information about the document. (Optional, max 255 characters)
-- `maxSize`: Maximum allowed file size in bytes. (Optional, must be a positive number)
-- `tags`: Keywords associated with the document. (Optional)
-- `metadata`: A map of key/value pairs for storing additional information. (Optional)
-- `allowedContentTypes`: List of permitted content types (e.g., "application/pdf", "application/msword"). (Optional)
-- `maxFiles`: Maximum number of files that can be uploaded. (Optional, default: 1)
-- `minFiles`: Minimum number of files that must be uploaded. (Optional, default: 1)
-
-## Functions
-
-For the complete list of available functions and methods, please refer to the files:
-
-- [operation.go](operation.go): Basic survey operations (construction, validation, answers review, etc.).
-- [operation_de_serializers.go](operation_de_serializers.go): Survey serialization and deserialization.
-- [operation_group.go](operation_group.go): Operations on groups (add, remove, etc.).
-- [operation_question.go](operation_question.go): Operations on questions (add, remove, etc.).
-
-## Agent Skill
-
-An [Agent Skill](https://agentskills.io/specification) is included at [`skills/surveygo/`](skills/surveygo/) for AI coding agents (Claude Code, etc.). It provides structured guidance for consuming this library: workflows, API reference, question types, and render package docs.
-
-Install in Claude Code:
-
-```bash
-ln -s /path/to/surveygo/skills/surveygo ~/.claude/skills/surveygo
-```
-
-Or use the distributable package: `skills/surveygo.skill`
+> `dependsOn` can only reference choice-type questions (`single_select`, `multi_select`, `radio`, `checkbox`, `toggle`).
 
 ## Render Package
 
-The `render` package (`github.com/rendis/surveygo/v2/render`) provides survey output generation from survey definitions and answers.
+The `render` package generates survey outputs from definitions and answers.
 
-### Usage
+### Answers to Outputs
+
+| Function                                      | Returns                 | Description                                    |
+| --------------------------------------------- | ----------------------- | ---------------------------------------------- |
+| `AnswersToCSV(survey, answers, checkMark...)` | `[]byte, error`         | CSV with cartesian expansion for repeat groups |
+| `AnswersToJSON(survey, answers)`              | `*SurveyCard, error`    | Structured survey card                         |
+| `AnswersToHTML(survey, answers)`              | `*HTMLResult, error`    | HTML + CSS (independent)                       |
+| `HTMLResult.WithCSSPath(path)`                | `*HTMLResult`           | Replace CSS `href` in HTML                     |
+| `AnswersToTipTap(survey, answers)`            | `*TipTapNode, error`    | TipTap-compatible document                     |
+| `AnswersTo(survey, answers, opts)`            | `*AnswersResult, error` | Multiple formats, single pass                  |
+
+### Definition Tree
+
+| Function                     | Returns              | Description                                 |
+| ---------------------------- | -------------------- | ------------------------------------------- |
+| `DefinitionTreeJSON(survey)` | `*GroupTree, error`  | Group hierarchy with cycle detection        |
+| `DefinitionTreeHTML(survey)` | `[]byte, error`      | Interactive tree visualization (go-echarts) |
+| `DefinitionTree(survey)`     | `*TreeResult, error` | Both HTML + JSON                            |
+
+### CheckMark (CSV Boolean Columns)
+
+Customize selected/not-selected marks for multi-select, checkbox, and toggle CSV columns:
 
 ```go
-import "github.com/rendis/surveygo/v2/render"
-
-// Single format
-csvBytes, err := render.AnswersToCSV(survey, answers)
-card, err := render.AnswersToJSON(survey, answers)
-htmlResult, err := render.AnswersToHTML(survey, answers) // htmlResult.HTML, htmlResult.CSS
-htmlCustom := htmlResult.WithCSSPath("/assets/survey.css") // replace CSS href in HTML
-tiptapDoc, err := render.AnswersToTipTap(survey, answers)
-
-// Multiple formats in one pass
-result, err := render.AnswersTo(survey, answers, render.OutputOptions{
-    CSV:  true,
-    JSON: true,
-    HTML: true,
+csv, err := render.AnswersToCSV(survey, answers, &render.CheckMark{
+    Selected:    "x",
+    NotSelected: "",
 })
-
-// Definition tree
-treeJSON, err := render.DefinitionTreeJSON(survey)
-treeHTML, err := render.DefinitionTreeHTML(survey)
-treeBoth, err := render.DefinitionTree(survey)
+// Defaults to "true"/"false" when nil
 ```
 
-### Public API
+## AnswerExpr
 
-**Answers → Outputs**
-
-| Function                           | Description                                    | Returns                 |
-| ---------------------------------- | ---------------------------------------------- | ----------------------- |
-| `AnswersToCSV(survey, answers)`    | CSV with cartesian expansion for repeat groups | `[]byte, error`         |
-| `AnswersToJSON(survey, answers)`   | Structured SurveyCard                          | `*SurveyCard, error`    |
-| `AnswersToHTML(survey, answers)`   | HTML and CSS as separate fields                | `*HTMLResult, error`    |
-| `HTMLResult.WithCSSPath(path)`     | Replace CSS `href` in HTML with custom path    | `*HTMLResult`           |
-| `AnswersToTipTap(survey, answers)` | TipTap-compatible document                     | `*TipTapNode, error`    |
-| `AnswersTo(survey, answers, opts)` | Multiple formats in a single pass              | `*AnswersResult, error` |
-
-**Definition Tree**
-
-| Function                     | Description                                 | Returns              |
-| ---------------------------- | ------------------------------------------- | -------------------- |
-| `DefinitionTreeJSON(survey)` | Group hierarchy with cycle detection        | `*GroupTree, error`  |
-| `DefinitionTreeHTML(survey)` | Interactive tree visualization (go-echarts) | `[]byte, error`      |
-| `DefinitionTree(survey)`     | Both HTML and JSON                          | `*TreeResult, error` |
-
-### AnswerExpr
-
-When a question has `answerExpr` set, the render package evaluates it using [expr-lang/expr](https://github.com/expr-lang/expr) and uses the result instead of default type-based extraction. If the expression fails, it silently falls back to default logic.
+When a question has `answerExpr` set, the render package evaluates it using [expr-lang/expr](https://github.com/expr-lang/expr) and uses the result instead of default type-based extraction. Falls back silently on error.
 
 Environment variables:
 
-- `ans` — `[]any` raw answer data for the question
-- `options` — `map[string]string` (nameId → label), only available for choice-type questions
+- `ans` -- `[]any` raw answer data for the question
+- `options` -- `map[string]string` (nameId to label), only for choice-type questions
 
 Examples:
 
@@ -341,3 +245,116 @@ ans[0] + " " + ans[1]        // concatenate country code + number
 ans[0] ? "Yes" : "No"        // toggle to text
 options[ans[0]]              // resolve selected option to its label
 ```
+
+## API Overview
+
+### Construction & Serialization
+
+| Function                          | Description              |
+| --------------------------------- | ------------------------ |
+| `NewSurvey(title, version, desc)` | Create new survey        |
+| `ParseFromBytes(b)`               | Parse from JSON bytes    |
+| `ParseFromJsonStr(s)`             | Parse from JSON string   |
+| `survey.ToJson()`                 | Serialize to JSON string |
+| `survey.ToMap()`                  | Serialize to map         |
+
+### Core Operations
+
+| Method                                 | Description                                      |
+| -------------------------------------- | ------------------------------------------------ |
+| `ValidateSurvey()`                     | Validate structure + cross-reference consistency |
+| `ReviewAnswers(ans)`                   | Validate answers, return `*SurveyResume`         |
+| `TranslateAnswers(ans, ignoreUnknown)` | Convert raw answers to human-readable labels     |
+| `GroupAnswersByType(ans)`              | Group answers by question type                   |
+
+### Question Management
+
+| Method                      | Description                                                                 |
+| --------------------------- | --------------------------------------------------------------------------- |
+| `AddQuestion(q)`            | Add question (also `AddQuestionJson`, `AddQuestionMap`, `AddQuestionBytes`) |
+| `UpdateQuestion(q)`         | Update question (also Json/Map/Bytes variants)                              |
+| `AddOrUpdateQuestion(q)`    | Upsert question (also Json/Map/Bytes variants)                              |
+| `RemoveQuestion(nameId)`    | Remove question + clean up DependsOn refs                                   |
+| `GetQuestionsAssignments()` | Map of questionNameId to groupNameId                                        |
+| `GetAssetQuestions()`       | List asset-type questions                                                   |
+
+### Group Management
+
+| Method                                         | Description                                                     |
+| ---------------------------------------------- | --------------------------------------------------------------- |
+| `AddGroup(g)`                                  | Add group (also `AddGroupJson`, `AddGroupMap`, `AddGroupBytes`) |
+| `UpdateGroup(g)`                               | Update group (also Json/Map/Bytes variants)                     |
+| `RemoveGroup(nameId)`                          | Remove group                                                    |
+| `AddQuestionToGroup(qId, gId, pos)`            | Assign question to group at position (-1 = end)                 |
+| `RemoveQuestionFromGroup(qId, gId)`            | Unassign question from group                                    |
+| `UpdateGroupQuestions(gId, qIds)`              | Replace group's question list                                   |
+| `UpdateGroupsOrder(order)`                     | Reorder top-level groups                                        |
+| `EnableGroup(nameId)` / `DisableGroup(nameId)` | Toggle group visibility                                         |
+
+### Query Helpers
+
+| Method                   | Description                  |
+| ------------------------ | ---------------------------- |
+| `GetDisabledQuestions()` | Questions in disabled groups |
+| `GetEnabledQuestions()`  | Questions in enabled groups  |
+| `GetRequiredQuestions()` | Required + enabled questions |
+| `GetOptionalQuestions()` | Optional + enabled questions |
+
+## Testing
+
+```bash
+go test ./...
+```
+
+Run the example application:
+
+```bash
+go run example/main.go
+```
+
+The [example/](example/) directory includes two survey JSON files (`survey.json`, `ecommerce_survey.json`) demonstrating question types, grouped answers, and validation.
+
+## Documentation
+
+| Document                                               | Description                                 |
+| ------------------------------------------------------ | ------------------------------------------- |
+| [Survey Structure Reference](docs/SURVEY_STRUCTURE.md) | Complete JSON schema for all question types |
+| [Example Application](example/)                        | Working code with survey JSON samples       |
+
+## AI Agent Skill
+
+SurveyGo includes an [Agent Skill](https://agentskills.io/specification) that provides AI coding agents (Claude Code, Cursor, etc.) with structured guidance for consuming this library.
+
+### Install via [skills.sh](https://skills.sh)
+
+```bash
+npx skills add https://github.com/rendis/surveygo --skill surveygo
+```
+
+### Install via symlink (Claude Code)
+
+```bash
+ln -s /path/to/surveygo/skills/surveygo ~/.claude/skills/surveygo
+```
+
+Or use the distributable package: `skills/surveygo.skill`
+
+## Tech Stack
+
+| Component         | Technology                    |
+| ----------------- | ----------------------------- |
+| **Language**      | Go 1.25+                      |
+| **Validation**    | `go-playground/validator/v10` |
+| **Expressions**   | `expr-lang/expr`              |
+| **Visualization** | `go-echarts/go-echarts/v2`    |
+| **BSON**          | `go.mongodb.org/mongo-driver` |
+
+## License
+
+[GPLv3](LICENSE) -- Copyright (c) rendis
+
+---
+
+<div align="center">
+  <sub>Built for surveys that adapt.</sub>
+</div>
