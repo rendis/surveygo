@@ -78,12 +78,14 @@ Public API (`render.go`):
 - `DefinitionTreeJSON(survey)` → `*GroupTree`
 - `DefinitionTreeHTML(survey)` → HTML bytes (go-echarts interactive tree)
 - `DefinitionTree(survey)` → `*TreeResult` (HTML + JSON)
+- `ReportColumns(survey)` → `([]ReportColumn, *GroupTree, error)` — ordered column definitions for multi-record reports
+- `ReportRows(survey, tree, columns, answers, checkMark)` → `([]map[string]string, error)` — row data with cartesian product expansion
 
 Internal files (all unexported):
 
-- `types.go`: Types (GroupTree, SurveyCard, OutputOptions, CheckMark, AnswersResult, TreeResult, etc.)
-- `answers.go`: Answer extraction helpers (extractTextValue, extractPhoneValue, etc.)
-- `tree.go`: `buildGroupTree` — DFS group hierarchy with cycle detection; computes `RepeatDescendants` (count of `AllowRepeat` descendants per node)
+- `types.go`: Types (GroupTree, SurveyCard, OutputOptions, CheckMark, AnswersResult, TreeResult, ReportColumn, etc.); `TopLevelGroup()` method on `GroupTree` (walks `parent` map to find root-level group)
+- `answers.go`: Answer extraction helpers (extractTextValue, extractPhoneValue, etc.); `extractToggleValue` handles both `bool` and string `"true"`/`"1"`
+- `tree.go`: `buildGroupTree` — DFS group hierarchy with cycle detection; computes `RepeatDescendants` (count of `AllowRepeat` descendants per node); populates `parent` map (child→parent) during DFS
 - `questions.go`: `extractGroupQuestions` — adapts `*question.Question` → `QuestionInfo`
 - `expr_eval.go`: expr-lang/expr evaluation with silent fallback
 - `card.go`: `buildSurveyCard` — structured card with resolved answers. Section type truth table:
@@ -91,6 +93,7 @@ Internal files (all unexported):
   - `AllowRepeat=true, RepeatDescendants > 0` → `repeat-list`
   - `AllowRepeat=true, RepeatDescendants=0, has multi_select/checkbox` → `repeat-list`
   - `AllowRepeat=true, RepeatDescendants=0, no multi_select/checkbox` → `repeat-table` (flattens descendant questions into columns)
+- `report.go`: `ReportColumns`, `ReportRows` — public API for multi-record report column/row extraction; reuses `buildColumns`/`fillRows` from csv.go
 - `csv.go`: `generateCSV` — cartesian product expansion for repeat groups
 - `html.go`: `generateHTML`, `defaultCSS` — HTML rendering
 - `tiptap.go`: `buildTipTapDoc` — TipTap document
