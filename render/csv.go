@@ -20,6 +20,7 @@ type csvColumn struct {
 	questionID string // question nameId for answer lookup
 	qType      string // question type
 	optionID   string // non-empty for multi_select/checkbox boolean columns
+	groupID    string // immediate group nameId this column belongs to
 }
 
 func generateCSV(survey *surveygo.Survey, tree *GroupTree, questions []GroupQuestions, answers surveygo.Answers, cm *CheckMark) ([]byte, error) {
@@ -78,6 +79,7 @@ func buildColumns(node *GroupNode, survey *surveygo.Survey, gqIndex map[string]G
 					header:     questionHeader(q),
 					questionID: q.NameId,
 					qType:      q.QuestionType,
+					groupID:    node.NameId,
 				})
 				continue
 			}
@@ -88,6 +90,7 @@ func buildColumns(node *GroupNode, survey *surveygo.Survey, gqIndex map[string]G
 						questionID: q.NameId,
 						qType:      q.QuestionType,
 						optionID:   opt.NameId,
+						groupID:    node.NameId,
 					})
 				}
 			} else {
@@ -95,6 +98,7 @@ func buildColumns(node *GroupNode, survey *surveygo.Survey, gqIndex map[string]G
 					header:     questionHeader(q),
 					questionID: q.NameId,
 					qType:      q.QuestionType,
+					groupID:    node.NameId,
 				})
 			}
 		}
