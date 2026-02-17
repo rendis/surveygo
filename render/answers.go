@@ -2,6 +2,7 @@ package render
 
 import (
 	"encoding/json"
+	"strings"
 
 	surveygo "github.com/rendis/surveygo/v2"
 )
@@ -92,8 +93,14 @@ func extractToggleValue(ans []any) bool {
 	if len(ans) == 0 {
 		return false
 	}
-	b, _ := ans[0].(bool)
-	return b
+	switch v := ans[0].(type) {
+	case bool:
+		return v
+	case string:
+		return strings.EqualFold(v, "true") || v == "1"
+	default:
+		return false
+	}
 }
 
 func extractGroupInstances(ans []any) []surveygo.Answers {

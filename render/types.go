@@ -12,8 +12,22 @@ type GroupNode struct {
 
 // GroupTree holds the hierarchical tree and a flat index for O(1) lookup.
 type GroupTree struct {
-	Roots []*GroupNode          `json:"roots"`
-	Index map[string]*GroupNode `json:"-"`
+	Roots  []*GroupNode          `json:"roots"`
+	Index  map[string]*GroupNode `json:"-"`
+	parent map[string]string     // child nameId → parent nameId
+}
+
+// TopLevelGroup returns the root-level group nameId for a given group nameId.
+// If the group is already a root, it returns itself. If not found, returns the input.
+func (t *GroupTree) TopLevelGroup(groupID string) string {
+	current := groupID
+	for {
+		p, ok := t.parent[current]
+		if !ok {
+			return current
+		}
+		current = p
+	}
 }
 
 // QuestionInfo is the processed output for a question.

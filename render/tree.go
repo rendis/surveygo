@@ -11,7 +11,8 @@ import (
 
 func buildGroupTree(survey *surveygo.Survey) (*GroupTree, error) {
 	tree := &GroupTree{
-		Index: make(map[string]*GroupNode),
+		Index:  make(map[string]*GroupNode),
+		parent: make(map[string]string),
 	}
 
 	visiting := make(map[string]bool) // cycle detection: ancestors in current DFS path
@@ -79,6 +80,7 @@ func buildNode(nameID string, visiting map[string]bool, survey *surveygo.Survey,
 	}
 
 	for _, c := range node.Children {
+		tree.parent[c.NameId] = nameID
 		node.RepeatDescendants += c.RepeatDescendants
 		if c.AllowRepeat {
 			node.RepeatDescendants++

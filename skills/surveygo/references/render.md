@@ -7,6 +7,7 @@
   - [Import](#import)
   - [Answer Output Functions](#answer-output-functions)
   - [Definition Tree Functions](#definition-tree-functions)
+  - [Report Functions](#report-functions)
   - [Output Types](#output-types)
     - [SurveyCard](#surveycard)
     - [HTMLResult](#htmlresult)
@@ -48,6 +49,34 @@ func DefinitionTreeJSON(survey *Survey) (*GroupTree, error)    // JSON tree stru
 func DefinitionTreeHTML(survey *Survey) ([]byte, error)         // interactive HTML (go-echarts)
 func DefinitionTree(survey *Survey) (*TreeResult, error)        // both JSON + HTML
 ```
+
+## Report Functions
+
+Multi-record report API: extract column definitions once, then generate rows per answer set.
+
+File: `render/report.go`
+
+```go
+// Column definitions — call once per survey
+func ReportColumns(survey *Survey) ([]ReportColumn, *GroupTree, error)
+
+// Row data — call per answer set; returns 1+ rows (cartesian product for repeat groups)
+func ReportRows(survey *Survey, tree *GroupTree, columns []ReportColumn, answers Answers, cm *CheckMark) ([]map[string]string, error)
+```
+
+```go
+type ReportColumn struct {
+    Header     string // display header (label, or "label - option" for multi-select)
+    QuestionID string // question nameId for answer lookup
+    QType      string // surveygo question type
+    OptionID   string // non-empty for multi-select/checkbox boolean columns
+    GroupID    string // immediate group nameId this column belongs to
+}
+```
+
+`ReportColumns` builds the group tree and returns ordered column definitions. The returned `*GroupTree` is needed by `ReportRows` and `TopLevelGroup`.
+
+`ReportRows` expands answers against the columns, producing `[]map[string]string` keyed by `ReportColumn.Header`. Repeatable groups expand via cartesian product (same logic as CSV). Optional `CheckMark` controls selected/not-selected strings for boolean columns.
 
 ## Output Types
 
@@ -150,6 +179,10 @@ type GroupNode struct {
     RepeatDescendants int          `json:"repeatDescendants"`          // count of AllowRepeat descendants (recursive, excludes self)
     Children          []*GroupNode `json:"children,omitempty"`
 }
+
+// Returns the root-level group nameId for a given group.
+// Walks the parent map upward; returns itself if already a root.
+func (t *GroupTree) TopLevelGroup(groupID string) string
 ```
 
 ### Result Types
