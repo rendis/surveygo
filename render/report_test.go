@@ -65,43 +65,6 @@ func TestReportColumns_MultiSelectExplosion(t *testing.T) {
 	}
 }
 
-func TestReportColumns_GroupIDAssignment(t *testing.T) {
-	survey := loadSurvey(t, "sample_nested.json")
-	cols, _, err := ReportColumns(survey)
-	if err != nil {
-		t.Fatalf("ReportColumns: %v", err)
-	}
-
-	// Verify specific columns belong to expected groups
-	expectations := map[string]string{
-		"company_name": "grp-company_info",
-		"company_rut":  "grp-company_info",
-		"addr_region":  "grp-addr_location",
-		"addr_street":  "grp-addr_detail",
-		"dept_name":    "grp-dept_info",
-		"emp_name":     "grp-emp_basic",
-		"emp_email":    "grp-emp_basic",
-	}
-
-	colMap := make(map[string]ReportColumn)
-	for _, c := range cols {
-		if c.OptionID == "" { // skip multi-select expanded columns
-			colMap[c.QuestionID] = c
-		}
-	}
-
-	for qID, wantGroup := range expectations {
-		c, ok := colMap[qID]
-		if !ok {
-			t.Errorf("column %q not found", qID)
-			continue
-		}
-		if c.GroupID != wantGroup {
-			t.Errorf("column %q: groupID = %q, want %q", qID, c.GroupID, wantGroup)
-		}
-	}
-}
-
 func TestReportRows_RepeatExpansion(t *testing.T) {
 	survey := loadSurvey(t, "sample.json")
 	answers := loadAnswersFile(t, "sample_answers.json")
@@ -340,30 +303,3 @@ func TestReportRows_CheckMark(t *testing.T) {
 	}
 }
 
-func TestTopLevelGroup(t *testing.T) {
-	survey := loadSurvey(t, "sample_nested.json")
-	_, tree, err := ReportColumns(survey)
-	if err != nil {
-		t.Fatalf("ReportColumns: %v", err)
-	}
-
-	tests := []struct {
-		groupID string
-		want    string
-	}{
-		{"grp-company", "grp-company"},           // root → itself
-		{"grp-company_info", "grp-company"},       // direct child → root
-		{"grp-addr_location", "grp-company"},      // nested 2 levels → root
-		{"grp-departments", "grp-company"},         // repeat child → root
-		{"grp-dept_info", "grp-company"},           // inside repeat → root
-		{"grp-emp_basic", "grp-company"},           // nested repeat → root
-		{"nonexistent", "nonexistent"},             // unknown → itself
-	}
-
-	for _, tt := range tests {
-		got := tree.TopLevelGroup(tt.groupID)
-		if got != tt.want {
-			t.Errorf("TopLevelGroup(%q) = %q, want %q", tt.groupID, got, tt.want)
-		}
-	}
-}

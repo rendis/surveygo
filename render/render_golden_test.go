@@ -43,6 +43,14 @@ func TestRenderTreeOnly(t *testing.T) {
 			writeFile(t, filepath.Join(outDir, "tree.json"), treeJSON)
 			writeFile(t, filepath.Join(outDir, "tree.html"), treeResult.HTML)
 
+			// Report columns output
+			reportCols, _, err := ReportColumns(survey)
+			if err != nil {
+				t.Fatalf("ReportColumns: %v", err)
+			}
+			colsJSON, _ := json.MarshalIndent(reportCols, "", "  ")
+			writeFile(t, filepath.Join(outDir, "report_columns.json"), colsJSON)
+
 			t.Logf("tree output → %s", outDir)
 		})
 	}
@@ -89,6 +97,21 @@ func TestRenderExamples(t *testing.T) {
 			}
 
 			writeFile(t, filepath.Join(outDir, "answers.csv"), result.CSV)
+
+			// Report columns + rows output
+			reportCols, tree, err := ReportColumns(survey)
+			if err != nil {
+				t.Fatalf("ReportColumns: %v", err)
+			}
+			colsJSON, _ := json.MarshalIndent(reportCols, "", "  ")
+			writeFile(t, filepath.Join(outDir, "report_columns.json"), colsJSON)
+
+			reportRows, err := ReportRows(survey, tree, reportCols, answers, &CheckMark{Selected: "Sí", NotSelected: "No"})
+			if err != nil {
+				t.Fatalf("ReportRows: %v", err)
+			}
+			rowsJSON, _ := json.MarshalIndent(reportRows, "", "  ")
+			writeFile(t, filepath.Join(outDir, "report_rows.json"), rowsJSON)
 
 			if result.JSON != nil {
 				cardJSON, _ := json.MarshalIndent(result.JSON, "", "  ")

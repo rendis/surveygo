@@ -12,12 +12,11 @@ type ReportColumn struct {
 	QuestionID string // question nameId for answer lookup
 	QType      string // surveygo question type
 	OptionID   string // non-empty for multi-select/checkbox boolean columns
-	GroupID    string // immediate group nameId this column belongs to
 }
 
 // ReportColumns resolves ordered column definitions from a survey definition.
 // It builds the group tree and extracts questions, returning exported column types
-// along with the tree (needed for ReportRows and TopLevelGroup).
+// along with the tree (needed for ReportRows).
 func ReportColumns(survey *surveygo.Survey) ([]ReportColumn, *GroupTree, error) {
 	tree, err := buildGroupTree(survey)
 	if err != nil {
@@ -46,7 +45,6 @@ func ReportColumns(survey *surveygo.Survey) ([]ReportColumn, *GroupTree, error) 
 			QuestionID: c.questionID,
 			QType:      c.qType,
 			OptionID:   c.optionID,
-			GroupID:    c.groupID,
 		}
 	}
 
@@ -74,7 +72,6 @@ func ReportRows(survey *surveygo.Survey, tree *GroupTree, columns []ReportColumn
 			questionID: c.QuestionID,
 			qType:      c.QType,
 			optionID:   c.OptionID,
-			groupID:    c.GroupID,
 		}
 	}
 

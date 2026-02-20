@@ -70,11 +70,10 @@ type ReportColumn struct {
     QuestionID string // question nameId for answer lookup
     QType      string // surveygo question type
     OptionID   string // non-empty for multi-select/checkbox boolean columns
-    GroupID    string // immediate group nameId this column belongs to
 }
 ```
 
-`ReportColumns` builds the group tree and returns ordered column definitions. The returned `*GroupTree` is needed by `ReportRows` and `TopLevelGroup`.
+`ReportColumns` builds the group tree and returns ordered column definitions. The returned `*GroupTree` is needed by `ReportRows`.
 
 `ReportRows` expands answers against the columns, producing `[]map[string]string` keyed by `ReportColumn.Header`. Repeatable groups expand via cartesian product (same logic as CSV). Optional `CheckMark` controls selected/not-selected strings for boolean columns.
 
@@ -179,10 +178,6 @@ type GroupNode struct {
     RepeatDescendants int          `json:"repeatDescendants"`          // count of AllowRepeat descendants (recursive, excludes self)
     Children          []*GroupNode `json:"children,omitempty"`
 }
-
-// Returns the root-level group nameId for a given group.
-// Walks the parent map upward; returns itself if already a root.
-func (t *GroupTree) TopLevelGroup(groupID string) string
 ```
 
 ### Result Types
