@@ -18,3 +18,6 @@ settings.local.json
 # Render test output (generated, not committed)
 render/testdata/output/
 .worktrees
+
+# MacOS
+.DS_Store
