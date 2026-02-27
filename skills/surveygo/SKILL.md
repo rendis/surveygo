@@ -3,10 +3,11 @@ name: surveygo
 description: >-
   Guides usage of the surveygo Go library (github.com/rendis/surveygo/v2)
   for building and managing surveys with validation, conditional logic, and
-  output rendering. Covers parsing surveys from JSON, creating surveys
-  programmatically, adding questions and groups, answer validation and
-  translation, DependsOn conditional visibility, grouped/repeatable answers,
-  and output generation (CSV, HTML, JSON, TipTap). Use when working with
+  output rendering, and tabular data extraction. Covers parsing surveys
+  from JSON, creating surveys programmatically, adding questions and groups,
+  answer validation and translation, DependsOn conditional visibility,
+  grouped/repeatable answers, and output generation (CSV, HTML, JSON, TipTap).
+  Use when working with
   surveygo imports, Survey structs, question types, answer review, schema
   construction, or the render package.
 ---
@@ -145,6 +146,9 @@ result, err := render.AnswersTo(survey, answers, render.OutputOptions{
 
 // HTMLResult has separate HTML + CSS
 htmlResult.WithCSSPath("/static/card.css")  // replace CSS href
+
+// Tabular matrix (header row + data rows, same data as CSV but as Go types)
+matrix, err := render.AnswersToRows(survey, answers)
 ```
 
 See [references/render.md](references/render.md) for full render API and typesGotchas

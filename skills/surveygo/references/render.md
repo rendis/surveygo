@@ -7,6 +7,7 @@
   - [Import](#import)
   - [Answer Output Functions](#answer-output-functions)
   - [Definition Tree Functions](#definition-tree-functions)
+  - [Tabular Row Output](#tabular-row-output)
   - [Output Types](#output-types)
     - [SurveyCard](#surveycard)
     - [HTMLResult](#htmlresult)
@@ -48,6 +49,18 @@ func DefinitionTreeJSON(survey *Survey) (*GroupTree, error)    // JSON tree stru
 func DefinitionTreeHTML(survey *Survey) ([]byte, error)         // interactive HTML (go-echarts)
 func DefinitionTree(survey *Survey) (*TreeResult, error)        // both JSON + HTML
 ```
+
+## Tabular Row Output
+
+Returns the same data as `AnswersToCSV` but as Go types (`[][]string`) instead of serialized CSV bytes.
+
+File: `render/render.go`
+
+```go
+func AnswersToRows(survey *Survey, answers Answers, checkMark ...*CheckMark) ([][]string, error)
+```
+
+Returns a matrix where `matrix[0]` is the header row and `matrix[1:]` are data rows. Repeatable groups expand via cartesian product (same logic as `AnswersToCSV`). Optional `CheckMark` controls selected/not-selected strings for boolean columns (multi-select, checkbox, toggle).
 
 ## Output Types
 

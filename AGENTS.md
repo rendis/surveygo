@@ -78,11 +78,12 @@ Public API (`render.go`):
 - `DefinitionTreeJSON(survey)` → `*GroupTree`
 - `DefinitionTreeHTML(survey)` → HTML bytes (go-echarts interactive tree)
 - `DefinitionTree(survey)` → `*TreeResult` (HTML + JSON)
+- `AnswersToRows(survey, answers, checkMark...*CheckMark)` → `([][]string, error)` — tabular matrix (header row + data rows) with cartesian product expansion for repeat groups
 
 Internal files (all unexported):
 
 - `types.go`: Types (GroupTree, SurveyCard, OutputOptions, CheckMark, AnswersResult, TreeResult, etc.)
-- `answers.go`: Answer extraction helpers (extractTextValue, extractPhoneValue, etc.)
+- `answers.go`: Answer extraction helpers (extractTextValue, extractPhoneValue, etc.); `extractToggleValue` handles both `bool` and string `"true"`/`"1"`
 - `tree.go`: `buildGroupTree` — DFS group hierarchy with cycle detection; computes `RepeatDescendants` (count of `AllowRepeat` descendants per node)
 - `questions.go`: `extractGroupQuestions` — adapts `*question.Question` → `QuestionInfo`
 - `expr_eval.go`: expr-lang/expr evaluation with silent fallback
@@ -91,7 +92,7 @@ Internal files (all unexported):
   - `AllowRepeat=true, RepeatDescendants > 0` → `repeat-list`
   - `AllowRepeat=true, RepeatDescendants=0, has multi_select/checkbox` → `repeat-list`
   - `AllowRepeat=true, RepeatDescendants=0, no multi_select/checkbox` → `repeat-table` (flattens descendant questions into columns)
-- `csv.go`: `generateCSV` — cartesian product expansion for repeat groups
+- `csv.go`: `generateMatrix` (returns `[][]string`) + `generateCSV` (matrix → CSV bytes) — cartesian product expansion for repeat groups
 - `html.go`: `generateHTML`, `defaultCSS` — HTML rendering
 - `tiptap.go`: `buildTipTapDoc` — TipTap document
 - `visualize.go`: `renderTreeToBytes` — go-echarts tree visualization
