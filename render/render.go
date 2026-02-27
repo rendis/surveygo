@@ -25,6 +25,26 @@ func AnswersToCSV(survey *surveygo.Survey, answers surveygo.Answers, checkMark .
 	return generateCSV(survey, tree, questions, answers, cm)
 }
 
+// AnswersToRows generates a [][]string matrix from survey answers.
+// The first row contains column headers; subsequent rows contain data.
+// Repeatable groups expand via cartesian product (same logic as AnswersToCSV).
+// An optional CheckMark controls selected/not-selected strings for boolean columns.
+func AnswersToRows(survey *surveygo.Survey, answers surveygo.Answers, checkMark ...*CheckMark) ([][]string, error) {
+	tree, err := buildGroupTree(survey)
+	if err != nil {
+		return nil, fmt.Errorf("building group tree: %w", err)
+	}
+	questions, err := extractGroupQuestions(survey)
+	if err != nil {
+		return nil, fmt.Errorf("extracting questions: %w", err)
+	}
+	var cm *CheckMark
+	if len(checkMark) > 0 {
+		cm = checkMark[0]
+	}
+	return generateMatrix(survey, tree, questions, answers, cm), nil
+}
+
 // AnswersToJSON builds a structured SurveyCard from survey answers.
 func AnswersToJSON(survey *surveygo.Survey, answers surveygo.Answers) (*SurveyCard, error) {
 	tree, err := buildGroupTree(survey)

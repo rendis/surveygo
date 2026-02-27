@@ -90,6 +90,14 @@ func TestRenderExamples(t *testing.T) {
 
 			writeFile(t, filepath.Join(outDir, "answers.csv"), result.CSV)
 
+			// Rows output (matrix)
+			matrix, err := AnswersToRows(survey, answers, &CheckMark{Selected: "Sí", NotSelected: "No"})
+			if err != nil {
+				t.Fatalf("AnswersToRows: %v", err)
+			}
+			matrixJSON, _ := json.MarshalIndent(matrix, "", "  ")
+			writeFile(t, filepath.Join(outDir, "rows.json"), matrixJSON)
+
 			if result.JSON != nil {
 				cardJSON, _ := json.MarshalIndent(result.JSON, "", "  ")
 				writeFile(t, filepath.Join(outDir, "card.json"), cardJSON)

@@ -22,7 +22,7 @@ type csvColumn struct {
 	optionID   string // non-empty for multi_select/checkbox boolean columns
 }
 
-func generateCSV(survey *surveygo.Survey, tree *GroupTree, questions []GroupQuestions, answers surveygo.Answers, cm *CheckMark) ([]byte, error) {
+func generateMatrix(survey *surveygo.Survey, tree *GroupTree, questions []GroupQuestions, answers surveygo.Answers, cm *CheckMark) [][]string {
 	gqIndex := make(map[string]GroupQuestions, len(questions))
 	for _, gq := range questions {
 		gqIndex[gq.GroupNameId] = gq
@@ -40,24 +40,32 @@ func generateCSV(survey *surveygo.Survey, tree *GroupTree, questions []GroupQues
 		rows = fillRows(root, answers, survey, gqIndex, cols, rows, cm)
 	}
 
-	// 3. Write CSV.
-	var buf bytes.Buffer
-	w := csv.NewWriter(&buf)
-
+	// 3. Convert to [][]string (header row + data rows).
 	headers := make([]string, len(cols))
 	for i, c := range cols {
 		headers[i] = c.header
 	}
-	if err := w.Write(headers); err != nil {
-		return nil, fmt.Errorf("writing CSV headers: %w", err)
-	}
 
+	matrix := make([][]string, 0, 1+len(rows))
+	matrix = append(matrix, headers)
 	for _, row := range rows {
 		record := make([]string, len(cols))
 		for i, c := range cols {
 			record[i] = row[c.header]
 		}
-		if err := w.Write(record); err != nil {
+		matrix = append(matrix, record)
+	}
+
+	return matrix
+}
+
+func generateCSV(survey *surveygo.Survey, tree *GroupTree, questions []GroupQuestions, answers surveygo.Answers, cm *CheckMark) ([]byte, error) {
+	matrix := generateMatrix(survey, tree, questions, answers, cm)
+
+	var buf bytes.Buffer
+	w := csv.NewWriter(&buf)
+	for _, row := range matrix {
+		if err := w.Write(row); err != nil {
 			return nil, fmt.Errorf("writing CSV row: %w", err)
 		}
 	}
