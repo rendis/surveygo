@@ -2,11 +2,12 @@ package reviewer
 
 import (
 	"fmt"
-	"github.com/rendis/surveygo/v2/question/types"
-	"github.com/rendis/surveygo/v2/question/types/text"
 	"regexp"
 	"strings"
 	"time"
+
+	"github.com/rendis/surveygo/v2/question/types"
+	"github.com/rendis/surveygo/v2/question/types/text"
 )
 
 // emailRegex is a regex to validate email.
@@ -39,7 +40,10 @@ func reviewFreeText(questionValue any, answers []any) error {
 	}
 
 	answer := answers[0]
-	freeText, _ := text.CastToFreeText(questionValue)
+	freeText, err := text.CastToFreeText(questionValue)
+	if err != nil {
+		return err
+	}
 
 	// cast answer to string
 	a, ok := answer.(string)
@@ -67,7 +71,10 @@ func reviewEmail(questionValue any, answers []any) error {
 	}
 
 	answer := answers[0]
-	email, _ := text.CastToEmail(questionValue)
+	email, err := text.CastToEmail(questionValue)
+	if err != nil {
+		return err
+	}
 
 	// cast answer to string
 	a, ok := answer.(string)
@@ -83,7 +90,7 @@ func reviewEmail(questionValue any, answers []any) error {
 	}
 
 	// validate domain
-	if email.AllowedDomains != nil && len(email.AllowedDomains) > 0 {
+	if len(email.AllowedDomains) > 0 {
 		for _, allowedDomain := range email.AllowedDomains {
 			if strings.HasSuffix(a, allowedDomain) {
 				return nil
@@ -101,7 +108,10 @@ func reviewTelephone(questionValue any, answers []any) error {
 		return fmt.Errorf("text type can only have one [phone number] or two [country code, phone number] answers. got: %v", answers)
 	}
 
-	phone, _ := text.CastToTelephone(questionValue)
+	phone, err := text.CastToTelephone(questionValue)
+	if err != nil {
+		return err
+	}
 
 	if len(phone.AllowedCountryCodes) == 0 {
 		return nil
@@ -138,7 +148,10 @@ func reviewDateTime(questionValue any, answers []any) error {
 		return fmt.Errorf("date time answer must be a string. got: %v", answers[0])
 	}
 
-	dateTime, _ := text.CastToDateTime(questionValue)
+	dateTime, err := text.CastToDateTime(questionValue)
+	if err != nil {
+		return err
+	}
 
 	dateTimeFormat := dateTime.Format
 
